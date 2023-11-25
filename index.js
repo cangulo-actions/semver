@@ -13,6 +13,7 @@ const repoChangesConfig = {
 function Index(context, core, conf) {
     const commits = context.payload.commits
     const commitMsg = commits[0].message
+
     const { title, entries } = parseLastCommit(commitMsg)
     const changes = entries.map(x => parseChange(x, conf.changeTypes))
     const { requiresNewRelease, nextVersion, nextReleaseType } = checkForNextRelease(changes, repoChangesConfig.versionJsonPath)
