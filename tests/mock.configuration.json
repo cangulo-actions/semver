@@ -1,0 +1,42 @@
+{
+    "changeTypes": {
+        "break": {
+            "release": "major"
+        },
+        "major": {
+            "release": "major"
+        },
+        "feat": {
+            "release": "minor"
+        },
+        "fix": {
+            "release": "fix"
+        },
+        "refactor": {
+            "release": "fix"
+        },
+        "docs": {
+            "release": "none"
+        }
+    },
+    "scopes": {
+        "src": {
+            "tagOnRelease": true,
+            "filesChanged": [
+                "src/**"
+            ]
+        },
+        "tfm": {
+            "tagOnRelease": true,
+            "filesChanged": [
+                "terraform/**"
+            ]
+        },
+        "conf": {
+            "tagOnRelease": true,
+            "filesChanged": [
+                "configuration/**"
+            ]
+        }
+    }
+}

@@ -1,0 +1,17 @@
+
+name: 🚀 continuous-delivery
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  semver:
+    name: 🚀 release new version
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4.1.1
+    - name: release new version
+      uses: cangulo-actions/semver@main
