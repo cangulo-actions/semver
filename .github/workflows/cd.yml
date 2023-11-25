@@ -1,4 +1,3 @@
-
 name: 🚀 continuous-delivery
 
 on:
@@ -13,5 +12,7 @@ jobs:
     steps:
     - name: Checkout
       uses: actions/checkout@v4.1.1
+      with:
+        token: ${{ secrets.GH_AUTOMATION_TOKEN }}
     - name: release new version
       uses: cangulo-actions/semver@main
