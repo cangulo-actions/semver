@@ -36,6 +36,7 @@ const testData = [
         },
         outputs: {
             version: '1.2.4',
+            "release-required": true,
             "release-title": 'fix: #123 solved error querying the payment service (#5)',
             "release-type": 'patch',
             changes: [
@@ -79,6 +80,7 @@ const testData = [
         },
         outputs: {
             version: '0.4.0',
+            "release-required": true,
             "release-title": 'squashed commit title with custom config (#9)',
             "release-type": 'minor',
             changes: [

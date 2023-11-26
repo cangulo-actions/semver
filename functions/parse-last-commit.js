@@ -2,9 +2,6 @@ function parseLastCommit(commitMsg) {
     const cleanCommitMsg = commitMsg.trim()
     const commitHasMultipleParts = cleanCommitMsg.includes('\n\n')
 
-    console.log('cleanCommitMsg', cleanCommitMsg)
-    console.log('commitHasMultipleParts', commitHasMultipleParts)
-
     const result = {
         title: cleanCommitMsg,
         entries: [cleanCommitMsg]
@@ -18,20 +15,17 @@ function parseLastCommit(commitMsg) {
 
         result.title = commitParts[0]
         const body = commitParts.slice(1).join('\r\n')
-
-        console.log('body', body)
-
-        result.entries = body
+        entries = body
             .split('\r\n')
             .filter(x => x !== '')
-            .map(x => {
-                console.log('entry before filter:', x)
-                return x
-            })
             .map(x => x.replace('* ', '').trim())
-    }
+            .filter(x => !x.startsWith('Co-authored-by:'))
 
-    console.log('parseLastCommit', JSON.stringify(result))
+        if (entries.length == 0) {
+            entries.push(result.title)
+        }
+        result.entries = entries
+    }
 
     return result
 }

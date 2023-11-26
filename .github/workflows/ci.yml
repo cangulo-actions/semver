@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       require-jest: ${{ steps.changes.outputs.js || steps.changes.outputs.tests }}
-      require-e2e2: ${{ steps.changes.outputs.action }}
+      require-e2e: ${{ steps.changes.outputs.action }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4.1.1
@@ -27,7 +27,7 @@ jobs:
               - 'action.yml'
 
   test-JS:
-    name: 🧪 Test JS changes
+    name: 🧪 JS Tests
     needs: detect-changes
     if: needs.detect-changes.outputs.require-jest == 'true'
     runs-on: ubuntu-latest
@@ -38,8 +38,8 @@ jobs:
       - name: install packages
         run: npm install
 
-      - name: run tests
-        run: npm run test-ci
+      - name: run JS tests (UT and index.js)
+        run: npm run test
 
       - name: Test Report
         uses: dorny/test-reporter@v1
@@ -47,4 +47,46 @@ jobs:
         with:
           name: JEST Tests # Name of the check run which will be created
           path: reports/jest-*.xml
+          reporter: jest-junit
+
+  test-e2e:
+    name: 🧪 E2E Tests in CrazyActionsTests repo
+    needs: detect-changes
+    if: needs.detect-changes.outputs.require-e2e == 'true'
+    runs-on: ubuntu-latest
+    concurrency:
+      group: e2e-tests
+      cancel-in-progress: false
+    steps:
+      - name: Checkout cangulo-actions/CrazyActionsTests for e2e tests
+        uses: actions/checkout@v4.1.1
+        with:
+          repository: cangulo-actions/CrazyActionsTests
+          ref: main
+          fetch-tags: true
+          token: ${{ secrets.GH_AUTOMATION_TOKEN }}
+
+      - name: Checkout semver repository
+        uses: actions/checkout@v4.1.1
+        with:
+          path: semver-repo
+
+      - name: install packages
+        working-directory: semver-repo
+        run: npm install
+
+      - name: run e2e tests (create and merge PR in CrazyActionsTests repo)
+        working-directory: semver-repo
+        env:
+          REPO_PATH: '../'
+          SEMVER_BRANCH: ${{ github.head_ref }}
+          GH_TOKEN: ${{ secrets.GH_AUTOMATION_TOKEN }}
+        run: npm run test-e2e
+          
+      - name: Test Report
+        uses: dorny/test-reporter@v1
+        if: success() || failure()
+        with:
+          name: E2E Tests # Name of the check run which will be created
+          path: semver-repo/reports/jest-*.xml
           reporter: jest-junit
