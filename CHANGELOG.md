@@ -1,3 +1,8 @@
+# 0.0.3 fix: fixed summary bug (#8)
+
+## patches:
+* fix: fixed summary bug (#8)
+
 # 0.0.2 fix: fixed summary to avoid display empty content when no release was triggered (#7)
 
 ## patches:
