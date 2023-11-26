@@ -1,3 +1,10 @@
+# 0.1.0 add release link (#13)
+
+## new features:
+* feat: added release-url in outputs and in the summary
+## patches:
+* fix: renamed GH release created to be &#39;{version} {title}&#39;
+
 # 0.0.6 fix: [NO-CHANGES] test that CI workflow execute JS tests when index modified (#11)
 
 ## patches:
