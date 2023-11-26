@@ -1,3 +1,8 @@
+# 0.0.6 fix: [NO-CHANGES] test that CI workflow execute JS tests when index modified (#11)
+
+## patches:
+* fix: [NO-CHANGES] test that CI workflow execute JS tests when index modified (#11)
+
 # 0.0.5 ci: rename steps (#10)
 
 ## patches:
