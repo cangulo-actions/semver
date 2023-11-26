@@ -127,7 +127,7 @@ runs:
         RELEASE_CHANGELOG: ${{ steps.semver.outputs.changelog-record}}
       with:
         script: |
-          await github.rest.repos.createRelease({
+          const response = await github.rest.repos.createRelease({
             owner: context.repo.owner,
             repo: context.repo.repo,
             tag_name: `${{ steps.semver.outputs.version}}`,
@@ -135,6 +135,7 @@ runs:
             name: `${{ steps.semver.outputs.version}}-${{ steps.semver.outputs.release-title}}`,
             body: process.env.RELEASE_CHANGELOG,
           })
+          console.log(response)
 
     - name: printing summary
       if: ${{ inputs.create-gh-release == 'true' }}
