@@ -45,7 +45,7 @@ jobs:
         uses: dorny/test-reporter@v1
         if: success() || failure()
         with:
-          name: JEST Tests # Name of the check run which will be created
+          name: JS Tests  # Name of the check run which will be created
           path: reports/jest-*.xml
           reporter: jest-junit
 
@@ -87,6 +87,6 @@ jobs:
         uses: dorny/test-reporter@v1
         if: success() || failure()
         with:
-          name: E2E Tests # Name of the check run which will be created
+          name: E2E Tests in CrazyActionsTests repo   # Name of the check run which will be created
           path: semver-repo/reports/jest-*.xml
           reporter: jest-junit
