@@ -1,4 +1,4 @@
-const REGEX_PARSE_COMMIT = /(?<type>^[a-z\d]+)\(?(?<scopes>[a-z_\d,\-]+)?\)?: (?<description>.*)/
+const REGEX_PARSE_COMMIT = /(?<type>^[a-z\d]+)\(?(?<scopes>[a-z_\d,-]+)?\)?: (?<description>.*)/
 
 function parseChange (changeMsg, changeTypes) {
   // change is a conventional commit

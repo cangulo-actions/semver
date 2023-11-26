@@ -4,14 +4,14 @@ function calculateNextVersion (currentVersion, releases) {
   minor = parseInt(minor)
   patch = parseInt(patch)
   const finalReleaseType = getReleaseType(releases)
-  if (finalReleaseType == 'major') {
+  if (finalReleaseType === 'major') {
     major += 1
     minor = 0
     patch = 0
-  } else if (finalReleaseType == 'minor') {
+  } else if (finalReleaseType === 'minor') {
     minor += 1
     patch = 0
-  } else if (finalReleaseType == 'patch') {
+  } else if (finalReleaseType === 'patch') {
     patch += 1
   }
 

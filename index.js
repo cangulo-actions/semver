@@ -2,6 +2,7 @@ const { calculateNextVersion, getReleaseType } = require('./functions/calculate-
 const { updateChangelog } = require('./functions/changelog')
 const { parseChange } = require('./functions/parse-change')
 const { parseLastCommit } = require('./functions/parse-last-commit')
+// eslint-disable-next-line no-unused-vars
 const { groupBy } = require('core-js/actual/array/group-by')
 
 const fs = require('fs')
@@ -106,7 +107,7 @@ function checkForNextRelease (changes, versionJsonPath) {
   const releases = changes.map(x => x.releaseAssociated)
   const nextReleaseType = getReleaseType(releases)
   const nextVersion = calculateNextVersion(currentVersion, releases)
-  const requiresNewRelease = nextVersion != currentVersion
+  const requiresNewRelease = nextVersion !== currentVersion
   return { requiresNewRelease, nextVersion, nextReleaseType }
 }
 

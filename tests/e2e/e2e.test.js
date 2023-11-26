@@ -65,7 +65,7 @@ describe('E2E test', () => {
       } catch (error) {
         console.log(`Error creating PR: ${error}`)
       }
-      prNumber = await customExec(`gh pr list -B main -H ${branchToCreate} --state open --json number`, [])
+      let prNumber = await customExec(`gh pr list -B main -H ${branchToCreate} --state open --json number`, [])
       prNumber = JSON.parse(prNumber)[0].number
       console.log(`PR Created ${prNumber}`)
 
@@ -75,25 +75,25 @@ describe('E2E test', () => {
 
       console.log('pr merged. Waiting for the workflow to complete...')
 
-      let retry_count = 0
-      const max_retries = 3
-      const seconds_between_retries = 20
+      let retryCount = 0
+      const maxRetries = 3
+      const secondsBetweenRetries = 20
 
-      console.log(`waiting ${seconds_between_retries} seconds before checking if the workflow is completed`)
-      await new Promise(r => setTimeout(r, seconds_between_retries * 1000))
+      console.log(`waiting ${secondsBetweenRetries} seconds before checking if the workflow is completed`)
+      await new Promise(resolve => setTimeout(resolve, secondsBetweenRetries * 1000))
 
       let lastRunCommit = await customExec('gh run list -b main -L 1 --status completed --json headSha', [])
       lastRunCommit = JSON.parse(lastRunCommit)[0].headSha
 
-      while (mergeCommit !== lastRunCommit && retry_count < max_retries) {
-        console.log(`Waiting ${seconds_between_retries} seconds before checking if the workflow is completed`)
-        await new Promise(r => setTimeout(r, seconds_between_retries * 1000))
+      while (mergeCommit !== lastRunCommit && retryCount < maxRetries) {
+        console.log(`Waiting ${secondsBetweenRetries} seconds before checking if the workflow is completed`)
+        await new Promise(resolve => setTimeout(resolve, secondsBetweenRetries * 1000))
         lastRunCommit = await customExec('gh run list -b main -L 1 --status completed --json headSha', [])
         lastRunCommit = JSON.parse(lastRunCommit)[0].headSha
-        retry_count++
+        retryCount++
       }
 
-      if (retry_count === max_retries) {
+      if (retryCount === maxRetries) {
         console.error('Max retries reached. Exiting...')
         throw new Error('Max retries reached. Exiting...')
       }
@@ -129,6 +129,6 @@ async function customExec (command, args) {
     // requires you to have the CrazyActionsTests repo cloned in the REPOR_PATH env variable or locally in ../CrazyActionsTests
     cwd: process.env.REPO_PATH ?? '../CrazyActionsTests'
   }
-  const { exitCode, stdout, stderr } = await exec.getExecOutput(command, args, options)
+  const { stdout } = await exec.getExecOutput(command, args, options)
   return stdout.trim()
 }

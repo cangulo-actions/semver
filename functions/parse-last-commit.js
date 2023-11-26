@@ -15,13 +15,13 @@ function parseLastCommit (commitMsg) {
 
     result.title = commitParts[0]
     const body = commitParts.slice(1).join('\r\n')
-    entries = body
+    const entries = body
       .split('\r\n')
       .filter(x => x !== '')
       .map(x => x.replace('* ', '').trim())
       .filter(x => !x.startsWith('Co-authored-by:'))
 
-    if (entries.length == 0) {
+    if (entries.length === 0) {
       entries.push(result.title)
     }
     result.entries = entries
