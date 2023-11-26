@@ -139,6 +139,7 @@ runs:
             name: `${{ steps.semver.outputs.version}} ${{ steps.semver.outputs.release-title}}`,
             body: process.env.RELEASE_CHANGELOG,
           })
+          
           const releaseUrl = response.data.html_url
           core.setOutput('release-url', releaseUrl)
 
