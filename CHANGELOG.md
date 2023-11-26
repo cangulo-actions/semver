@@ -1,3 +1,11 @@
+# 0.0.5 ci: rename steps (#10)
+
+## patches:
+* fix: added a  log for rest.repos.createRelease response
+## others
+* ci: rename steps
+* ---------
+
 # 0.0.4 fix: fixed summary and added E2E tests. Those merge and check version releases in teh repo CrazyActionsTests (#9)
 
 ## patches:
