@@ -5,8 +5,31 @@ on:
     branches: [main]
 
 jobs:
-  test-changes:
-    name: 🧪 Test changes
+  detect-changes:
+    name: 🔎 Detect Changes
+    runs-on: ubuntu-latest
+    outputs:
+      require-jest: ${{ steps.changes.outputs.js || steps.changes.outputs.tests }}
+      require-e2e2: ${{ steps.changes.outputs.action }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4.1.1
+      - name: Paths Changes Filter
+        uses: dorny/paths-filter@v2.11.1
+        id: changes
+        with:
+          filters: |
+            js:
+              - 'index.js|package.json|package-lock.json|functions/**'
+            tests:
+              - 'tests/**'
+            action:
+              - 'action.yml'
+
+  test-JS:
+    name: 🧪 Test JS changes
+    needs: detect-changes
+    if: needs.detect-changes.outputs.require-jest == 'true'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
