@@ -27,6 +27,9 @@ outputs:
   release-type:
     value: ${{ steps.semver.outputs.release-type }}
     description: 'release type as major, minor or patch'
+  release-url:
+    value: ${{ steps.create-release.outputs.release-url }}
+    description: 'release url'
   changes:
     value: ${{ steps.semver.outputs.changes }}
     description: 'changes merged: [{type,releaseAssociated,scopes,description,originalCommit}]'
@@ -123,6 +126,7 @@ runs:
     - name: Create GH Repo Release
       if: ${{ inputs.create-gh-release == 'true' &&  steps.semver.outputs.release-required == 'true' }}
       uses: actions/github-script@v7
+      id: create-release
       env:
         RELEASE_CHANGELOG: ${{ steps.semver.outputs.changelog-record}}
       with:
@@ -135,7 +139,8 @@ runs:
             name: `${{ steps.semver.outputs.version}} ${{ steps.semver.outputs.release-title}}`,
             body: process.env.RELEASE_CHANGELOG,
           })
-          console.log(response)
+          const releaseUrl = response.data.html_url
+          core.setOutput('release-url', releaseUrl)
 
     - name: printing summary
       if: ${{ inputs.create-gh-release == 'true' }}
@@ -145,6 +150,7 @@ runs:
         RELEASE_VERSION: ${{ steps.semver.outputs.version }}
         RELEASE_TITLE: ${{ steps.semver.outputs.release-title }}
         RELEASE_TYPE: ${{ steps.semver.outputs.release-type }}
+        RELEASE_URL: ${{ steps.create-release.outputs.release-url }}
       with:
         script: |
           const newVersionRelease = process.env.NEW_VERSION_RELEASED
@@ -153,6 +159,7 @@ runs:
             const releaseVersion  = process.env.RELEASE_VERSION
             const releaseTitle    = process.env.RELEASE_TITLE
             const releaseType     = process.env.RELEASE_TYPE  
+            const releaseUrl      = process.env.RELEASE_URL
             
             core.summary
               .addHeading('🚀 New release')
@@ -160,6 +167,7 @@ runs:
                 [{data: 'version', header: true}, {data: 'title', header: true}, {data: 'type', header: true}],
                 [releaseVersion, releaseTitle, releaseType],
               ])
+              .addLink(`release link`,releaseUrl)
               .write()
           }else{
             core.summary
