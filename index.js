@@ -1,7 +1,7 @@
-const { parseLastCommit } = require('./functions/parse-last-commit')
-const { parseChange } = require('./functions/parse-change')
-const { updateChangelog } = require('./functions/changelog')
 const { calculateNextVersion, getReleaseType } = require('./functions/calculate-next-version')
+const { updateChangelog } = require('./functions/changelog')
+const { parseChange } = require('./functions/parse-change')
+const { parseLastCommit } = require('./functions/parse-last-commit')
 const { groupBy } = require('core-js/actual/array/group-by')
 
 const fs = require('fs')
