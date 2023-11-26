@@ -19,6 +19,7 @@ jobs:
         create-gh-release: true
         print-summary: true
     - name: print semver output
+      if: ${{ steps.semver.outputs.version != '' }}
       env:
         CHANGES: ${{ steps.semver.outputs.changes }}
         CHANGELOG_RECORD: ${{ steps.semver.outputs.changelog-record }}
