@@ -14,9 +14,23 @@ function Index(context, core, conf) {
     const commits = context.payload.commits
     const commitMsg = commits[0].message
 
+    core.startGroup('Last Commit message')
     const { title, entries } = parseLastCommit(commitMsg)
-    const changes = entries.map(x => parseChange(x, conf.changeTypes))
+    console.log(`title: ${title}`)
+    console.log(`entries:`, JSON.stringify(entries, null, 2))
+
+    console.log(`changes:`)
+    const changes = entries
+        .map(x => {
+            const parsedChange = parseChange(x, conf.changeTypes)
+            console.log(JSON.stringify(parsedChange, null, 2))
+            return parsedChange
+        })
+    core.endGroup()
+
     const { requiresNewRelease, nextVersion, nextReleaseType } = checkForNextRelease(changes, repoChangesConfig.versionJsonPath)
+
+    core.setOutput("release-required", requiresNewRelease)
 
     if (requiresNewRelease) {
         const newChangelogRecord = updateChangelog(changes, nextVersion, title, repoChangesConfig.changelog)
@@ -31,7 +45,7 @@ function Index(context, core, conf) {
         }
 
         core.startGroup('New release for the whole repo')
-        console.log(repoChangesResult)
+        console.log(repoChangesResult, null, 2)
         core.endGroup()
 
         core.setOutput("version", repoChangesResult.version)
@@ -39,40 +53,42 @@ function Index(context, core, conf) {
         core.setOutput("release-title", repoChangesResult.title)
         core.setOutput("changes", repoChangesResult.changes)
         core.setOutput("changelog-record", repoChangesResult.changelogRecord)
-    }
 
-    const commitsContainAnyScope = changes.some(change => change.scopes.length > 0)
-    if (commitsContainAnyScope && conf.scopes) {
-        let scopesResult = {}
-        const changesByScope = changes
-            .flatMap(change => change.scopes.map(scope => ({ scope, change })))
-            .reduce((acc, entry) => {
-                acc[entry.scope] = (acc[entry.scope] || []).concat(entry.change)
-                return acc
-            }, {})
+        const commitsContainAnyScope = changes.some(change => change.scopes.length > 0)
+        if (commitsContainAnyScope && conf.scopes) {
+            let scopesResult = {}
+            const changesByScope = changes
+                .flatMap(change => change.scopes.map(scope => ({ scope, change })))
+                .reduce((acc, entry) => {
+                    acc[entry.scope] = (acc[entry.scope] || []).concat(entry.change)
+                    return acc
+                }, {})
 
-        for (const [scope, changes] of Object.entries(changesByScope)) {
-            const versionJsonPath = conf.scopes[scope].versioning?.file ?? `${scope}/version.json`
-            const changelogPath = conf.scopes[scope].versioning?.changelog ?? `${scope}/CHANGELOG.md`
-            const { requiresNewRelease, nextVersion, nextReleaseType } = checkForNextRelease(changes, versionJsonPath)
+            for (const [scope, changes] of Object.entries(changesByScope)) {
+                const versionJsonPath = conf.scopes[scope].versioning?.file ?? `${scope}/version.json`
+                const changelogPath = conf.scopes[scope].versioning?.changelog ?? `${scope}/CHANGELOG.md`
+                const { requiresNewRelease, nextVersion, nextReleaseType } = checkForNextRelease(changes, versionJsonPath)
 
-            if (requiresNewRelease) {
-                const newChangelogRecord = updateChangelog(changes, nextVersion, title, changelogPath)
-                updateVersionJsonFile(nextVersion, versionJsonPath)
-                scopesResult[scope] = {
-                    version: nextVersion,
-                    releaseType: nextReleaseType,
-                    changes: changes,
-                    "changelog-record": newChangelogRecord,
+                if (requiresNewRelease) {
+                    const newChangelogRecord = updateChangelog(changes, nextVersion, title, changelogPath)
+                    updateVersionJsonFile(nextVersion, versionJsonPath)
+                    scopesResult[scope] = {
+                        version: nextVersion,
+                        releaseType: nextReleaseType,
+                        changes: changes,
+                        "changelog-record": newChangelogRecord,
+                    }
                 }
             }
+
+            core.startGroup('new releases per scope')
+            console.log(scopesResult, null, 2)
+            core.endGroup()
+
+            core.setOutput("scopes", scopesResult)
         }
-
-        core.startGroup('new releases per scope')
-        console.log(scopesResult)
-        core.endGroup()
-
-        core.setOutput("scopes", scopesResult)
+    } else {
+        console.log(`release-required:`, requiresNewRelease)
     }
 }
 

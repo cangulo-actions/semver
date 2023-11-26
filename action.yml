@@ -15,6 +15,9 @@ inputs:
     default: 'true'
 
 outputs:
+  new-version-released:
+    value: ${{ steps.semver.outputs.release-required }}
+    description: 'flag for creating GH release'
   version:
     value: ${{ steps.semver.outputs.version }}
     description: 'repository version'
@@ -65,14 +68,14 @@ runs:
           const conf          = JSON.parse(configContent)
 
           core.startGroup('Configuration')
-          console.log(conf)
+          console.log(conf, null, 2)
           core.endGroup()
 
     - name: Install dependencies
       shell: bash
       working-directory: ${{ github.action_path }}
       run: |
-        npm install
+        npm install --only=dev --silent
 
     - name: Semver
       uses: actions/github-script@v7
@@ -94,7 +97,7 @@ runs:
           Index(context, core, conf)
 
     - name: Commit changes
-      if: ${{ steps.semver.outputs.release-title != '' }}
+      if: ${{ steps.semver.outputs.release-required == 'true' }}
       id: commit
       shell: bash
       run: |
@@ -117,9 +120,9 @@ runs:
         echo "last_commit_id=$last_commit_id"
         echo "last_commit_id=$last_commit_id" >> $GITHUB_OUTPUT
 
-    - name: Create new Repo Release
+    - name: Create GH Repo Release
+      if: ${{ inputs.create-gh-release == 'true' &&  steps.semver.outputs.release-required == 'true' }}
       uses: actions/github-script@v7
-      if: ${{ inputs.create-gh-release == 'true' && steps.semver.outputs.release-title != '' }}
       env:
         RELEASE_CHANGELOG: ${{ steps.semver.outputs.changelog-record}}
       with:
@@ -134,15 +137,31 @@ runs:
           })
 
     - name: printing summary
-      if: ${{ inputs.print-summary == 'true' }}
-      shell: bash
-      run: |
-        echo "printing summary"
-        if [ -n "${{ steps.semver.outputs.version }}" ]; then
-          echo "# New release"                                                >> $GITHUB_STEP_SUMMARY
-          echo "released version: ${{ steps.semver.outputs.version }}"        >> $GITHUB_STEP_SUMMARY
-          echo "release title:    ${{ steps.semver.outputs.release-title }}"  >> $GITHUB_STEP_SUMMARY
-          echo "release type:     ${{ steps.semver.outputs.release-type }}"   >> $GITHUB_STEP_SUMMARY
-        else
-          echo "changes did not triggered a new release"                      >> $GITHUB_STEP_SUMMARY
-        fi
+      if: ${{ inputs.create-gh-release == 'true' }}
+      uses: actions/github-script@v7
+      env:
+        NEW_VERSION_RELEASED: ${{ steps.semver.outputs.release-required == 'true' }}
+        RELEASE_VERSION: ${{ steps.semver.outputs.version }}
+        RELEASE_TITLE: ${{ steps.semver.outputs.release-title }}
+        RELEASE_TYPE: ${{ steps.semver.outputs.release-type }}
+      with:
+        script: |
+          const newVersionRelease = process.env.NEW_VERSION_RELEASED
+
+          if(newVersionRelease) {
+            const releaseVersion  = process.env.RELEASE_VERSION
+            const releaseTitle    = process.env.RELEASE_TITLE
+            const releaseType     = process.env.RELEASE_TYPE  
+            
+            core.summary
+              .addHeading('🚀 New release')
+              .addTable([
+                [{data: 'version', header: true}, {data: 'title', header: true}, {data: 'type', header: true}],
+                [releaseVersion, releaseTitle, releaseType],
+              ])
+              .write()
+          }else{
+            core.summary
+              .addRaw('changes did not triggered a new release')
+              .write()
+          } 
