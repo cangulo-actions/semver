@@ -1,3 +1,8 @@
+# 0.0.4 fix: fixed summary and added E2E tests. Those merge and check version releases in teh repo CrazyActionsTests (#9)
+
+## patches:
+* fix: fixed summary and added E2E tests. Those merge and check version releases in teh repo CrazyActionsTests (#9)
+
 # 0.0.3 fix: fixed summary bug (#8)
 
 ## patches:
