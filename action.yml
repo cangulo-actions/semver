@@ -133,12 +133,16 @@ runs:
             body: process.env.RELEASE_CHANGELOG,
           })
 
-    - name: print summary
+    - name: printing summary
       if: ${{ inputs.print-summary == 'true' }}
       shell: bash
       run: |
         echo "printing summary"
-        echo "# New release"                                                >> $GITHUB_STEP_SUMMARY
-        echo "version released: ${{ steps.semver.outputs.version }}"        >> $GITHUB_STEP_SUMMARY
-        echo "release title:    ${{ steps.semver.outputs.release-title }}"  >> $GITHUB_STEP_SUMMARY
-        echo "release type:     ${{ steps.semver.outputs.release-type }}"   >> $GITHUB_STEP_SUMMARY
+        if [ -z "${{ steps.semver.outputs.version }}" ]; then
+          echo "# New release"                                                >> $GITHUB_STEP_SUMMARY
+          echo "released version: ${{ steps.semver.outputs.version }}"        >> $GITHUB_STEP_SUMMARY
+          echo "release title:    ${{ steps.semver.outputs.release-title }}"  >> $GITHUB_STEP_SUMMARY
+          echo "release type:     ${{ steps.semver.outputs.release-type }}"   >> $GITHUB_STEP_SUMMARY
+        else
+          echo "changes do not triggered a new release"                       >> $GITHUB_STEP_SUMMARY
+        fi
