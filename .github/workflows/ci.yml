@@ -5,31 +5,14 @@ on:
     branches: [main]
 
 jobs:
-  detect-changes:
-    name: 🔎 Detect Changes
-    runs-on: ubuntu-latest
-    outputs:
-      require-jest: ${{ steps.changes.outputs.js || steps.changes.outputs.tests }}
-      require-e2e: ${{ steps.changes.outputs.action }}
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4.1.1
-      - name: Paths Changes Filter
-        uses: dorny/paths-filter@v2.11.1
-        id: changes
-        with:
-          filters: |
-            js:
-              - 'index.js|package.json|package-lock.json|functions/**'
-            tests:
-              - 'tests/**'
-            action:
-              - 'action.yml'
+  get-changes:
+    name: 🔎 Get Changes
+    uses: ./.github/workflows/shared-get-changes.yml
 
   test-JS:
     name: 🧪 JS Tests
-    needs: detect-changes
-    if: needs.detect-changes.outputs.require-jest == 'true'
+    needs: get-changes
+    if: needs.get-changes.outputs.js-modified == 'true'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -51,8 +34,8 @@ jobs:
 
   test-e2e:
     name: 🧪 E2E Tests in CrazyActionsTests repo
-    needs: detect-changes
-    if: needs.detect-changes.outputs.require-e2e == 'true'
+    needs: get-changes
+    if: needs.get-changes.outputs.action-modified == 'true'
     runs-on: ubuntu-latest
     concurrency:
       group: e2e-tests
