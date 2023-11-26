@@ -138,11 +138,11 @@ runs:
       shell: bash
       run: |
         echo "printing summary"
-        if [ -z "${{ steps.semver.outputs.version }}" ]; then
+        if [ -n "${{ steps.semver.outputs.version }}" ]; then
           echo "# New release"                                                >> $GITHUB_STEP_SUMMARY
           echo "released version: ${{ steps.semver.outputs.version }}"        >> $GITHUB_STEP_SUMMARY
           echo "release title:    ${{ steps.semver.outputs.release-title }}"  >> $GITHUB_STEP_SUMMARY
           echo "release type:     ${{ steps.semver.outputs.release-type }}"   >> $GITHUB_STEP_SUMMARY
         else
-          echo "changes do not triggered a new release"                       >> $GITHUB_STEP_SUMMARY
+          echo "changes did not triggered a new release"                      >> $GITHUB_STEP_SUMMARY
         fi
