@@ -1,0 +1,27 @@
+name: 🛞 continuous-integration
+
+on:
+  pull_request:
+    branches: [main]
+
+jobs:
+  test-changes:
+    name: 🧪 Test changes
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4.1.1
+
+      - name: install packages
+        run: npm install
+
+      - name: run tests
+        run: npm run test-ci
+
+      - name: Test Report
+        uses: dorny/test-reporter@v1
+        if: success() || failure()
+        with:
+          name: JEST Tests # Name of the check run which will be created
+          path: reports/jest-*.xml
+          reporter: jest-junit

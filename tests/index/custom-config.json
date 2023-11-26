@@ -1,0 +1,31 @@
+{
+    "changeTypes": {
+        "break": {
+            "release": "major"
+        },
+        "major": {
+            "release": "major"
+        },
+        "feat": {
+            "release": "minor"
+        },
+        "fix": {
+            "release": "patch"
+        },
+        "refactor": {
+            "release": "none"
+        },
+        "docs": {
+            "release": "none"
+        }
+    },
+    "scopes": {
+        "tfm": {
+            "versioning": {
+                "file": "terraform/version.json",
+                "changelog": "terraform/CHANGELOG.md"
+            }
+        },
+        "src": {}
+    }
+}

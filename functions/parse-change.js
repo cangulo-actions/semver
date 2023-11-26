@@ -1,0 +1,31 @@
+const REGEX_PARSE_COMMIT = /(?<type>^[a-z\d]+)\(?(?<scopes>[a-z_\d,\-]+)?\)?: (?<description>.*)/
+
+function parseChange(changeMsg, changeTypes) {
+    // change is a conventional commit 
+    // following pattern <type>[optional scope]: <description>
+    // https://www.conventionalcommits.org/en/v1.0.0/
+    // do not support <BREAKING CHANGE> 
+
+    const change = {
+        type: '',
+        releaseAssociated: 'none',
+        scopes: [],
+        description: changeMsg.trim(),
+        originalCommit: changeMsg.trim()
+    }
+
+    if (changeMsg.match(REGEX_PARSE_COMMIT)) {
+        let { type, scopes, description } = changeMsg.match(REGEX_PARSE_COMMIT).groups
+        scopes = scopes ? scopes.split(',') : []
+        change.type = type
+        change.releaseAssociated = changeTypes[type]?.release ?? 'none'
+        change.scopes = scopes
+        change.description = description
+    }
+
+    return change
+}
+
+module.exports = {
+    parseChange
+}
