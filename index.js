@@ -97,7 +97,6 @@ module.exports = {
 }
 
 function checkForNextRelease(changes, versionJsonPath) {
-
     let currentVersion = '0.0.0'
     if (fs.existsSync(versionJsonPath)) {
         const versionJsonContent = fs.readFileSync(versionJsonPath)
