@@ -147,14 +147,14 @@ runs:
       if: ${{ inputs.create-gh-release == 'true' }}
       uses: actions/github-script@v7
       env:
-        NEW_VERSION_RELEASED: ${{ steps.semver.outputs.release-required == 'true' }}
+        NEW_VERSION_RELEASED: ${{ steps.semver.outputs.release-required }}
         RELEASE_VERSION: ${{ steps.semver.outputs.version }}
         RELEASE_TITLE: ${{ steps.semver.outputs.release-title }}
         RELEASE_TYPE: ${{ steps.semver.outputs.release-type }}
         RELEASE_URL: ${{ steps.create-release.outputs.release-url }}
       with:
         script: |
-          const newVersionRelease = process.env.NEW_VERSION_RELEASED
+          const newVersionRelease = process.env.NEW_VERSION_RELEASED === 'true'
 
           if(newVersionRelease) {
             const releaseVersion  = process.env.RELEASE_VERSION
