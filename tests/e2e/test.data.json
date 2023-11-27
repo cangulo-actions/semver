@@ -1,9 +1,0 @@
-{
-    "PR1Commit": {
-        "scenario": "PR with 1 commit",
-        "commits": [
-            "fix: [cd.yml] updated to cangulo-actions/semver@$CURRENT_BRANCH"
-        ],
-        "branch" : "test-semver-pr1-commit"
-    }
-}
