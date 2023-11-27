@@ -72,6 +72,7 @@ jobs:
           repository: cangulo-actions/CrazyActionsTests
           ref: main
           fetch-tags: true
+          fetch-depth: 2
           token: ${{ secrets.GH_AUTOMATION_TOKEN }}
 
       - name: Checkout semver repository
