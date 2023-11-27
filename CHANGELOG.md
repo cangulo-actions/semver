@@ -1,3 +1,8 @@
+# 0.1.3 fix: [action.yml] fixed error printing the summary when there is no release (#17)
+
+## patches:
+* fix: [action.yml] fixed error printing the summary when there is no release (#17)
+
 # 0.1.2 ci: updated e2e tests and include a clean workflow to undo changes in CrazyActionsTests repo (#15)
 
 ## patches:
