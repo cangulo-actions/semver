@@ -6,13 +6,8 @@ on:
       - main
 
 jobs:
-  get-changes:
-    name: 🔎 Get Changes
-    uses: ./.github/workflows/shared-get-changes.yml
-
   semver:
     name: 🚀 release new version
-    needs: get-changes
     runs-on: ubuntu-latest
     steps:
     - name: Checkout
