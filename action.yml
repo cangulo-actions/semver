@@ -90,8 +90,8 @@ runs:
         CHANGELOG_RECORD_TEMPLATE: ${{ github.action_path }}/templates/changelog-record.md
       with:
         script: |
-          const fs          = require('fs')        
-          const { Index }   = require('${{ github.action_path }}/index.js')
+          const fs            = require('fs')        
+          const { Index }     = require('${{ github.action_path }}/index.js')
 
           const confPath      = process.env.USE_INPUT_CONFIG === 'true' ? process.env.INPUT_CONFIG : process.env.DEFAULT_CONFIG
           const configContent = fs.readFileSync(confPath)
