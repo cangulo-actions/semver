@@ -1,3 +1,10 @@
+# 0.1.2 ci: updated e2e tests and include a clean workflow to undo changes in CrazyActionsTests repo (#15)
+
+## patches:
+* fix: added ci to default commit types
+## others
+* ci: updated e2e tests and include a clean workflow to undo changes in CrazyActionsTests repo
+
 # 0.1.1 ci: refactor workflows (#14)
 
 ## patches:
