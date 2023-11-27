@@ -1,3 +1,10 @@
+# 0.1.4 fix: fixed error when there is no tag in the latest commit at CrazyActionsTests repo (#18)
+
+## patches:
+* fix: [NO-CHANGES][action.yml] force new release for testing
+## others
+* ci: [ci.yml] fixed error when there is no tag in the latest commit at CrazyActionsTests repo
+
 # 0.1.3 fix: [action.yml] fixed error printing the summary when there is no release (#17)
 
 ## patches:
