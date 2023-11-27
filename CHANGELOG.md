@@ -1,3 +1,14 @@
+# 0.1.1 ci: refactor workflows (#14)
+
+## patches:
+* fix: [NO CHANGES][action.yml] test workflow detect changes
+## others
+* ci: refactor workflows
+* ci: added eslint
+* refactor: fixed all eslint errors
+* refactor: fixed all eslint errors
+* ci: updated ci.yml to validate code style
+
 # 0.1.0 add release link (#13)
 
 ## new features:
