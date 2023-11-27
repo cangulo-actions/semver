@@ -86,7 +86,7 @@ describe('E2E test', () => {
       prNumber = JSON.parse(prNumber)[0].number
       console.log(`PR Created ${prNumber}`)
 
-      await customExec(`gh pr merge ${prNumber} --squash --delete-branch`)
+      await customExec(`gh pr merge ${prNumber} --squash --delete-branch --admin`)
       const mergeCommit = await customExec(`gh pr view ${prNumber} --json mergeCommit --jq .mergeCommit.oid`, [])
       console.log(`mergeCommit: ${mergeCommit}`)
 
