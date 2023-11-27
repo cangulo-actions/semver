@@ -1,3 +1,8 @@
+# 0.1.5 fix: fixed summary to depend ont input.print-summary (#20)
+
+## patches:
+* fix: fixed summary to depend ont input.print-summary (#20)
+
 # 0.1.4 fix: fixed error when there is no tag in the latest commit at CrazyActionsTests repo (#18)
 
 ## patches:
