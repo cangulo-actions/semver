@@ -144,7 +144,7 @@ runs:
           core.setOutput('release-url', releaseUrl)
 
     - name: printing summary
-      if: ${{ inputs.create-gh-release == 'true' }}
+      if: ${{ inputs.print-summary == 'true' }}
       uses: actions/github-script@v7
       env:
         NEW_VERSION_RELEASED: ${{ steps.semver.outputs.release-required }}
