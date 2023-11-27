@@ -23,6 +23,9 @@
         },
         "docs": {
             "release": "none"
+        },
+        "ci" : {
+            "release": "none"
         }
     }
 }

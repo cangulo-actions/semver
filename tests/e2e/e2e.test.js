@@ -3,18 +3,30 @@ const exec = require('@actions/exec')
 const testData = [
   {
     scenario: 'Merge a PR with a single commit fixing a bug',
+    testId: 'PR_1_COMMIT_FIX',
     enabled: true,
     commits: [
-      'fix: [cd.yml] updated to cangulo-actions/semver@$CURRENT_BRANCH'
+      'fix: [cd.yml] updated to cangulo-actions/semver@SEMVER_BRANCH_UNDER_TEST'
     ],
     increase: 'patch',
     branch: 'test-semver-pr1-commit'
   },
   {
-    scenario: 'Merge a PR with three commits introducing a breaking change, fixing a bug and adding a feature',
+    scenario: 'Merge a PR with a single commit that does not trigger a release',
+    testId: 'PR_1_COMMIT_NO_RELEASE',
     enabled: true,
     commits: [
-      'fix: [cd.yml] updated to cangulo-actions/semver@$CURRENT_BRANCH',
+      'ci: [cd.yml] updated to cangulo-actions/semver@SEMVER_BRANCH_UNDER_TEST'
+    ],
+    increase: 'none',
+    branch: 'test-semver-pr1-commit'
+  },
+  {
+    scenario: 'Merge a PR with three commits introducing a breaking change, fixing a bug and adding a feature',
+    testId: 'PR_3_COMMITS_BREAK_FIX_FEAT',
+    enabled: true,
+    commits: [
+      'fix: [cd.yml] updated to cangulo-actions/semver@SEMVER_BRANCH_UNDER_TEST',
       'break: #123 random commit that breaks something',
       'feat: #123 random commit that adds a feature'
     ],
@@ -39,7 +51,12 @@ describe('E2E test', () => {
     throw new Error('SEMVER_BRANCH env var is required')
   }
 
-  for (const test of testData.filter(t => t.enabled)) {
+  let testCases = testData.filter(t => t.enabled)
+  if (process.env.TEST_ID && process.env.TEST_ID !== '' && testData.find(t => t.testId === process.env.TEST_ID)) {
+    testCases = [testData.find(t => t.testId === process.env.TEST_ID)]
+  }
+
+  for (const test of testCases) {
     const branchToCreate = test.branch
 
     it(test.scenario, async () => {
@@ -52,7 +69,7 @@ describe('E2E test', () => {
       await customExec(`git checkout -B ${branchToCreate}`, [])
 
       for (const commit of test.commits) {
-        const commitCleaned = commit.replace('$CURRENT_BRANCH', semverBranchUnderTest)
+        const commitCleaned = commit.replace('SEMVER_BRANCH_UNDER_TEST', semverBranchUnderTest)
         console.log(`commit: ${commitCleaned}`)
         await customExec(`sed -i s|cangulo-actions/semver@.*|cangulo-actions/semver@${semverBranchUnderTest}|g .github/workflows/cd.yml`, [])
         await customExec(`git commit --allow-empty -am "${commitCleaned}"`, [])
@@ -115,7 +132,7 @@ describe('E2E test', () => {
       } else if (test.increase === 'minor') {
         minor = parseInt(minor) + 1
         patch = 0
-      } else {
+      } else if (test.increase === 'patch') {
         patch = parseInt(patch) + 1
       }
       const expectedTag = `${major}.${minor}.${patch}`
