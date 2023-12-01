@@ -113,8 +113,8 @@ runs:
             })
           core.endGroup()
           
-          core.setOutput('changes', repoChangesResult.changes)
-          core.setOutput('release-title', repoChangesResult.title)
+          core.setOutput('changes', changes)
+          core.setOutput('release-title', title)
 
     - name: Semver
       uses: actions/github-script@v7
@@ -124,33 +124,18 @@ runs:
         INPUT_CONFIG: ${{ inputs.configuration }}
         DEFAULT_CONFIG: ${{ github.action_path }}/default-config.json
         CHANGELOG_RECORD_TEMPLATE: ${{ github.action_path }}/templates/changelog-record.md
+        CHANGES: ${{ steps.parse-changes.outputs.changes }}
+        RELEASE_TITLE: ${{ steps.parse-changes.outputs.release-title }}
       with:
         script: |
           const fs                  = require('fs')        
-          const { parseChange }     = require('${{ github.action_path }}/functions/parse-change')
-          const { parseLastCommit } = require('${{ github.action_path }}/functions/parse-last-commit')
           const { Index }           = require('${{ github.action_path }}/index.js')
-
 
           const confPath      = process.env.USE_INPUT_CONFIG === 'true' ? process.env.INPUT_CONFIG : process.env.DEFAULT_CONFIG
           const configContent = fs.readFileSync(confPath)
           const conf          = JSON.parse(configContent)
-          const commits       = context.payload.commits
-          const commitMsg     = commits[0].message
-
-          core.startGroup('Last Commit message')
-          const { title, entries } = parseLastCommit(commitMsg)
-          console.log(`title: ${title}`)
-          console.log('entries:', JSON.stringify(entries, null, 2))
-
-          console.log('changes:')
-          const changes = entries
-            .map(x => {
-              const parsedChange = parseChange(x, conf.changeTypes)
-              console.log(JSON.stringify(parsedChange, null, 2))
-              return parsedChange
-            })
-          core.endGroup()
+          const changes       = JSON.parse(process.env.CHANGES)
+          const title         = process.env.RELEASE_TITLE
 
           Index(core, changes, title, conf)
 

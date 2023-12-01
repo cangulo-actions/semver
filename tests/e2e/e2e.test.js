@@ -18,11 +18,15 @@ describe('E2E tests', () => {
     it(test.scenario, async () => {
       // arrange
       const branchToCreate = test.branch
-      const { stdout } = await exec.getExecOutput('git rev-parse --abbrev-ref HEAD')
-      const semverBranchUnderTest = stdout.trim()
+      let semverBranchUnderTest = ''
+      if (process.env.GITHUB_HEAD_REF) {
+        semverBranchUnderTest = process.env.GITHUB_HEAD_REF
+      } else {
+        const { stdout } = await exec.getExecOutput('git rev-parse --abbrev-ref HEAD')
+        semverBranchUnderTest = stdout.trim()
+      }
 
       console.log(`Scenario: ${test.scenario}`)
-      console.log(`Running test ${test.testId}`)
 
       const initialVersion = await customExec('git describe --abbrev=0')
       console.log(`initialVersion: ${initialVersion}`)
