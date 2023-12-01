@@ -1,3 +1,8 @@
+# 0.1.7 fix: [on-pr-closed] fixed error getting current branch (#25)
+
+## patches:
+* fix: [on-pr-closed] fixed error getting current branch (#25)
+
 # 0.1.6 fix: fixed error in the workflow (#24)
 
 ## patches:
