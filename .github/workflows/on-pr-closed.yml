@@ -40,8 +40,7 @@ jobs:
       - name: update cd.yml to target cangulo-actions/semver@main
         working-directory: semver-repo
         env:
-          TEST_ID: PR_1_COMMIT_NO_RELEASE
           REPO_PATH: '../'
-          SEMVER_BRANCH: main
+          TEST_DATA_PATH: ./tests/e2e/reset-cd.test.data.json
           GH_TOKEN: ${{ secrets.GH_AUTOMATION_TOKEN }}
         run: npm run test-e2e
