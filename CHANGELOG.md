@@ -1,3 +1,8 @@
+# 0.1.6 fix: fixed error in the workflow (#24)
+
+## patches:
+* fix: fixed error in the workflow (#24)
+
 # 0.1.5 fix: fixed summary to depend ont input.print-summary (#20)
 
 ## patches:
