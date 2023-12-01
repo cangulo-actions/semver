@@ -30,7 +30,7 @@ function Index (context, core, conf) {
   core.endGroup()
 
   const { requiresNewRelease, nextVersion, nextReleaseType } = checkForNextRelease(changes, repoChangesConfig.versionJsonPath)
-
+  console.log('release-required:', requiresNewRelease)
   core.setOutput('release-required', requiresNewRelease)
 
   if (requiresNewRelease) {
@@ -88,8 +88,6 @@ function Index (context, core, conf) {
 
       core.setOutput('scopes', scopesResult)
     }
-  } else {
-    console.log('release-required:', requiresNewRelease)
   }
 }
 
