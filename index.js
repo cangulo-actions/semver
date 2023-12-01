@@ -1,7 +1,5 @@
 const { calculateNextVersion, getReleaseType } = require('./functions/calculate-next-version')
 const { updateChangelog } = require('./functions/changelog')
-const { parseChange } = require('./functions/parse-change')
-const { parseLastCommit } = require('./functions/parse-last-commit')
 // eslint-disable-next-line no-unused-vars
 const { groupBy } = require('core-js/actual/array/group-by')
 
@@ -11,24 +9,7 @@ const repoChangesConfig = {
   versionJsonPath: 'version.json'
 }
 
-function Index (context, core, conf) {
-  const commits = context.payload.commits
-  const commitMsg = commits[0].message
-
-  core.startGroup('Last Commit message')
-  const { title, entries } = parseLastCommit(commitMsg)
-  console.log(`title: ${title}`)
-  console.log('entries:', JSON.stringify(entries, null, 2))
-
-  console.log('changes:')
-  const changes = entries
-    .map(x => {
-      const parsedChange = parseChange(x, conf.changeTypes)
-      console.log(JSON.stringify(parsedChange, null, 2))
-      return parsedChange
-    })
-  core.endGroup()
-
+function Index (core, changes, title, conf) {
   const { requiresNewRelease, nextVersion, nextReleaseType } = checkForNextRelease(changes, repoChangesConfig.versionJsonPath)
   console.log('release-required:', requiresNewRelease)
   core.setOutput('release-required', requiresNewRelease)
@@ -51,8 +32,6 @@ function Index (context, core, conf) {
 
     core.setOutput('version', repoChangesResult.version)
     core.setOutput('release-type', repoChangesResult.releaseType)
-    core.setOutput('release-title', repoChangesResult.title)
-    core.setOutput('changes', repoChangesResult.changes)
     core.setOutput('changelog-record', repoChangesResult.changelogRecord)
 
     const commitsContainAnyScope = changes.some(change => change.scopes.length > 0)
