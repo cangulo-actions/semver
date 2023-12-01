@@ -20,12 +20,13 @@ describe('E2E tests', () => {
       const branchToCreate = test.branch
 
       let semverBranchUnderTest = ''
-      const { stdout } = await exec.getExecOutput('git rev-parse --abbrev-ref HEAD')
-      semverBranchUnderTest = stdout.trim()
-
-      if (semverBranchUnderTest === 'HEAD') {
-        semverBranchUnderTest = 'main'
+      if (process.env.SEMVER_BRANCH) {
+        semverBranchUnderTest = process.env.SEMVER_BRANCH
+      } else {
+        const { stdout } = await exec.getExecOutput('git rev-parse --abbrev-ref HEAD')
+        semverBranchUnderTest = stdout.trim()
       }
+      console.log(`semverBranchUnderTest: ${semverBranchUnderTest}`)
 
       console.log(`Scenario: ${test.scenario}`)
 

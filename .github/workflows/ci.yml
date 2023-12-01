@@ -88,6 +88,7 @@ jobs:
         working-directory: semver-repo
         env:
           REPO_PATH: '../'
+          SEMVER_BRANCH: ${{ github.head_ref }}
           TEST_DATA_PATH: ./tests/e2e/e2e.test.data.json
           GH_TOKEN: ${{ secrets.GH_AUTOMATION_TOKEN }}
         run: npm run test-e2e
