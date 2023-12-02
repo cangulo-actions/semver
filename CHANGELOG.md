@@ -1,3 +1,8 @@
+# 0.1.8 fix: [on-pr-closed] fixed error getting current branch (#26)
+
+## patches:
+* fix: [on-pr-closed] fixed error getting current branch (#26)
+
 # 0.1.7 fix: [on-pr-closed] fixed error getting current branch (#25)
 
 ## patches:
