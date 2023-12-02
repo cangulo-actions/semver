@@ -1,3 +1,8 @@
+# 0.1.9 fix: [NO CHANGES] testing GH action release (#27)
+
+## patches:
+* fix: [NO CHANGES] testing GH action release (#27)
+
 # 0.1.8 fix: [on-pr-closed] fixed error getting current branch (#26)
 
 ## patches:
