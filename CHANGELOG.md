@@ -1,3 +1,8 @@
+# 0.1.10 fix: solved error in release title (#28)
+
+## patches:
+* fix: solved error in release title (#28)
+
 # 0.1.9 fix: [NO CHANGES] testing GH action release (#27)
 
 ## patches:
