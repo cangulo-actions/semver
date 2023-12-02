@@ -1,5 +1,6 @@
 const { calculateNextVersion, getReleaseType } = require('./functions/calculate-next-version')
 const { updateChangelog } = require('./functions/changelog')
+
 // eslint-disable-next-line no-unused-vars
 const { groupBy } = require('core-js/actual/array/group-by')
 
