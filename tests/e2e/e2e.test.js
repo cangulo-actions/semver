@@ -120,3 +120,5 @@ async function customExec (command, args) {
   const { stdout } = await exec.getExecOutput(command, args, options)
   return stdout.trim()
 }
+
+// refresh E2E execution 20231202-1
