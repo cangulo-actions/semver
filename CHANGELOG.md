@@ -1,3 +1,8 @@
+# 0.2.0 feat: #35 added commit-id as output for the GH action (#39)
+
+## new features:
+* feat: #35 added commit-id as output for the GH action (#39)
+
 # 0.1.11 fix: [NO CHANGES] testing GH action release (#29)
 
 ## patches:
