@@ -140,7 +140,17 @@ runs:
           const changes       = JSON.parse(process.env.CHANGES)
           const title         = process.env.RELEASE_TITLE
 
-          Index(core, changes, title, conf)
+          const releaseDetails = Index(core, changes, title, conf)
+
+          core.startGroup('new release info')
+          console.log(releaseDetails)
+          core.endGroup()
+
+          core.setOutput('version', releaseDetails.version)
+          core.setOutput('release-type', releaseDetails.releaseType)
+          core.setOutput('release-required', releaseDetails.releaseRequired)
+          core.setOutput('changelog-record', releaseDetails.changelogRecord)
+          core.setOutput('scopes', releaseDetails.scopes)
 
     - name: Commit changes
       if: ${{ steps.semver.outputs.release-required == 'true' }}

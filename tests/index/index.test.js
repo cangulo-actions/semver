@@ -3,11 +3,8 @@ const core = require('@actions/core')
 const fs = require('fs')
 
 jest.mock('@actions/core', () => ({
-  getInput: jest.fn(),
   startGroup: jest.fn(),
-  info: jest.fn(),
-  endGroup: jest.fn(),
-  setOutput: jest.fn()
+  endGroup: jest.fn()
 }))
 
 jest.mock('fs', () => {
@@ -35,7 +32,7 @@ describe('index.js Happy Paths', () => {
     .forEach(data => {
       const testName = `${data.scenario}\n` +
             `inputs:\n\t${JSON.stringify(data.inputs, null, 2)}\n` +
-            `output:\n\t${JSON.stringify(data.outputs, null, 2)}`
+            `result:\n\t${JSON.stringify(data.result, null, 2)}`
 
       it(testName, () => {
         // arrange
@@ -47,7 +44,7 @@ describe('index.js Happy Paths', () => {
         const conf = data.configuration === 'custom-config' ? customConfig : defaultConfig
 
         // act
-        Index(core, changes, title, conf)
+        const result = Index(core, changes, title, conf)
 
         // assert
         const numFilesModified = Object.keys(data.filesModified).length
@@ -56,11 +53,12 @@ describe('index.js Happy Paths', () => {
           expect(content).toEqual(data.filesModified[file])
         })
 
-        const numOutputs = Object.keys(data.outputs).length
-        expect(core.setOutput).toHaveBeenCalledTimes(numOutputs)
-        core.setOutput.mock.calls.forEach(([key, value]) => {
-          expect(value).toEqual(data.outputs[key])
-        })
+        const numOutputsExpected = Object.keys(data.result).length
+        const numOutputs = Object.keys(result).length
+        expect(numOutputs).toEqual(numOutputsExpected)
+        for (const [key, value] of Object.entries(result)) {
+          expect(value).toEqual(data.result[key])
+        }
       })
     })
   afterEach(() => {
