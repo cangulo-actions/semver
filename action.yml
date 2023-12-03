@@ -30,6 +30,9 @@ outputs:
   release-url:
     value: ${{ steps.create-release.outputs.release-url }}
     description: 'release url'
+  commit-id:
+    value: ${{ steps.commit.outputs.last_commit_id }}
+    description: 'Commit ID that includes the version.json and changelog updated'
   changes:
     value: ${{ steps.parse-changes.outputs.changes }}
     description: 'changes merged: [{type,releaseAssociated,scopes,description,originalCommit}]'
