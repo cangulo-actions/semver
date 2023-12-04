@@ -1,5 +1,5 @@
 {
-    "custom-config":{
+    "custom-config": {
         "changeTypes": {
             "break": {
                 "release": "major"
@@ -30,7 +30,7 @@
             "src": {}
         }
     },
-    "scenarios" : [
+    "scenarios": [
         {
             "enabled": true,
             "scenario": "PR with one commit",
@@ -152,21 +152,27 @@
                     {
                         "type": "fix",
                         "releaseAssociated": "patch",
-                        "scopes": ["src"],
+                        "scopes": [
+                            "src"
+                        ],
                         "description": "#221 solved DB timeout issue",
                         "originalCommit": "fix(src): #221 solved DB timeout issue"
                     },
                     {
                         "type": "feat",
                         "releaseAssociated": "minor",
-                        "scopes": ["src"],
+                        "scopes": [
+                            "src"
+                        ],
                         "description": "#232 added reporting feature",
                         "originalCommit": "feat(src): #232 added reporting feature"
                     },
                     {
                         "type": "fix",
                         "releaseAssociated": "patch",
-                        "scopes": ["tfm"],
+                        "scopes": [
+                            "tfm"
+                        ],
                         "description": "#212 increased default DB size",
                         "originalCommit": "fix(tfm): #212 increased default DB size"
                     }
@@ -180,19 +186,24 @@
                 "scopes": {
                     "src": {
                         "version": "0.2.0",
+                        "tag": "src-0.2.0",
                         "releaseType": "minor",
                         "changes": [
                             {
                                 "type": "fix",
                                 "releaseAssociated": "patch",
-                                "scopes": ["src"],
+                                "scopes": [
+                                    "src"
+                                ],
                                 "description": "#221 solved DB timeout issue",
                                 "originalCommit": "fix(src): #221 solved DB timeout issue"
                             },
                             {
                                 "type": "feat",
                                 "releaseAssociated": "minor",
-                                "scopes": ["src"],
+                                "scopes": [
+                                    "src"
+                                ],
                                 "description": "#232 added reporting feature",
                                 "originalCommit": "feat(src): #232 added reporting feature"
                             }
@@ -201,12 +212,15 @@
                     },
                     "tfm": {
                         "version": "1.0.1",
+                        "tag": "tfm-1.0.1",
                         "releaseType": "patch",
                         "changes": [
                             {
                                 "type": "fix",
                                 "releaseAssociated": "patch",
-                                "scopes": ["tfm"],
+                                "scopes": [
+                                    "tfm"
+                                ],
                                 "description": "#212 increased default DB size",
                                 "originalCommit": "fix(tfm): #212 increased default DB size"
                             }

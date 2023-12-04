@@ -28,7 +28,7 @@ outputs:
     value: ${{ steps.semver.outputs.release-type }}
     description: 'release type as major, minor or patch'
   release-url:
-    value: ${{ steps.create-release.outputs.release-url }}
+    value: ${{ steps.create-repo-release.outputs.release-url }}
     description: 'release url'
   commit-id:
     value: ${{ steps.commit.outputs.last_commit_id }}
@@ -74,7 +74,7 @@ runs:
           const conf          = JSON.parse(configContent)
 
           core.startGroup('Configuration')
-          console.log(conf, null, 2)
+          console.log(JSON.stringify(conf, null, 2))
           core.endGroup()
 
     - name: Install dependencies
@@ -140,10 +140,10 @@ runs:
           const changes       = JSON.parse(process.env.CHANGES)
           const title         = process.env.RELEASE_TITLE
 
-          const releaseDetails = Index(core, changes, title, conf)
+          const releaseDetails = Index(changes, title, conf)
 
           core.startGroup('new release info')
-          console.log(releaseDetails)
+          console.log(JSON.stringify(releaseDetails, null, 2))
           core.endGroup()
 
           core.setOutput('version', releaseDetails.version)
@@ -156,19 +156,36 @@ runs:
       if: ${{ steps.semver.outputs.release-required == 'true' }}
       id: commit
       shell: bash
+      env:
+        RELEASE_TITLE: ${{ steps.parse-changes.outputs.release-title }}
+        CHANGELOG_RECORD: ${{ steps.semver.outputs.changelog-record }}
+        REPO_TAG_VERSION: ${{ steps.semver.outputs.version }}
+        SCOPES: ${{ steps.semver.outputs.scopes }}
       run: |
         # committing the changes in semver files
         git config user.name  "github-actions[bot]"
         git config user.email "github-actions[bot]@users.noreply.github.com"
         
-        release_title="${{ steps.parse-changes.outputs.release-title }}"
-        commit_title="[skip ci] created release ${{ steps.semver.outputs.version }} - $release_title"
-        changelog_record="${{ steps.semver.outputs.changelog-record }}"
-        tag_version="${{ steps.semver.outputs.version}}"
+        commit_title="[skip ci] created release $REPO_TAG_VERSION - $RELEASE_TITLE"
 
         git add . 
-        git commit -m "$commit_title" -m "$changelog_record"
-        git tag -a $tag_version -m "$release_title" -m "$changelog_record"
+        git commit -m "$commit_title" -m "$CHANGELOG_RECORD"
+        
+        # tag repo version
+        git tag -a $REPO_TAG_VERSION -m "$RELEASE_TITLE" -m "$CHANGELOG_RECORD"
+        
+        # tag scopes versions
+        scopes=$(echo $SCOPES | jq -r 'keys[]')
+        for scope in $scopes; do
+          filter_version=".$scope.version"
+          version=$(echo $SCOPES | jq -r $filter_version)          
+          filter_changelog=".$scope.changelogRecord"
+          changelog_record=$(echo $SCOPES | jq -r $filter_changelog)
+          filter_tag=".$scope.tag"
+          tag=$(echo $SCOPES | jq -r $filter_tag)
+          git tag -a "$tag" -m "$RELEASE_TITLE" -m "$changelog_record"
+        done
+
         git push --follow-tags
 
         last_commit_id=$(git rev-parse HEAD)
@@ -179,7 +196,7 @@ runs:
     - name: Create GH Repo Release
       if: ${{ inputs.create-gh-release == 'true' &&  steps.semver.outputs.release-required == 'true' }}
       uses: actions/github-script@v7
-      id: create-release
+      id: create-repo-release
       env:
         RELEASE_CHANGELOG: ${{ steps.semver.outputs.changelog-record}}
       with:
@@ -196,7 +213,40 @@ runs:
           const releaseUrl = response.data.html_url
           core.setOutput('release-url', releaseUrl)
 
-    - name: printing summary
+    - name: Create GH releases for scopes
+      if: ${{ inputs.create-gh-release == 'true' &&  steps.semver.outputs.scopes != '{}' }}
+      uses: actions/github-script@v7
+      id: create-scopes-releases
+      env:
+        SCOPES: ${{ steps.semver.outputs.scopes }}
+        RELEASE_CHANGELOG: ${{ steps.semver.outputs.changelog-record}}
+      with:
+        script: |
+          const scopes = JSON.parse(process.env.SCOPES)
+          const scopesWithUrl = {}
+
+          for (const [scope, properties] of Object.entries(scopes)) {
+            const response = await github.rest.repos.createRelease({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              tag_name: properties.tag,
+              target_commitish: '${{ steps.commit.outputs.last_commit_id }}',
+              name: `${properties.tag} ${{ steps.parse-changes.outputs.release-title}}`,
+              body: properties.changelogRecord,
+            })
+            scopesWithUrl[scope] = {
+              ...properties,
+              releaseUrl: response.data.html_url
+            }
+          }
+          
+          core.startGroup('scopes releases')
+          console.log(JSON.stringify(scopesWithUrl, null, 2))
+          core.endGroup()
+          
+          core.setOutput('scopes', scopesWithUrl)
+
+    - name: printing summary for Repo Release
       if: ${{ inputs.print-summary == 'true' }}
       uses: actions/github-script@v7
       env:
@@ -204,7 +254,7 @@ runs:
         RELEASE_VERSION: ${{ steps.semver.outputs.version }}
         RELEASE_TITLE: ${{ steps.parse-changes.outputs.release-title }}
         RELEASE_TYPE: ${{ steps.semver.outputs.release-type }}
-        RELEASE_URL: ${{ steps.create-release.outputs.release-url }}
+        RELEASE_URL: ${{ steps.create-repo-release.outputs.release-url }}
       with:
         script: |
           const newVersionRelease = process.env.NEW_VERSION_RELEASED === 'true'
@@ -213,20 +263,45 @@ runs:
             const releaseVersion  = process.env.RELEASE_VERSION
             const releaseTitle    = process.env.RELEASE_TITLE
             const releaseType     = process.env.RELEASE_TYPE  
-            const releaseUrl      = process.env.RELEASE_URL
+            const releaseUrl      = `<a href="${process.env.RELEASE_URL}">releaseUrl</a>`
             
             core.summary
               .addHeading('🚀 New release')
               .addTable([
-                [{data: 'version', header: true}, {data: 'title', header: true}, {data: 'type', header: true}],
-                [releaseVersion, releaseTitle, releaseType],
+                [{data: 'version', header: true}, {data: 'title', header: true}, {data: 'type', header: true}, {data: 'link', header: true}],
+                [releaseVersion, releaseTitle, releaseType, releaseUrl],
               ])
-              .addLink(`release link`,releaseUrl)
               .write()
           }else{
             core.summary
               .addRaw('changes did not triggered a new release')
               .write()
-          } 
+          }
+
+    - name: printing summary for Scopes Releases
+      if: ${{ inputs.print-summary == 'true' && steps.semver.outputs.scopes != '{}' }}
+      uses: actions/github-script@v7
+      env:
+        SCOPES: ${{ steps.create-scopes-releases.outputs.scopes || '{}' }}
+      with:
+        script: |
+          const scopes   = JSON.parse(process.env.SCOPES)
+
+          const table = [
+            [{data: 'version', header: true}, {data: 'tag', header: true}, {data: 'type', header: true}, {data: 'link', header: true}]
+          ]
+          
+          Object.entries(scopes).forEach(([scope, properties]) => {
+            const releaseVersion  = properties.version
+            const tag             = properties.tag
+            const releaseType     = properties.releaseType  
+            const releaseUrl      = `<a href="${properties.releaseUrl}">releaseUrl</a>`
+            table.push([releaseVersion, tag, releaseType, releaseUrl])
+          })
+
+          core.summary
+            .addHeading('🚀 Releases per scope')
+            .addTable(table)
+            .write()
 
 # refresh_GH_action_version 20231202

@@ -10,7 +10,7 @@ const repoChangesConfig = {
   versionJsonPath: 'version.json'
 }
 
-function Index (core, changes, title, conf) {
+function Index (changes, title, conf) {
   const result = {
     releaseRequired: false,
     version: '',
@@ -50,6 +50,7 @@ function Index (core, changes, title, conf) {
           updateVersionJsonFile(nextVersion, versionJsonPath)
           scopesResult[scope] = {
             version: nextVersion,
+            tag: `${scope}-${nextVersion}`,
             releaseType: nextReleaseType,
             changes,
             changelogRecord: newChangelogRecord

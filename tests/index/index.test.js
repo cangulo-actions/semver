@@ -1,11 +1,5 @@
 const { Index } = require('../../index')
-const core = require('@actions/core')
 const fs = require('fs')
-
-jest.mock('@actions/core', () => ({
-  startGroup: jest.fn(),
-  endGroup: jest.fn()
-}))
 
 jest.mock('fs', () => {
   return {
@@ -44,7 +38,7 @@ describe('index.js Happy Paths', () => {
         const conf = data.configuration === 'custom-config' ? customConfig : defaultConfig
 
         // act
-        const result = Index(core, changes, title, conf)
+        const result = Index(changes, title, conf)
 
         // assert
         const numFilesModified = Object.keys(data.filesModified).length
