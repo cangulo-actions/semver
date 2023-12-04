@@ -7,7 +7,7 @@
             "ci: updated [cd.yml] to use cangulo-actions/semver@SEMVER_BRANCH_UNDER_TEST"
         ],
         "increase": "none",
-        "branch": "test-semver-pr1-commit-no-release"
+        "branch": "test-semver-pr@PR_NUMBER-push-1-commit-no-release"
     },
     {
         "scenario": "Merge a PR with a single commit fixing a bug",
@@ -17,7 +17,7 @@
 
         ],
         "increase": "patch",
-        "branch": "test-semver-pr1-commit-fix"
+        "branch": "test-semver-pr@PR_NUMBER-push-1-commit-fix"
     },
     {
         "scenario": "Merge a PR with three commits introducing a breaking change, fixing a bug and adding a feature",
@@ -28,6 +28,6 @@
             "feat: #123 random commit that adds a feature"
         ],
         "increase": "major",
-        "branch": "test-semver-pr3-commit-break"
+        "branch": "test-semver-pr@PR_NUMBER-push-3-commits-break"
     }
 ]
