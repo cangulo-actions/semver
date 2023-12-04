@@ -255,15 +255,18 @@ runs:
         RELEASE_TITLE: ${{ steps.parse-changes.outputs.release-title }}
         RELEASE_TYPE: ${{ steps.semver.outputs.release-type }}
         RELEASE_URL: ${{ steps.create-repo-release.outputs.release-url }}
+        RELEASE_COMMIT_ID: ${{ steps.commit.outputs.last_commit_id }}
       with:
         script: |
           const newVersionRelease = process.env.NEW_VERSION_RELEASED === 'true'
 
           if(newVersionRelease) {
-            const releaseVersion  = process.env.RELEASE_VERSION
-            const releaseTitle    = process.env.RELEASE_TITLE
-            const releaseType     = process.env.RELEASE_TYPE  
-            const releaseUrl      = `<a href="${process.env.RELEASE_URL}">releaseUrl</a>`
+            const releaseVersion    = process.env.RELEASE_VERSION
+            const releaseTitle      = process.env.RELEASE_TITLE
+            const releaseType       = process.env.RELEASE_TYPE  
+            const releaseUrl        = `<a href="${process.env.RELEASE_URL}">releaseUrl</a>`
+            const releaseCommitId   = process.env.RELEASE_COMMIT_ID
+            const linkToCommit      = `https://github.com/${context.repo.owner}/${context.repo.repo}/commit/${releaseCommitId}`
             
             core.summary
               .addHeading('🚀 New release')
@@ -271,6 +274,8 @@ runs:
                 [{data: 'version', header: true}, {data: 'title', header: true}, {data: 'type', header: true}, {data: 'link', header: true}],
                 [releaseVersion, releaseTitle, releaseType, releaseUrl],
               ])
+              .addHeading('commit id:', 3)
+              .addLink(releaseCommitId, linkToCommit)
               .write()
           }else{
             core.summary

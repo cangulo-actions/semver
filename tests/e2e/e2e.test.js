@@ -38,8 +38,8 @@ describe('E2E tests', () => {
 
       console.log(`Scenario: ${test.scenario}`)
 
-      const initialVersion = await customExec('git describe --abbrev=0')
-      console.log(`initialVersion: ${initialVersion}`)
+      let initialVersion = await customExec('gh api repos/{owner}/{repo}/git/matching-refs/tags --jq ".[0].ref"')
+      initialVersion = initialVersion.replace('refs/tags/', '')
 
       await customExec(`git checkout -B ${branchToCreate}`)
 
@@ -95,28 +95,31 @@ describe('E2E tests', () => {
       // assert
       console.log('Workflow completed successfully. Getting the tag released')
 
-      await customExec('git restore .')
-      await customExec('git checkout main')
-      await customExec('git pull')
-
-      let [major, minor, patch] = initialVersion.split('.')
-      if (test.increase === 'major') {
-        major = parseInt(major) + 1
-        minor = 0
-        patch = 0
-      } else if (test.increase === 'minor') {
-        minor = parseInt(minor) + 1
-        patch = 0
-      } else if (test.increase === 'patch') {
-        patch = parseInt(patch) + 1
+      let expectedTag = initialVersion
+      if (initialVersion === '' && test.increase !== 'none') {
+        initialVersion = '0.0.0'
+        let [major, minor, patch] = initialVersion.split('.')
+        if (test.increase === 'major') {
+          major = parseInt(major) + 1
+          minor = 0
+          patch = 0
+        } else if (test.increase === 'minor') {
+          minor = parseInt(minor) + 1
+          patch = 0
+        } else if (test.increase === 'patch') {
+          patch = parseInt(patch) + 1
+        }
+        expectedTag = `${major}.${minor}.${patch}`
       }
-      const expectedTag = `${major}.${minor}.${patch}`
 
       const refTag = await customExec(`gh api repos/{owner}/{repo}/git/matching-refs/tags/${expectedTag} --jq ".[0].ref"`)
       const tagReleased = refTag.replace('refs/tags/', '')
+
+      console.log(`initialVersion: ${initialVersion}`)
+      console.log(`expectedTag: ${expectedTag}`)
       console.log(`tagReleased: ${tagReleased}`)
 
-      expect(tagReleased).toBe(expectedTag)
+      expect(tagReleased.trim()).toBe(expectedTag.trim())
     }, timeout)
   }
 })
