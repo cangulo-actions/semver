@@ -44,4 +44,5 @@ jobs:
           SEMVER_BRANCH: main
           TEST_DATA_PATH: ./tests/e2e/reset-cd.test.data.json
           GH_TOKEN: ${{ secrets.GH_AUTOMATION_TOKEN }}
+          PR_NUMBER: ${{ github.event.number }}
         run: npm run test-e2e

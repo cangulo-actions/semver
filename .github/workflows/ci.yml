@@ -75,6 +75,31 @@ jobs:
           fetch-depth: 10 # fetch last 10 commits
           token: ${{ secrets.GH_AUTOMATION_TOKEN }}
 
+      - name: Reset repo before testing
+        env:
+          GH_TOKEN: ${{ secrets.GH_AUTOMATION_TOKEN }}
+        run: |
+          gh workflow run reset-repo-before-test.yml
+          sleep 20
+
+          currentDate=$(date +%Y-%m-%d)
+
+          database_id=$(gh run list -b main -L 1      \
+            -w "reset-repo-before-test.yml"           \
+            --created "$currentDate"                  \
+            --json databaseId                        \
+            --jq '.[0].databaseId')
+          echo "database_id: $database_id"
+
+          gh run watch $database_id
+          conclusion=$(gh run view $database_id --json conclusion --jq '.conclusion')
+          echo "conclusion: $conclusion"
+
+          if [ "$conclusion" != "success" ]; then
+            echo "Reset repo failed"
+            exit 1
+          fi
+
       - name: Checkout semver repository
         uses: actions/checkout@v4.1.1
         with:
@@ -91,6 +116,7 @@ jobs:
           SEMVER_BRANCH: ${{ github.head_ref }}
           TEST_DATA_PATH: ./tests/e2e/e2e.test.data.json
           GH_TOKEN: ${{ secrets.GH_AUTOMATION_TOKEN }}
+          PR_NUMBER: ${{ github.event.number }}
         run: npm run test-e2e
           
       - name: Test Report

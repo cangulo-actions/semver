@@ -2,22 +2,30 @@ const exec = require('@actions/exec')
 const fs = require('fs')
 
 describe('E2E tests', () => {
-  beforeAll(async () => {
-    await customExec('git restore .')
-    await customExec('git checkout main')
-    await customExec('git pull')
-  })
-
   const timeout = 1000 * 60 * 5 // 5 minutes
+  const maxRetries = 3
+  const secondsBetweenRetries = 20
+  const random = (min, max) => Math.floor(Math.random() * (max - min + 1) + min)
+  const semverPRNumber = process.env.PR_NUMBER || random(1, 100)
+
   const testDataPath = process.env.TEST_DATA_PATH ?? './tests/e2e/e2e.test.data.json'
   const testDataContent = fs.readFileSync(testDataPath, 'utf8')
   const testData = JSON.parse(testDataContent)
   const testCases = testData.filter(t => t.enabled)
 
+  beforeAll(async () => {
+    await customExec('git restore .')
+    await customExec('git checkout main')
+    await customExec('git pull')
+
+    await customExec('git config user.name "cangulo-semver-e2e-test[bot]"')
+    await customExec('git config user.email "cangulo-semver-e2e-test[bot]@users.noreply.github.com"')
+  })
+
   for (const test of testCases) {
     it(test.scenario, async () => {
       // arrange
-      const branchToCreate = test.branch
+      const branchToCreate = test.branch.replace('@PR_NUMBER', semverPRNumber)
 
       let semverBranchUnderTest = ''
       if (process.env.SEMVER_BRANCH) {
@@ -33,9 +41,6 @@ describe('E2E tests', () => {
       const initialVersion = await customExec('git describe --abbrev=0')
       console.log(`initialVersion: ${initialVersion}`)
 
-      await customExec('git config user.name "cangulo-semver-e2e-test[bot]"')
-      await customExec('git config user.email "cangulo-semver-e2e-test[bot]@users.noreply.github.com"')
-
       await customExec(`git checkout -B ${branchToCreate}`)
 
       for (const commit of test.commits) {
@@ -45,15 +50,10 @@ describe('E2E tests', () => {
         await customExec(`git commit --allow-empty -am "${commitCleaned}"`)
       }
 
-      await customExec(`git push origin ${branchToCreate} --force `)
+      await customExec(`git push origin ${branchToCreate} --force`)
 
-      try {
-        await customExec('gh pr create --fill')
-      } catch (error) {
-        console.log(`Error creating PR: ${error}`)
-      }
-      let prNumber = await customExec(`gh pr list -B main -H ${branchToCreate} --state open --json number`)
-      prNumber = JSON.parse(prNumber)[0].number
+      const prLink = await customExec('gh pr create --fill')
+      const prNumber = prLink.split('/').pop()
       console.log(`PR Created ${prNumber}`)
 
       await customExec(`gh pr merge ${prNumber} --squash --delete-branch --admin`)
@@ -63,8 +63,6 @@ describe('E2E tests', () => {
       // act
       console.log('pr merged. Waiting for the workflow to complete...')
       let retryCount = 0
-      const maxRetries = 3
-      const secondsBetweenRetries = 20
 
       console.log(`waiting ${secondsBetweenRetries} seconds before checking if the workflow is completed`)
       await new Promise(resolve => setTimeout(resolve, secondsBetweenRetries * 1000))
@@ -101,9 +99,6 @@ describe('E2E tests', () => {
       await customExec('git checkout main')
       await customExec('git pull')
 
-      const tagReleased = await customExec('git describe --abbrev=0')
-      console.log(`tagReleased: ${tagReleased}`)
-
       let [major, minor, patch] = initialVersion.split('.')
       if (test.increase === 'major') {
         major = parseInt(major) + 1
@@ -116,6 +111,11 @@ describe('E2E tests', () => {
         patch = parseInt(patch) + 1
       }
       const expectedTag = `${major}.${minor}.${patch}`
+
+      const refTag = await customExec(`gh api repos/{owner}/{repo}/git/matching-refs/tags/${expectedTag} --jq ".[0].ref"`)
+      const tagReleased = refTag.replace('refs/tags/', '')
+      console.log(`tagReleased: ${tagReleased}`)
+
       expect(tagReleased).toBe(expectedTag)
     }, timeout)
   }
