@@ -1,3 +1,10 @@
+# 0.3.0 refactor: #32 refactor to allow iteration over scopes version (#40)
+
+## new features:
+* feat: #32 created git tags for scopes. Closes #32
+## others
+* refactor: #32 refactor to allow iteration over scopes version
+
 # 0.2.0 feat: #35 added commit-id as output for the GH action (#39)
 
 ## new features:
