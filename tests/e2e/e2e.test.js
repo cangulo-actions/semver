@@ -69,14 +69,23 @@ describe('E2E tests', () => {
       console.log(`waiting ${secondsBetweenRetries} seconds before checking if the workflow is completed`)
       await new Promise(resolve => setTimeout(resolve, secondsBetweenRetries * 1000))
 
-      let lastRunCommit = await customExec('gh run list -b main -L 1 --status completed --json headSha')
-      lastRunCommit = JSON.parse(lastRunCommit)[0].headSha
+      // set current date in YYYY-MM-DD format
+      const currentDate = new Date().toISOString().split('T')[0]
 
-      while (mergeCommit !== lastRunCommit && retryCount < maxRetries) {
+      const getLastRunCommand = `gh run list -b main -L 1 -w "cd.yml" --created "${currentDate}" --json headSha,conclusion --jq ".[] | {headSha: .headSha, conclusion: .conclusion}"`
+      let lastRunDetailsJSON = await customExec(getLastRunCommand)
+      let lastRunDetails = JSON.parse(lastRunDetailsJSON)
+
+      while ((mergeCommit !== lastRunDetails.headSha || lastRunDetails.conclusion !== 'success') && retryCount < maxRetries) {
         console.log(`Waiting ${secondsBetweenRetries} seconds before checking if the workflow is completed`)
         await new Promise(resolve => setTimeout(resolve, secondsBetweenRetries * 1000))
-        lastRunCommit = await customExec('gh run list -b main -L 1 --status completed --json headSha')
-        lastRunCommit = JSON.parse(lastRunCommit)[0].headSha
+
+        lastRunDetailsJSON = await customExec(getLastRunCommand)
+        lastRunDetails = JSON.parse(lastRunDetailsJSON)
+
+        if (lastRunDetails.conclusion === 'failure') {
+          throw new Error('Workflow failed. Exiting...')
+        }
         retryCount++
       }
 

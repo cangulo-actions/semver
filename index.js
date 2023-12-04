@@ -10,30 +10,25 @@ const repoChangesConfig = {
   versionJsonPath: 'version.json'
 }
 
-function Index (core, changes, title, conf) {
+function Index (changes, title, conf) {
+  const result = {
+    releaseRequired: false,
+    version: '',
+    releaseType: '',
+    changelogRecord: {},
+    scopes: {}
+  }
+
   const { requiresNewRelease, nextVersion, nextReleaseType } = checkForNextRelease(changes, repoChangesConfig.versionJsonPath)
-  console.log('release-required:', requiresNewRelease)
-  core.setOutput('release-required', requiresNewRelease)
+  result.releaseRequired = requiresNewRelease
 
   if (requiresNewRelease) {
+    result.version = nextVersion
+    result.releaseType = nextReleaseType
+
     const newChangelogRecord = updateChangelog(changes, nextVersion, title, repoChangesConfig.changelog)
     updateVersionJsonFile(nextVersion, repoChangesConfig.versionJsonPath)
-
-    const repoChangesResult = {
-      version: nextVersion,
-      releaseType: nextReleaseType,
-      title,
-      changes,
-      changelogRecord: newChangelogRecord
-    }
-
-    core.startGroup('New release for the whole repo')
-    console.log(repoChangesResult, null, 2)
-    core.endGroup()
-
-    core.setOutput('version', repoChangesResult.version)
-    core.setOutput('release-type', repoChangesResult.releaseType)
-    core.setOutput('changelog-record', repoChangesResult.changelogRecord)
+    result.changelogRecord = newChangelogRecord
 
     const commitsContainAnyScope = changes.some(change => change.scopes.length > 0)
     if (commitsContainAnyScope && conf.scopes) {
@@ -55,20 +50,18 @@ function Index (core, changes, title, conf) {
           updateVersionJsonFile(nextVersion, versionJsonPath)
           scopesResult[scope] = {
             version: nextVersion,
+            tag: `${scope}-${nextVersion}`,
             releaseType: nextReleaseType,
             changes,
-            'changelog-record': newChangelogRecord
+            changelogRecord: newChangelogRecord
           }
         }
       }
-
-      core.startGroup('new releases per scope')
-      console.log(scopesResult, null, 2)
-      core.endGroup()
-
-      core.setOutput('scopes', scopesResult)
+      result.scopes = scopesResult
     }
   }
+
+  return result
 }
 
 module.exports = {
