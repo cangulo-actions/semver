@@ -6,6 +6,10 @@ inputs:
   gh-workflow-path:
     description: 'flag for creating GH release'
     required: true
+  workflow-inputs-json:
+    description: 'workflow inputs in JSON format'
+    required: false
+    default: '{}'
   owner-repo:
     description: 'owner/repo for executing gh cli commands. Examples cangulo-actions/CrazyActionsTests'
     required: true
@@ -19,10 +23,14 @@ runs:
         GH_TOKEN: ${{ inputs.gh-token }}
         OWNER_REPO: ${{ inputs.owner-repo }}
         WORKFLOW_PATH: ${{ inputs.gh-workflow-path }}
+        WORKFLOW_INPUTS_JSON: ${{ inputs.workflow-inputs-json }}
         WAIT_TIME_SECONDS: 20
       run: |
-        gh workflow run $WORKFLOW_PATH \
-          -R $OWNER_REPO
+        # executing GH workflow
+
+        echo "$WORKFLOW_INPUTS_JSON"      | \
+          gh workflow run $WORKFLOW_PATH    \
+          -R $OWNER_REPO --json 
 
         echo "waiting $WAIT_TIME_SECONDS seconds for GH to trigger the workflow"
         sleep $WAIT_TIME_SECONDS

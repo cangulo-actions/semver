@@ -26,16 +26,6 @@ describe('E2E tests', () => {
     it(test.scenario, async () => {
       // arrange
       const branchToCreate = test.branch.replace('@PR_NUMBER', semverPRNumber)
-
-      let semverBranchUnderTest = ''
-      if (process.env.SEMVER_BRANCH) {
-        semverBranchUnderTest = process.env.SEMVER_BRANCH
-      } else {
-        const { stdout } = await exec.getExecOutput('git rev-parse --abbrev-ref HEAD')
-        semverBranchUnderTest = stdout.trim()
-      }
-      console.log(`semverBranchUnderTest: ${semverBranchUnderTest}`)
-
       console.log(`Scenario: ${test.scenario}`)
 
       let initialVersion = await customExec('gh api repos/{owner}/{repo}/git/matching-refs/tags --jq ".[0].ref"')
@@ -44,10 +34,7 @@ describe('E2E tests', () => {
       await customExec(`git checkout -B ${branchToCreate}`)
 
       for (const commit of test.commits) {
-        const commitCleaned = commit.replace('SEMVER_BRANCH_UNDER_TEST', semverBranchUnderTest)
-        console.log(`commit: ${commitCleaned}`)
-        await customExec(`sed -i s|cangulo-actions/semver@.*|cangulo-actions/semver@${semverBranchUnderTest}|g .github/workflows/cd.yml`)
-        await customExec(`git commit --allow-empty -am "${commitCleaned}"`)
+        await customExec(`git commit --allow-empty -am "${commit}"`)
       }
 
       await customExec(`git push origin ${branchToCreate} --force`)
