@@ -126,3 +126,29 @@ jobs:
           name: E2E Tests in CrazyActionsTests repo   # Name of the check run which will be created
           path: semver-repo/reports/jest-*.xml
           reporter: jest-junit
+
+      - name: Reset repo after testing
+        if: success() || failure()
+        env:
+          GH_TOKEN: ${{ secrets.GH_AUTOMATION_TOKEN }}
+        run: |
+          gh workflow run reset-repo-before-test.yml
+          sleep 20
+
+          currentDate=$(date +%Y-%m-%d)
+
+          database_id=$(gh run list -b main -L 1      \
+            -w "reset-repo-before-test.yml"           \
+            --created "$currentDate"                  \
+            --json databaseId                        \
+            --jq '.[0].databaseId')
+          echo "database_id: $database_id"
+
+          gh run watch $database_id
+          conclusion=$(gh run view $database_id --json conclusion --jq '.conclusion')
+          echo "conclusion: $conclusion"
+
+          if [ "$conclusion" != "success" ]; then
+            echo "Reset repo failed"
+            exit 1
+          fi
