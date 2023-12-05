@@ -1,0 +1,51 @@
+name: '🔱 trigger a GH workflow'
+inputs:
+  gh-token:
+    description: 'GH token for executing gh cli commands'
+    required: true
+  gh-workflow-path:
+    description: 'flag for creating GH release'
+    required: true
+  owner-repo:
+    description: 'owner/repo for executing gh cli commands. Examples cangulo-actions/CrazyActionsTests'
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    - name: Execute GH workflow
+      shell: bash
+      env:
+        GH_TOKEN: ${{ inputs.gh-token }}
+        OWNER_REPO: ${{ inputs.owner-repo }}
+        WORKFLOW_PATH: ${{ inputs.gh-workflow-path }}
+        WAIT_TIME_SECONDS: 20
+      run: |
+        gh workflow run $WORKFLOW_PATH \
+          -R $OWNER_REPO
+
+        echo "waiting $WAIT_TIME_SECONDS seconds for GH to trigger the workflow"
+        sleep $WAIT_TIME_SECONDS
+
+        currentDate=$(date +%Y-%m-%d)
+
+        database_id=$(gh run list -b main -L 1  \
+          -w "$WORKFLOW_PATH"   \
+          -R $OWNER_REPO  \
+          --created "$currentDate"              \
+          --json databaseId                     \
+          --jq '.[0].databaseId')
+        echo "database_id: $database_id"
+
+        gh run watch $database_id -R $OWNER_REPO
+        conclusion=$(
+          gh run view $database_id  \
+          -R $OWNER_REPO            \
+          --json conclusion         \
+          --jq '.conclusion')
+        echo "conclusion: $conclusion"
+
+        if [ "$conclusion" != "success" ]; then
+          echo "$WORKFLOW_PATH failed"
+          exit 1
+        fi
