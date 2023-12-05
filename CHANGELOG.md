@@ -1,3 +1,8 @@
+# 0.4.0 feat: #42 listed link to release commit in the same repo. closed. (#43)
+
+## new features:
+* feat: #42 listed link to release commit in the same repo. closed. (#43)
+
 # 0.3.0 refactor: #32 refactor to allow iteration over scopes version (#40)
 
 ## new features:
