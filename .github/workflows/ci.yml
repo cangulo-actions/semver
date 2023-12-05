@@ -84,8 +84,13 @@ jobs:
         uses: ./semver-repo/.github/actions/execute-gh-workflow-action
         with:
           gh-token: ${{ secrets.GH_AUTOMATION_TOKEN }}
-          gh-workflow-path: reset-repo-before-test.yml
+          gh-workflow-path: reset-repo.yml
           owner-repo: cangulo-actions/CrazyActionsTests
+          workflow-inputs-json: >
+            {
+              "semver-version": "${{ github.head_ref }}",
+              "enable-ci-workflow": "false"
+            }
 
       - name: install packages
         working-directory: semver-repo
@@ -95,7 +100,6 @@ jobs:
         working-directory: semver-repo
         env:
           REPO_PATH: '../'
-          SEMVER_BRANCH: ${{ github.head_ref }}
           TEST_DATA_PATH: ./tests/e2e/e2e.test.data.json
           GH_TOKEN: ${{ secrets.GH_AUTOMATION_TOKEN }}
           PR_NUMBER: ${{ github.event.number }}
@@ -114,5 +118,10 @@ jobs:
         uses: ./semver-repo/.github/actions/execute-gh-workflow-action
         with:
           gh-token: ${{ secrets.GH_AUTOMATION_TOKEN }}
-          gh-workflow-path: reset-repo-before-test.yml
+          gh-workflow-path: reset-repo.yml
           owner-repo: cangulo-actions/CrazyActionsTests
+          workflow-inputs-json: >
+            {
+              "semver-version": "main",
+              "enable-ci-workflow": "true"
+            }
