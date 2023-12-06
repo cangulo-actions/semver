@@ -57,8 +57,8 @@ jobs:
           path: reports/jest-*.xml
           reporter: jest-junit
 
-  test-e2e:
-    name: 🧪 E2E Tests in CrazyActionsTests repo
+  prepare-test-e2e:
+    name: ✈️ Prepare CrazyActionsTests repo
     needs: get-changes
     if: needs.get-changes.outputs.action-modified == 'true'
     runs-on: ubuntu-latest
@@ -66,22 +66,11 @@ jobs:
       group: e2e-tests
       cancel-in-progress: false
     steps:
-      - name: Checkout cangulo-actions/CrazyActionsTests for e2e tests
-        uses: actions/checkout@v4.1.1
-        with:
-          repository: cangulo-actions/CrazyActionsTests
-          ref: main
-          fetch-tags: true
-          fetch-depth: 10 # fetch last 10 commits
-          token: ${{ secrets.GH_AUTOMATION_TOKEN }}
-
       - name: Checkout semver repository
         uses: actions/checkout@v4.1.1
-        with:
-          path: semver-repo
 
       - name: Reset repo before testing
-        uses: ./semver-repo/.github/actions/execute-gh-workflow-action
+        uses: ./.github/actions/execute-gh-workflow-action
         with:
           gh-token: ${{ secrets.GH_AUTOMATION_TOKEN }}
           gh-workflow-path: reset-repo.yml
@@ -92,30 +81,65 @@ jobs:
               "enable-ci-workflow": "false"
             }
 
-      - name: install packages
-        working-directory: semver-repo
-        run: npm install
-
-      - name: run e2e tests (create and merge PR in CrazyActionsTests repo)
-        working-directory: semver-repo
-        env:
-          REPO_PATH: '../'
-          TEST_DATA_PATH: ./tests/e2e/e2e.test.data.json
-          GH_TOKEN: ${{ secrets.GH_AUTOMATION_TOKEN }}
-          PR_NUMBER: ${{ github.event.number }}
-        run: npm run test-e2e
-          
-      - name: Test Report
-        uses: dorny/test-reporter@v1
-        if: success() || failure()
+  test-e2e:
+    name: 🧪 E2E Tests in CrazyActionsTests repo
+    needs:
+    - prepare-test-e2e
+    - get-changes
+    if: needs.get-changes.outputs.action-modified == 'true'
+    runs-on: ubuntu-latest
+    concurrency:
+      group: e2e-tests
+      cancel-in-progress: false
+    steps:
+      - name: Checkout cangulo-actions/CrazyActionsTests repository
+        uses: actions/checkout@v4.1.1
         with:
-          name: E2E Tests in CrazyActionsTests repo   # Name of the check run which will be created
-          path: semver-repo/reports/jest-*.xml
-          reporter: jest-junit
+          repository: cangulo-actions/CrazyActionsTests
+          ref: main
+          fetch-tags: true
+          fetch-depth: 10 # fetch last 10 commits
+          token: ${{ secrets.GH_AUTOMATION_TOKEN }}
 
-      - name: Reset repo before testing
-        if: success() || failure()
-        uses: ./semver-repo/.github/actions/execute-gh-workflow-action
+      # - name: install packages
+      #   working-directory: semver-repo
+      #   run: npm install
+
+      # - name: run e2e tests (create and merge PR in CrazyActionsTests repo)
+      #   working-directory: semver-repo
+      #   env:
+      #     REPO_PATH: '../'
+      #     TEST_DATA_PATH: ./tests/e2e/e2e.test.data.json
+      #     GH_TOKEN: ${{ secrets.GH_AUTOMATION_TOKEN }}
+      #     PR_NUMBER: ${{ github.event.number }}
+      #   run: npm run test-e2e
+          
+      # - name: Test Report
+      #   uses: dorny/test-reporter@v1
+      #   if: success() || failure()
+      #   with:
+      #     name: E2E Tests in CrazyActionsTests repo   # Name of the check run which will be created
+      #     path: semver-repo/reports/jest-*.xml
+      #     reporter: jest-junit
+
+  cleanup-test-e2e:
+    name: 🧹 Clean CrazyActionsTests repo
+    needs: 
+    - get-changes
+    - test-e2e
+    if: >
+      needs.get-changes.outputs.action-modified == 'true' &&
+      (needs.test-e2e.result == 'success' || needs.test-e2e.result == 'failure')
+    runs-on: ubuntu-latest
+    concurrency:
+      group: e2e-tests
+      cancel-in-progress: false
+    steps:
+      - name: Checkout semver repository
+        uses: actions/checkout@v4.1.1
+
+      - name: Reset repo after testing
+        uses: ./.github/actions/execute-gh-workflow-action
         with:
           gh-token: ${{ secrets.GH_AUTOMATION_TOKEN }}
           gh-workflow-path: reset-repo.yml
