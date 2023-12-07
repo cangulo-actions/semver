@@ -21,5 +21,6 @@ module.exports = defineConfig({
     baseUrl: 'https://duckduckgo.com',
     specPattern: '**/*.feature',
     setupNodeEvents
-  }
+  },
+  screenshotOnRunFailure: false
 })
