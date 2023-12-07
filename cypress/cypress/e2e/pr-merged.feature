@@ -1,4 +1,4 @@
-Feature: release version after a PR with one commit is merged
+Feature: release version after a PR is merged
 
   Scenario: Merge PR with one commit
     Given the initial version is "<initialVersion>"
