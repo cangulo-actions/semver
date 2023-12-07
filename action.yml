@@ -283,6 +283,25 @@ runs:
               .write()
           }
 
+    - name: Write Check Annotations
+      uses: actions/github-script@v7
+      env:
+        NEW_VERSION_RELEASED: ${{ steps.semver.outputs.release-required }}
+        RELEASE_VERSION: ${{ steps.semver.outputs.version }}
+        RELEASE_TITLE: ${{ steps.parse-changes.outputs.release-title }}
+      with:
+        script: |
+          const newVersionRelease = process.env.NEW_VERSION_RELEASED === 'true'
+
+          if(newVersionRelease) {
+            const releaseVersion    = process.env.RELEASE_VERSION
+            const releaseTitle      = process.env.RELEASE_TITLE
+
+            core.notice(`Version ${releaseVersion} released!`, {title: 'cangulo-actions/semver result'})
+          }else{
+            core.notice('Changes did not triggered a new release', {title: 'cangulo-actions/semver result'})
+          }
+
     - name: printing summary for Scopes Releases
       if: ${{ inputs.print-summary == 'true' && steps.semver.outputs.scopes != '{}' }}
       uses: actions/github-script@v7
