@@ -1,3 +1,8 @@
+# 0.5.0 feat: trigger release creation after adding annotations feature (#53)
+
+## new features:
+* feat: trigger release creation after adding annotations feature (#53)
+
 # 0.4.0 feat: #42 listed link to release commit in the same repo. closed. (#43)
 
 ## new features:
