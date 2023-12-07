@@ -60,16 +60,20 @@ When('I merge it', () => {
 })
 
 Then('the CD workflow triggered must succeed', () => {
+  const owner = Cypress.env('OWNER')
+  const repo = Cypress.env('REPO')
+
   // eslint-disable-next-line cypress/no-unnecessary-waiting
   cy
     .wait(waitTimeMs)
     .exec(
-      `gh run list -b main -L 1 -w "cd.yml" --created "${prMergeDate}" --json headSha,conclusion --jq ".[] | {headSha: .headSha, conclusion: .conclusion}"`,
-      { failOnNonZeroExit: false })
+      `gh api repos/${owner}/${repo}/commits/${prMergeCommitId}/check-runs`)
     .then((result) => {
-      const lastRunDetailsJSON = result.stdout
-      const lastRunDetails = JSON.parse(lastRunDetailsJSON)
-      expect(lastRunDetails.headSha).to.equal(prMergeCommitId, 'headSha must be the same as the PR merge commit')
-      expect(lastRunDetails.conclusion).to.equal('success', 'conclusion must be success')
+      const checksJSON = result.stdout
+      const checks = JSON.parse(checksJSON)
+
+      expect(checks.total_count).to.equal(1, `There must be only one check, but there are ${checks.total_count}`)
+      expect(checks.check_runs[0].status).to.equal('completed', `The check must be completed, but it is ${checks.check_runs[0].status}`)
+      expect(checks.check_runs[0].conclusion).to.equal('success', `The check must be successful, but it is ${checks.check_runs[0].conclusion}`)
     })
 })
