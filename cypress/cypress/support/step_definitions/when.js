@@ -17,6 +17,7 @@ When('I commit the next changes', (table) => {
       const commitMsg = row[0]
       cy.exec(`git commit --allow-empty -m "${commitMsg}"`)
     })
+
   cy
     .task('getSharedDataByKey', 'branch')
     .then((branch) => {
