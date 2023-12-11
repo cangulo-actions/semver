@@ -1,35 +1,12 @@
 const { When } = require('@badeball/cypress-cucumber-preprocessor')
 
-When('I commit the next change {string}', (commitMsg) => {
-  cy
-    .task('getSharedDataByKey', 'branch')
-    .then((branch) => {
-      cy
-        .exec(`git commit --allow-empty -m "${commitMsg}"`)
-        .exec(`git push origin ${branch} --force`)
-    })
-})
-
-When('I commit the next changes', (table) => {
-  table
-    .rows()
-    .forEach(row => {
-      const commitMsg = row[0]
-      cy.exec(`git commit --allow-empty -m "${commitMsg}"`)
-    })
-
-  cy
-    .task('getSharedDataByKey', 'branch')
-    .then((branch) => {
-      cy.exec(`git push origin ${branch} --force`)
-    })
-})
-
-When('I create a PR', () => {
+When('I create a PR and merge it', () => {
   const owner = Cypress.env('OWNER')
   const repo = Cypress.env('REPO')
   const semverPRNumber = Cypress.env('SEMVER_PR_NUMBER')
-  const description = `PR created by the CI workflow for the PR #${semverPRNumber} in the ${owner}/${repo} repository. Created for testing the GH action behavior.`
+  const description = `PR created by the CI workflow for the PR 
+    cangulo-actions/semver#${semverPRNumber} in the ${owner}/${repo} repository. 
+    Created for testing the GH action behavior.`
 
   cy
     .exec(`gh pr create --fill --body "${description}"`, { failOnNonZeroExit: false })
@@ -44,20 +21,12 @@ When('I create a PR', () => {
         prNumber = result.stderr.split('/').pop()
         expect(prNumber).to.match(/^\d+$/)
       }
-      cy.task('appendSharedData', `prNumber=${prNumber}`)
-    })
-})
-
-When('I merge it', () => {
-  cy
-    .task('getSharedDataByKey', 'prNumber')
-    .then((prNumber) => {
       cy
         .exec(`gh pr merge ${prNumber} --squash --delete-branch --admin`)
         .exec(`gh pr view ${prNumber} --json mergeCommit --jq .mergeCommit.oid`)
         .then((result) => {
           const prMergeCommitId = result.stdout
-          cy.task('appendSharedData', `prMergeCommitId=${prMergeCommitId}`)
+          cy.task('appendSharedData', `PR_MERGE_COMMIT_ID=${prMergeCommitId}`)
         })
     })
 })

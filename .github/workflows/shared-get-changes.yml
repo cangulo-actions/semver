@@ -27,6 +27,7 @@ jobs:
             js:
               - index.js
               - functions/**
+              - cypress/**/*.js
               - package.json
               - package-lock.json
             tests:
