@@ -1,36 +1,44 @@
 Feature: release version after a PR is merged
 
-  Scenario: Merge PR with one commit
-    Given the initial version is "<initialVersion>"
-    And I checkout "<branchName>" branch
-    When I commit the next change "<commitMsg>"
-    And I create a PR
-    And I merge it
+  Scenario: Merge a PR with one commit
+    Given I checkout a branch
+    And I commit the next change "<commitMsg>"
+    When I create a PR and merge it
     Then the CD workflow triggered must succeed
-    And the version released is "<releasedVersion>"
-    And there are "<totalVersions>" versions in the repository
+    And the release commit created includes the tag "<releasedVersion>"
 
     Examples: 
-      | branchName                          | initialVersion | commitMsg                                     | releasedVersion | totalVersions |
-      | semver-pr{SEMVER_PR_NUMBER}-1-fix   | none           | fix: commit that fixes something              |           0.0.1 |             1 |
-      | semver-pr{SEMVER_PR_NUMBER}-1-ci    |          0.0.1 | ci: commit that won't trigger a release       | none            |             1 |
-      | semver-pr{SEMVER_PR_NUMBER}-1-feat  |          0.0.1 | feat: commit that adds a feature              |           0.1.0 |             2 |
-      | semver-pr{SEMVER_PR_NUMBER}-1-break |          0.1.0 | break: commit that introduce a breking change |           1.0.0 |             3 |
+      | commitMsg                                       | releasedVersion |
+      | fix: commit that fixes something                |           0.0.1 |
+      | ci: commit that won't trigger a release         | none            |
+      | feat: commit that adds a feature                |           0.1.0 |
+      | break: commit that introduces a breaking change |           1.0.0 |
 
-  Scenario: Merge PR with multiple commits
-    Given the initial version is "<initialVersion>"
-    And I checkout "<branchName>" branch
-    When I commit the next changes
-      | ci: commit that fixes something               |
-      | fix: commit that fixes something              |
-      | feat: commit that adds a feature              |
-      | break: commit that introduce a breking change |
-    And I create a PR
-    And I merge it
+  Scenario: Merge a PR with multiple commits without scopes
+    Given I checkout a branch
+    And I commit the next changes
+      | ci: commit that fixes something                |
+      | fix: commit that fixes something               |
+      | feat: commit that adds a feature               |
+      | break: commit that introduce a breaking change |
+    When I create a PR and merge it
     Then the CD workflow triggered must succeed
-    And the version released is "<releasedVersion>"
-    And there are "<totalVersions>" versions in the repository
+    And the release commit created includes the tag "<releasedVersion>"
 
     Examples: 
-      | branchName                            | initialVersion | releasedVersion | totalVersions |
-      | semver-pr{SEMVER_PR_NUMBER}-4-commits |          1.0.0 |           2.0.0 |             4 |
+      | releasedVersion |
+      |           2.0.0 |
+
+  Scenario: Merge a PR with multiple commits with scopes
+    Given I checkout a branch
+    And I commit the next changes
+      | ci(tfm): commit that fixes something in terraform    |
+      | fix(src): commit that fixes something in the lambdas |
+      | feat(tfm): commit that adds a feature in terraform   |
+      | break: commit that introduce a breaking change       |
+    When I create a PR and merge it
+    Then the CD workflow triggered must succeed
+    And the release commit created includes the next tags
+      |     3.0.0 |
+      | tfm-0.1.0 |
+      | src-0.0.1 |

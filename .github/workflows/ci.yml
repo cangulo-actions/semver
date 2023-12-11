@@ -126,6 +126,7 @@ jobs:
           GH_TOKEN: ${{ secrets.GH_AUTOMATION_TOKEN }}
           CYPRESS_OWNER: cangulo-actions
           CYPRESS_REPO: CrazyActionsTests
+          CYPRESS_GH_API_URL: https://api.github.com/repos/cangulo-actions/CrazyActionsTests
           CYPRESS_SEMVER_PR_NUMBER: ${{ github.event.number }}
 
   cleanup-test-e2e:
