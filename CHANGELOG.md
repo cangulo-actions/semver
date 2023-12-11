@@ -1,3 +1,10 @@
+# 0.6.0 #33 added E2E tests with scopes (#55)
+
+## new features:
+* feat: #33 added input for printing check annotation with the release version
+## others
+* refactor: #33 added E2E tests with scopes
+
 # 0.5.0 feat: trigger release creation after adding annotations feature (#53)
 
 ## new features:
