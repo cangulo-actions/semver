@@ -1,3 +1,8 @@
+# 0.6.1 fix: #54 change input to YML. Fixes (#56)
+
+## patches:
+* fix: #54 change input to YML. Fixes (#56)
+
 # 0.6.0 #33 added E2E tests with scopes (#55)
 
 ## new features:
