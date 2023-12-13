@@ -21,6 +21,7 @@ jobs:
       with:
         create-gh-release: true
         print-summary: true
+        print-annotations: true
 
     - name: add semver output to GH summary
       uses: actions/github-script@v7
@@ -36,4 +37,3 @@ jobs:
             .addHeading('Semver Output:')
             .addCodeBlock(JSON.stringify(semverOutputs, null, 2), 'json')
             .write()      
-    

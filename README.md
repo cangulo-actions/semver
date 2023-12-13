@@ -35,17 +35,18 @@ This GH action aims to make the version increase depend on the commits merged. F
 - `<description>` explains how this commit affects the solution.
 - Please note `: ` semicolon followed by one space between the type and the description.
 
-
 | `type`     | `release` |
 | ---------- | --------- |
 | `break`    | major     |
-| `major`    | major     |
 | `feat`     | minor     |
 | `fix`      | patch     |
 | `refactor` | none      |
 | `chore`    | none      |
 | `test`     | none      |
 | `docs`     | none      |
+| `ci`       | none      |
+
+You can check the default config [here](default-config.yml)
 
 - Please note if more than one commit is merged. The one with the higher release type will be taken into account. Example: You merge a `fix: ...` and a `break: ...` the next version will be a major.
 - ⚠️ Commits merged with a different type than the previous one won't trigger a release
@@ -85,6 +86,7 @@ jobs:
         create-gh-release: true
         print-summary: true
     - name: print semver output
+      if: ${{ steps.semver.outputs.new-version-released }}
       env:
         CHANGES: ${{ steps.semver.outputs.changes }}
         CHANGELOG_RECORD: ${{ steps.semver.outputs.changelog-record }}
@@ -93,6 +95,8 @@ jobs:
         echo "version:        ${{ steps.semver.outputs.version }}"
         echo "release-title:  ${{ steps.semver.outputs.release-title }}"
         echo "release-type:   ${{ steps.semver.outputs.release-type }}"
+        echo "release-url:    ${{ steps.semver.outputs.release-url }}"
+        echo "commit-id:      ${{ steps.semver.outputs.commit-id }}"
 
         echo "changes:"
         echo "$CHANGES" | jq .
@@ -108,41 +112,32 @@ You can copy it from the [cd.yml](.github/workflows/cd.yml)
 
 ### Custom Commit Types
 
-You can customize the commits types and the release. Add a new JSON file to your solution and define then the commits you need following the next template:
+You can define the commits types and its release in a yml file as next:
 
-```json
-{
-    "changeTypes": {
-        "break": {
-            "release": "major"
-        },
-        "major": {
-            "release": "major"
-        },
-        "feat": {
-            "release": "minor"
-        },
-        "fix": {
-            "release": "patch"
-        },
-        "refactor": {
-            "release": "patch"
-        },
-        "chore": {
-            "release": "patch"
-        },
-        "test": {
-            "release": "patch"
-        },
-        "docs": {
-            "release": "patch"
-        }
-    }
-}
+```yml
+commits:
+- type: break
+  release: major
+- type: major
+  release: major
+- type: feat
+  release: minor
+- type: fix
+  release: patch
+- type: refactor
+  release: none
+- type: chore
+  release: none
+- type: test
+  release: none
+- type: docs
+  release: none
+- type: ci
+  release: none
 ```
 
 > Please note the `changeTypes` at the root level.
-> As a proposal, name the file `repo-config.json` and place it in the root of your repo.
+> As a proposal, name the file `semver.yml` and place it in the root of your repo.
 
 Then provide it in the `configuration` input when calling the GH action:
 
@@ -165,7 +160,7 @@ jobs:
       uses: cangulo-actions/semver@main
       id: semver
       with:
-        configuration: repo-config.json
+        configuration: semver.yml
         create-gh-release: true
         print-summary: true
 ```

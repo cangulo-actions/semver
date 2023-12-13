@@ -1,34 +1,43 @@
 {
     "custom-config": {
-        "changeTypes": {
-            "break": {
+        "commits": [
+            {
+                "type": "break",
                 "release": "major"
             },
-            "major": {
+            {
+                "type": "major",
                 "release": "major"
             },
-            "feat": {
+            {
+                "type": "feat",
                 "release": "minor"
             },
-            "fix": {
+            {
+                "type": "fix",
                 "release": "patch"
             },
-            "refactor": {
+            {
+                "type": "refactor",
                 "release": "none"
             },
-            "docs": {
+            {
+                "type": "docs",
                 "release": "none"
             }
-        },
-        "scopes": {
-            "tfm": {
+        ],
+        "scopes": [
+            {
+                "key": "tfm",
                 "versioning": {
                     "file": "terraform/version.json",
                     "changelog": "terraform/CHANGELOG.md"
                 }
             },
-            "src": {}
-        }
+            {
+                "key": "src"
+            }
+        ]
     },
     "scenarios": [
         {

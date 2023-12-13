@@ -31,7 +31,8 @@ function Index (changes, title, conf) {
     result.changelogRecord = newChangelogRecord
 
     const commitsContainAnyScope = changes.some(change => change.scopes.length > 0)
-    if (commitsContainAnyScope && conf.scopes) {
+    if (commitsContainAnyScope && (conf.scopes ?? []).length > 0) {
+      const scopesConfig = conf.scopes
       const scopesResult = {}
       const changesByScope = changes
         .flatMap(change => change.scopes.map(scope => ({ scope, change })))
@@ -41,8 +42,18 @@ function Index (changes, title, conf) {
         }, {})
 
       for (const [scope, changes] of Object.entries(changesByScope)) {
-        const versionJsonPath = conf.scopes[scope].versioning?.file ?? `${scope}/version.json`
-        const changelogPath = conf.scopes[scope].versioning?.changelog ?? `${scope}/CHANGELOG.md`
+        const defaultScopeConfig = {
+          versioning: {
+            file: `${scope}/version.json`,
+            changelog: `${scope}/CHANGELOG.md`
+          }
+        }
+        const scopeConfig = {
+          ...defaultScopeConfig,
+          ...scopesConfig.find(x => x.key === scope)
+        }
+        const versionJsonPath = scopeConfig.versioning.file
+        const changelogPath = scopeConfig.versioning.changelog
         const { requiresNewRelease, nextVersion, nextReleaseType } = checkForNextRelease(changes, versionJsonPath)
 
         if (requiresNewRelease) {

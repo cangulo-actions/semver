@@ -1,5 +1,6 @@
 const { Index } = require('../../index')
 const fs = require('fs')
+const yaml = require('js-yaml')
 
 jest.mock('fs', () => {
   return {
@@ -16,21 +17,16 @@ describe('index.js Happy Paths', () => {
   const testData = JSON.parse(testDataContent)
   const testScenarios = testData.scenarios
 
-  const defaultConfigContent = originalModule.readFileSync('default-config.json')
-  const defaultConfig = JSON.parse(defaultConfigContent)
+  const defaultConfigContent = originalModule.readFileSync('default-config.yml')
+  const defaultConfig = yaml.load(defaultConfigContent)
   const customConfig = testData['custom-config']
   process.env.CHANGELOG_RECORD_TEMPLATE = 'templates/changelog-record.md'
 
   testScenarios
     .filter(x => x.enabled)
     .forEach(data => {
-      const testName = `${data.scenario}\n` +
-            `inputs:\n\t${JSON.stringify(data.inputs, null, 2)}\n` +
-            `result:\n\t${JSON.stringify(data.result, null, 2)}`
-
-      it(testName, () => {
+      it(data.scenario, () => {
         // arrange
-
         fs.readFileSync = (filePath) => data.files[filePath] || originalModule.readFileSync(filePath)
 
         const changes = data.inputs.changes
