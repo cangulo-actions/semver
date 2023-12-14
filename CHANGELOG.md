@@ -1,3 +1,8 @@
+# 0.7.0 feat: #37 added configuration validation using schema. Fixes #37 (#57)
+
+## new features:
+* feat: #37 added configuration validation using schema. Fixes #37 (#57)
+
 # 0.6.1 fix: #54 change input to YML. Fixes (#56)
 
 ## patches:
