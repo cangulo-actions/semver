@@ -82,22 +82,37 @@ runs:
       env:
         CONFIG: ${{ inputs.configuration }}
         NODE_MODULES_PATH: ${{ github.action_path }}/node_modules
+        SCHEMA: ${{ github.action_path }}/config.schema.yml
       with:
         script: |
           core.startGroup('Validating input configuration')
 
-          const fs        = require('fs')        
-          const yaml      = require(`${process.env.NODE_MODULES_PATH}/js-yaml`)
-          const confPath  = process.env.CONFIG
+          const yml = require(`${process.env.NODE_MODULES_PATH}/js-yaml`)
+          const Ajv = require(`${process.env.NODE_MODULES_PATH}/ajv`)
+          const fs  = require('fs')
 
-          if (!fs.existsSync(confPath)) {
-            core.setFailed(`configuration file not found: ${confPath}`)
+          const schemaPath  = process.env.SCHEMA
+          const configPath  = process.env.CONFIG
+
+          if (!fs.existsSync(configPath)) {
+            core.setFailed(`configuration file not found: ${configPath}`)
           }
 
-          const configContent = fs.readFileSync(confPath)
-          const conf          = yaml.load(configContent)
+          const schemaContent = fs.readFileSync(schemaPath)
+          const configContent = fs.readFileSync(configPath)
+          const schema        = yml.load(schemaContent)
+          const config        = yml.load(configContent)
 
-          console.log('config:', JSON.stringify(conf, null, 2))
+          const ajv       = new Ajv()
+          const validate  = ajv.compile(schema)
+          const valid     = validate(config)
+
+          if (!valid) {
+            const errorsJson = JSON.stringify(validate.errors, null, 2)
+            core.setFailed(`configuration file is not valid: ${errorsJson}`)
+          }
+
+          console.log('config:', JSON.stringify(config, null, 2))
           core.endGroup()
 
     - name: Parse Changes from last commit

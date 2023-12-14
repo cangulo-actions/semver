@@ -15,10 +15,16 @@ properties:
         release:
           type: string
           enum: [major, minor, patch, none]
+      required:
+        - type
+        - release
+
   scopes:
     type: array
     description: |
       The list of scopes that can be used in commit messages.
+    minItems: 1
+    uniqueItems: true
     items:
       type: object
       properties:
