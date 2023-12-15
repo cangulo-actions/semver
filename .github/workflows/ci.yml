@@ -4,6 +4,10 @@ on:
   pull_request:
     branches: [main]
 
+concurrency:
+  group: e2e-tests
+  cancel-in-progress: false
+
 jobs:
   get-changes:
     name: 🔎 Get Changes
@@ -53,7 +57,7 @@ jobs:
         uses: dorny/test-reporter@v1
         if: success() || failure()
         with:
-          name: JS Tests  # Name of the check run which will be created
+          name: JS Tests # Name of the check run which will be created
           path: reports/jest-*.xml
           reporter: jest-junit
 
@@ -62,9 +66,6 @@ jobs:
     needs: get-changes
     if: needs.get-changes.outputs.action-modified == 'true'
     runs-on: ubuntu-latest
-    concurrency:
-      group: e2e-tests
-      cancel-in-progress: false
     steps:
       - name: Checkout semver repository
         uses: actions/checkout@v4.1.1
@@ -89,21 +90,16 @@ jobs:
   test-e2e:
     name: 🧪 E2E Tests in CrazyActionsTests repo
     needs:
-    - prepare-test-e2e
-    - get-changes
+      - prepare-test-e2e
+      - get-changes
     if: needs.get-changes.outputs.action-modified == 'true'
     runs-on: ubuntu-latest
-    concurrency:
-      group: e2e-tests
-      cancel-in-progress: false
     steps:
       - name: Checkout cangulo-actions/CrazyActionsTests repository
         uses: actions/checkout@v4.1.1
         with:
           repository: cangulo-actions/CrazyActionsTests
           ref: main
-          fetch-tags: true
-          fetch-depth: 10 # fetch last 10 commits
           token: ${{ secrets.GH_AUTOMATION_TOKEN }}
 
       - name: configure git credentials
@@ -124,23 +120,23 @@ jobs:
         uses: cypress-io/github-action@v6.6.0
         env:
           GH_TOKEN: ${{ secrets.GH_AUTOMATION_TOKEN }}
+          CYPRESS_GH_TOKEN: ${{ secrets.GH_AUTOMATION_TOKEN }}
           CYPRESS_OWNER: cangulo-actions
           CYPRESS_REPO: CrazyActionsTests
           CYPRESS_GH_API_URL: https://api.github.com/repos/cangulo-actions/CrazyActionsTests
           CYPRESS_SEMVER_PR_NUMBER: ${{ github.event.number }}
+          # CYPRESS_TAGS: "@smoke" # if comment run all tests
+          CYPRESS_TAGS: "not @smoke"
 
   cleanup-test-e2e:
     name: 🧹 Clean CrazyActionsTests repo
-    needs: 
-    - get-changes
-    - test-e2e
+    needs:
+      - get-changes
+      - test-e2e
     if: >
       needs.get-changes.outputs.action-modified == 'true' &&
       always() && !cancelled()
     runs-on: ubuntu-latest
-    concurrency:
-      group: e2e-tests
-      cancel-in-progress: false
     steps:
       - name: Checkout semver repository
         uses: actions/checkout@v4.1.1

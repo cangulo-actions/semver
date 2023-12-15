@@ -1,4 +1,6 @@
 const { defineConfig } = require('cypress')
+const consoleLogReporter = require('cypress-terminal-report/src/installLogsPrinter')
+
 const {
   addCucumberPreprocessorPlugin
 } = require('@badeball/cypress-cucumber-preprocessor')
@@ -11,7 +13,7 @@ const sharedData = {}
 async function setupNodeEvents (on, config) {
   // This is required for the preprocessor to be able to generate JSON reports after each run, and more,
   await addCucumberPreprocessorPlugin(on, config)
-
+  consoleLogReporter(on)
   on('file:preprocessor', preprocessor(config))
   on('task', {
     appendSharedData: (keyvalue) => {
