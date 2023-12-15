@@ -4,6 +4,10 @@ on:
   pull_request:
     branches: [main]
 
+concurrency:
+  group: e2e-tests
+  cancel-in-progress: false
+
 jobs:
   get-changes:
     name: 🔎 Get Changes
@@ -62,9 +66,6 @@ jobs:
     needs: get-changes
     if: needs.get-changes.outputs.action-modified == 'true'
     runs-on: ubuntu-latest
-    concurrency:
-      group: e2e-tests
-      cancel-in-progress: false
     steps:
       - name: Checkout semver repository
         uses: actions/checkout@v4.1.1
@@ -93,9 +94,6 @@ jobs:
       - get-changes
     if: needs.get-changes.outputs.action-modified == 'true'
     runs-on: ubuntu-latest
-    concurrency:
-      group: e2e-tests
-      cancel-in-progress: false
     steps:
       - name: Checkout cangulo-actions/CrazyActionsTests repository
         uses: actions/checkout@v4.1.1
@@ -122,6 +120,7 @@ jobs:
         uses: cypress-io/github-action@v6.6.0
         env:
           GH_TOKEN: ${{ secrets.GH_AUTOMATION_TOKEN }}
+          CYPRESS_GH_TOKEN: ${{ secrets.GH_AUTOMATION_TOKEN }}
           CYPRESS_OWNER: cangulo-actions
           CYPRESS_REPO: CrazyActionsTests
           CYPRESS_GH_API_URL: https://api.github.com/repos/cangulo-actions/CrazyActionsTests
@@ -138,9 +137,6 @@ jobs:
       needs.get-changes.outputs.action-modified == 'true' &&
       always() && !cancelled()
     runs-on: ubuntu-latest
-    concurrency:
-      group: e2e-tests
-      cancel-in-progress: false
     steps:
       - name: Checkout semver repository
         uses: actions/checkout@v4.1.1

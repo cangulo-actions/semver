@@ -6,4 +6,4 @@ Feature: Smoke tests
     And I commit the next change "fix: commit that fixes something"
     When I create a PR and merge it
     Then the CD workflow triggered must succeed
-    And the release commit created includes the tag "0.0.1"
+    And the new release must only increase the patch number
