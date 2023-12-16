@@ -39,8 +39,5 @@ module.exports = defineConfig({
     specPattern: '**/*.feature',
     setupNodeEvents
   },
-  screenshotOnRunFailure: false,
-  env: {
-    WAIT_TIME_MS: 30000
-  }
+  screenshotOnRunFailure: false
 })
