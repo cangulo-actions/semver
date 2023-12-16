@@ -1,4 +1,7 @@
 const consoleReporter = require('cypress-terminal-report/src/installLogsCollector')
-require('./commands')
 
 consoleReporter()
+
+// commands
+require('./commands/gh-api-commits')
+require('./commands/gh-api-releases')
