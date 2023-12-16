@@ -51,7 +51,7 @@ Then('the new release must only increase the patch number', () => {
   cy
     .getLastCommit()
     .then((lastCommit) => {
-      cy.ensureCommitReleasesANewVersion(lastCommit)
+      cy.ensureCommitReleasesANewVersion(lastCommit.message)
       const releaseCommit = lastCommit.sha
       cy.ensureLastReleaseMatchCommit(releaseCommit)
 
@@ -78,7 +78,7 @@ function checkReleaseCommitIncludesTags (expectedTags) {
   cy
     .getLastCommit()
     .then((lastCommit) => {
-      cy.ensureCommitReleasesANewVersion(lastCommit)
+      cy.ensureCommitReleasesANewVersion(lastCommit.message)
       const releaseCommit = lastCommit.sha
       cy.ensureLastReleaseMatchCommit(releaseCommit)
 

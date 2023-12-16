@@ -125,8 +125,8 @@ jobs:
           CYPRESS_REPO: CrazyActionsTests
           CYPRESS_GH_API_URL: https://api.github.com/repos/cangulo-actions/CrazyActionsTests
           CYPRESS_SEMVER_PR_NUMBER: ${{ github.event.number }}
-          # CYPRESS_TAGS: "@smoke" # if comment run all tests
-          CYPRESS_TAGS: "not @smoke"
+          CYPRESS_TAGS: "@smoke" # if comment run all tests
+          # CYPRESS_TAGS: "not @smoke"
 
   cleanup-test-e2e:
     name: 🧹 Clean CrazyActionsTests repo
