@@ -94,7 +94,10 @@ function checkReleaseCommitIncludesTags (expectedTags) {
 
       cy.request({
         method: 'GET',
-        url: getTagsUrl
+        url: getTagsUrl,
+        headers: {
+          Authorization: `token ${Cypress.env('GH_TOKEN')}`
+        }
       }).then((response) => {
         expect(response.status)
           .to.equal(expectedCode, 'the response code received when getting the tags is not expected.')

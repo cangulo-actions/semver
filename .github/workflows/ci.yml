@@ -83,16 +83,14 @@ jobs:
       cancel-in-progress: true
     runs-on: ubuntu-latest
     env:
-      GH_TOKEN: ${{ secrets.GH_AUTOMATION_TOKEN }}
       CYPRESS_GH_TOKEN: ${{ secrets.GH_AUTOMATION_TOKEN }}
-      CYPRESS_OWNER: cangulo-actions
-      CYPRESS_REPO: CrazyActionsTests
       CYPRESS_GH_API_URL: https://api.github.com/repos/cangulo-actions/CrazyActionsTests
       CYPRESS_WAIT_TIME_CD_WORKFLOW: 25000  # wait 25 seconds before checking the CD workflow
       CYPRESS_API_RETRY_INTERVAL_MS: 10000  # retry every 10 seconds
       CYPRESS_API_RETRY_TIMEOUT_MS: 40000   # timeout after 40 seconds of retry
       CYPRESS_SEMVER_BRANCH: ${{ github.head_ref }}
       CYPRESS_SEMVER_PR_NUMBER: ${{ github.event.number }}
+      CYPRESS_BRANCH_TO_CREATE: test-semver-pr-${{ github.event.number }}
     steps:
       - name: Checkout cangulo-actions/CrazyActionsTests repository
         uses: actions/checkout@v4.1.1

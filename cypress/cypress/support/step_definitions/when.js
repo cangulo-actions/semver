@@ -1,32 +1,19 @@
 const { When } = require('@badeball/cypress-cucumber-preprocessor')
 
-When('I create a PR with title {string} and merge it', (prTitle) => {
-  const owner = Cypress.env('OWNER')
-  const repo = Cypress.env('REPO')
+When('I create a PR with title {string} and merge it', (title) => {
   const semverPRNumber = Cypress.env('SEMVER_PR_NUMBER')
-  const description = `PR created by the CI workflow for the PR 
-    cangulo-actions/semver#${semverPRNumber} in the ${owner}/${repo} repository. 
-    Created for testing the semver GH action.`
+  const branch = Cypress.env('BRANCH_TO_CREATE')
+  const description = `PR created for testing the cangulo-actions/semver GH action. Triggered by ci.yml in the PR cangulo-actions/semver#${semverPRNumber}`
 
   cy
-    .exec(`gh pr create --title "${prTitle}" --body "${description}"`, { failOnNonZeroExit: false })
-    .then((result) => {
-      let prNumber = ''
-      if (result.code === 0) {
-        // result.stdout contains https://github.com/.../pull/$PR_NUMBER
-        prNumber = result.stdout.split('/').pop()
-        expect(prNumber).to.match(/^\d+$/)
-      } else if (result.stderr !== '') {
-        expect(result.stderr).to.contain('already exists', 'PR already exists')
-        prNumber = result.stderr.split('/').pop()
-        expect(prNumber).to.match(/^\d+$/)
-      }
+    .createPR({ title, description, branch })
+    .then((pr) => {
+      console.log(`PR created: ${pr.number}`)
       cy
-        .exec(`gh pr merge ${prNumber} --squash --delete-branch --admin`)
-        .exec(`gh pr view ${prNumber} --json mergeCommit --jq .mergeCommit.oid`)
-        .then((result) => {
-          const prMergeCommitId = result.stdout
-          cy.task('appendSharedData', `PR_MERGE_COMMIT_ID=${prMergeCommitId}`)
+        .mergePR(pr.number)
+        .then((mergeCommitSHA) => {
+          console.log(`PR merged! merge commit SHA: ${mergeCommitSHA}`)
+          cy.task('appendSharedData', `PR_MERGE_COMMIT_ID=${mergeCommitSHA}`)
         })
     })
 })
