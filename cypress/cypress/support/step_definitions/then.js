@@ -1,29 +1,35 @@
 const { Then } = require('@badeball/cypress-cucumber-preprocessor')
 
 Then('the CD workflow triggered must succeed', () => {
-  const owner = Cypress.env('OWNER')
-  const repo = Cypress.env('REPO')
-  const waitTimeMs = Cypress.env('WAIT_TIME_MS')
+  const waitTimeCD = Cypress.env('WAIT_TIME_CD_WORKFLOW')
+  const retryInterval = Cypress.env('API_RETRY_INTERVAL_MS')
+  const maxTimeout = Cypress.env('API_RETRY_TIMEOUT_MS')
+  const semverBranchName = Cypress.env('SEMVER_BRANCH')
+  const checkName = `test cangulo-actions/semver@${semverBranchName}` // must match the job name in the cd.yml workflow
+  const status = 'completed'
 
-  // eslint-disable-next-line cypress/no-unnecessary-waiting
   cy
-    .wait(waitTimeMs)
-    .task('getSharedDataByKey', 'PR_MERGE_COMMIT_ID')
-    .then((prMergeCommitId) => {
+    .wait(waitTimeCD)
+    .waitUntil(() => {
+      return cy
+        .task('getSharedDataByKey', 'PR_MERGE_COMMIT_ID')
+        .then((prMergeCommitId) =>
+          cy
+            .getCommitCheckRuns({ commitId: prMergeCommitId, checkName, status })
+            .then((checkRuns) => checkRuns.length === 1)
+        )
+    }, { interval: retryInterval, timeout: maxTimeout, errorMsg: `The CD workflow did not succeed after ${maxTimeout} ms.` })
+    .then(() => {
       cy
-        .exec(`gh api repos/${owner}/${repo}/commits/${prMergeCommitId}/check-runs`)
-        .then((result) => {
-          const checksJSON = result.stdout
-          const checks = JSON.parse(checksJSON).check_runs
-          expect(checks.length).to.be.greaterThan(0, 'There must be at least one check run. Please retry the whole ci.yml workflow.')
-          const releaseCheck = checks.find(check => check.name === 'release new version')
-          // eslint-disable-next-line no-unused-expressions
-          expect(releaseCheck).to.not.be.undefined
-          expect(releaseCheck.status).to.equal('completed', `The check must be completed, but it is ${releaseCheck.status}. Please retry the whole ci.yml workflow.`)
-          expect(releaseCheck.conclusion).to.equal('success', `The check must be successful, but it is ${releaseCheck.conclusion}`)
-
-          const checkRunId = releaseCheck.id
-          cy.task('appendSharedData', `checkRunId=${checkRunId}`)
+        .task('getSharedDataByKey', 'PR_MERGE_COMMIT_ID')
+        .then((prMergeCommitId) => {
+          cy
+            .getCommitCheckRuns({ commitId: prMergeCommitId, checkName, status })
+            .then((checkRuns) => {
+              const releaseCheck = checkRuns.find(check => check.name === checkName)
+              const checkRunId = releaseCheck.id
+              cy.task('appendSharedData', `checkRunId=${checkRunId}`)
+            })
         })
     })
 })
