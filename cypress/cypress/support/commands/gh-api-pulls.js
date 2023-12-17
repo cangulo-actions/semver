@@ -23,10 +23,37 @@ Cypress.Commands.add('createPR', ({ title, description, branch }) => {
       expect(response.status)
         .to.equal(expectedCode, 'the response code received when creating the PR is not the expected one')
 
-      const lastCommit = {
-        message: response.body[0].commit.message,
-        sha: response.body[0].sha
+      const pr = {
+        id: response.body.id,
+        number: response.body.number
       }
-      return lastCommit
+      return pr
+    })
+})
+
+Cypress.Commands.add('mergePR', (number) => {
+  const ghAPIUrl = Cypress.env('GH_API_URL')
+  const pullsUrl = `${ghAPIUrl}/pulls/${number}/merge`
+  const expectedCode = 200
+
+  return cy
+    .request(
+      {
+        method: 'PUT',
+        url: pullsUrl,
+        headers: {
+          Authorization: `token ${Cypress.env('GH_TOKEN')}`
+        },
+        body: {
+          merge_method: 'squash'
+        }
+      }
+    )
+    .then((response) => {
+      expect(response.status)
+        .to.equal(expectedCode, 'the response code received when merging the PR is not the expected one')
+
+      const mergeCommit = response.body.sha
+      return mergeCommit
     })
 })

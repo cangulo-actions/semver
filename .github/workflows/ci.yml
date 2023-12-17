@@ -83,10 +83,7 @@ jobs:
       cancel-in-progress: true
     runs-on: ubuntu-latest
     env:
-      GH_TOKEN: ${{ secrets.GH_AUTOMATION_TOKEN }}
       CYPRESS_GH_TOKEN: ${{ secrets.GH_AUTOMATION_TOKEN }}
-      CYPRESS_OWNER: cangulo-actions
-      CYPRESS_REPO: CrazyActionsTests
       CYPRESS_GH_API_URL: https://api.github.com/repos/cangulo-actions/CrazyActionsTests
       CYPRESS_WAIT_TIME_CD_WORKFLOW: 25000  # wait 25 seconds before checking the CD workflow
       CYPRESS_API_RETRY_INTERVAL_MS: 10000  # retry every 10 seconds
