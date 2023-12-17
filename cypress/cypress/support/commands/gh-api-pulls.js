@@ -1,15 +1,21 @@
-Cypress.Commands.add('createPR', ({ title, description }) => {
+Cypress.Commands.add('createPR', ({ title, description, branch }) => {
   const ghAPIUrl = Cypress.env('GH_API_URL')
-  const getCommitsUrl = `${ghAPIUrl}/pulls`
+  const pullsUrl = `${ghAPIUrl}/pulls`
   const expectedCode = 201
 
   return cy
     .request(
       {
         method: 'POST',
-        url: getCommitsUrl,
+        url: pullsUrl,
         headers: {
           Authorization: `token ${Cypress.env('GH_TOKEN')}`
+        },
+        body: {
+          base: 'main',
+          head: branch,
+          title,
+          body: description
         }
       }
     )

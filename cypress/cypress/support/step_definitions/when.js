@@ -1,15 +1,16 @@
 const { When } = require('@badeball/cypress-cucumber-preprocessor')
 
-When('I create a PR with title {string} and merge it', (prTitle) => {
+When('I create a PR with title {string} and merge it', (title) => {
   const owner = Cypress.env('OWNER')
   const repo = Cypress.env('REPO')
   const semverPRNumber = Cypress.env('SEMVER_PR_NUMBER')
+  // const branch = Cypress.env('BRANCH_TO_CREATE')
   const description = `PR created by the CI workflow for the PR 
     cangulo-actions/semver#${semverPRNumber} in the ${owner}/${repo} repository. 
     Created for testing the semver GH action.`
 
   cy
-    .exec(`gh pr create --title "${prTitle}" --body "${description}"`, { failOnNonZeroExit: false })
+    .exec(`gh pr create --title "${title}" --body "${description}"`, { failOnNonZeroExit: false })
     .then((result) => {
       let prNumber = ''
       if (result.code === 0) {
