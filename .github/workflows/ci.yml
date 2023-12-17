@@ -78,7 +78,7 @@ jobs:
       - prepare-test-e2e
       - get-changes
     if: needs.get-changes.outputs.action-modified == 'true'
-    concurrency:
+    concurrency:  # concurrency set to avoid conflicts pushing to CrazyActionsTests repo
       group: e2e-tests
       cancel-in-progress: true
     runs-on: ubuntu-latest
@@ -88,7 +88,6 @@ jobs:
       CYPRESS_OWNER: cangulo-actions
       CYPRESS_REPO: CrazyActionsTests
       CYPRESS_GH_API_URL: https://api.github.com/repos/cangulo-actions/CrazyActionsTests
-      CYPRESS_WAIT_TIME_RESET_REPO_WORKFLOW: 30000  # wait 30 seconds before checking the reset repo workflow
       CYPRESS_WAIT_TIME_CD_WORKFLOW: 25000  # wait 25 seconds before checking the CD workflow
       CYPRESS_API_RETRY_INTERVAL_MS: 10000  # retry every 10 seconds
       CYPRESS_API_RETRY_TIMEOUT_MS: 40000   # timeout after 40 seconds of retry
@@ -107,7 +106,7 @@ jobs:
           git config user.name  "cangulo-semver-e2e-test[bot]"
           git config user.email "cangulo-semver-e2e-test[bot]@users.noreply.github.com"
 
-      - name: Download cypress artifact
+      - name: 🥡 Download cypress artifact
         uses: actions/download-artifact@v3.0.2
         with:
           name: cypress
@@ -116,12 +115,16 @@ jobs:
       - name: move cypress folder to root
         run: mv cypress-semver/* .
 
-      - name: 🚬 Cypress Smoke Tests
+      - name: 🚬 smoke tests
         uses: cypress-io/github-action@v6.6.0
-        env:
-          CYPRESS_TAGS: "@smoke"
+        with:
+          spec: cypress/e2e/smoke-test.feature
 
-      - name: 🚬 Cypress E2E Tests
+      - name: 🎪 e2e tests
         uses: cypress-io/github-action@v6.6.0
         env:
-          CYPRESS_TAGS: "not @smoke"
+          CYPRESS_BEFORE_ALL_RESET_REPO_ENABLED: "true" # execute reset-repo before and after tests
+          CYPRESS_AFTER_ALL_RESET_REPO_ENABLED: "true" # execute reset-repo before and after tests
+          CYPRESS_GH_WORKFLOW_RESET_REPO_TIMEOUT: 30000  # wait 30 seconds before checking the reset repo workflow
+        with:
+          spec: cypress/e2e/pr-merged.feature

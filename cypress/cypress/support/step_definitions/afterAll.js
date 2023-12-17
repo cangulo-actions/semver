@@ -1,13 +1,20 @@
 import { AfterAll } from '@badeball/cypress-cucumber-preprocessor'
 
 AfterAll(function () {
-  const waitTimeWorkflow = Cypress.env('WAIT_TIME_RESET_REPO_WORKFLOW')
+  const enabled = Cypress.env('AFTER_ALL_RESET_REPO_ENABLED')
+
+  if (!enabled) {
+    console.log('trigger reset repo workflow skipped')
+    return
+  }
+
+  const waitTimeWorkflow = Cypress.env('GH_WORKFLOW_RESET_REPO_TIMEOUT')
   const workflowId = 'reset-repo.yml'
   const workflowParams = {
     ref: 'main',
     inputs: {
       'semver-version': 'main',
-      'enable-ci-workflow': true
+      'enable-ci-workflow': false
     }
   }
 

@@ -4,8 +4,7 @@ Then('the CD workflow triggered must succeed', () => {
   const waitTimeCD = Cypress.env('WAIT_TIME_CD_WORKFLOW')
   const retryInterval = Cypress.env('API_RETRY_INTERVAL_MS')
   const maxTimeout = Cypress.env('API_RETRY_TIMEOUT_MS')
-  const semverBranchName = Cypress.env('SEMVER_BRANCH')
-  const checkName = `test cangulo-actions/semver@${semverBranchName}` // must match the job name in the cd.yml workflow
+  const checkName = 'test cangulo-actions/semver' // must match the job name in the cd.yml workflow
   const status = 'completed'
 
   cy
@@ -18,7 +17,7 @@ Then('the CD workflow triggered must succeed', () => {
             .getCommitCheckRuns({ commitId: prMergeCommitId, checkName, status })
             .then((checkRuns) => checkRuns.length === 1)
         )
-    }, { interval: retryInterval, timeout: maxTimeout, errorMsg: `The CD workflow did not succeed after ${maxTimeout} ms.` })
+    }, { interval: retryInterval, timeout: maxTimeout, errorMsg: 'The release commit did not have the check-runs.' })
     .then(() => {
       cy
         .task('getSharedDataByKey', 'PR_MERGE_COMMIT_ID')
