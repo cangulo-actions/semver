@@ -111,10 +111,14 @@ jobs:
           path: cypress-semver
 
       - name: move cypress folder to root
-        run: mv cypress-semver/* .
+        run: |
+          rm -rf cypress                            # remove any local cypress folder
+          mv cypress-semver/* . --force --verbose   # move cypress from artifact to root
 
       - name: 🚬 smoke tests
         uses: cypress-io/github-action@v6.6.0
+        env:
+          CYPRESS_BEFORE_ALL_CLOSE_ANY_PR: "true" # execute reset-repo before and after tests
         with:
           spec: cypress/e2e/smoke-test.feature
 
@@ -122,7 +126,8 @@ jobs:
         uses: cypress-io/github-action@v6.6.0
         env:
           CYPRESS_BEFORE_ALL_RESET_REPO_ENABLED: "true" # execute reset-repo before and after tests
-          CYPRESS_AFTER_ALL_RESET_REPO_ENABLED: "true" # execute reset-repo before and after tests
-          CYPRESS_GH_WORKFLOW_RESET_REPO_TIMEOUT: 30000  # wait 30 seconds before checking the reset repo workflow
+          CYPRESS_AFTER_ALL_RESET_REPO_ENABLED: "true"  # execute reset-repo before and after tests
+          CYPRESS_AFTER_ALL_CLOSE_ANY_PR: "true" # execute reset-repo before and after tests
+          CYPRESS_GH_WORKFLOW_RESET_REPO_TIMEOUT: 30000 # wait 30 seconds before checking the reset repo workflow
         with:
           spec: cypress/e2e/pr-merged.feature

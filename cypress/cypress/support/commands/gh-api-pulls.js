@@ -57,3 +57,44 @@ Cypress.Commands.add('mergePR', (number) => {
       return mergeCommit
     })
 })
+
+Cypress.Commands.add('closeAnyPendingPR', () => {
+  const ghAPIUrl = Cypress.env('GH_API_URL')
+  const branch = Cypress.env('BRANCH_TO_CREATE')
+  const pullsUrl = `${ghAPIUrl}/pulls`
+  const expectedCode = 200
+
+  return cy
+    .request(
+      {
+        method: 'GET',
+        url: `${pullsUrl}?state=open&head=cangulo-actions:${branch}`,
+        headers: {
+          Authorization: `token ${Cypress.env('GH_TOKEN')}`
+        }
+      }
+    )
+    .then((response) => {
+      expect(response.status)
+        .to.equal(expectedCode, 'the response code received when listing previous PRs is not the expected one')
+
+      const prNumbers = response.body.map((pr) => pr.number)
+      for (const prNumber of prNumbers) {
+        cy.request(
+          {
+            method: 'PATCH',
+            url: `${pullsUrl}/${prNumber}`,
+            headers: {
+              Authorization: `token ${Cypress.env('GH_TOKEN')}`
+            },
+            body: {
+              state: 'closed'
+            }
+          }
+        ).then((response) => {
+          expect(response.status)
+            .to.equal(expectedCode, `the response code received when closing previous the PR ${prNumber} is not the expected one`)
+        })
+      }
+    })
+})
