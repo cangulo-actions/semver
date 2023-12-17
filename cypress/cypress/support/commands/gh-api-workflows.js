@@ -16,7 +16,7 @@ Cypress.Commands.add('triggerWorkflow', ({ workflowId, workflowParams }) => {
     )
     .then((response) => {
       expect(response.status)
-        .to.equal(expectedCode, 'the response code received when getting the commits is not expected.')
+        .to.equal(expectedCode, 'the response code received when triggering the workflow is not the expected one')
       return response.body
     })
 })

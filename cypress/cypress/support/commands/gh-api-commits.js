@@ -34,14 +34,14 @@ Cypress.Commands.add('ensureCommitReleasesANewVersion', (commitMsg) => {
 Cypress.Commands.add('getCommitCheckRuns', ({ commitId, checkName, status }) => {
   const ghAPIUrl = Cypress.env('GH_API_URL')
   const encodedCheckName = encodeURIComponent(checkName)
-  const getCommitsUrl = `${ghAPIUrl}/commits/${commitId}/check-runs?check_name=${encodedCheckName}&status=${status}&per_page=1}`
+  const getCommitCheckRunsUrl = `${ghAPIUrl}/commits/${commitId}/check-runs?check_name=${encodedCheckName}&status=${status}&per_page=1}`
   const expectedCode = 200
 
   return cy
     .request(
       {
         method: 'GET',
-        url: getCommitsUrl,
+        url: getCommitCheckRunsUrl,
         headers: {
           Authorization: `token ${Cypress.env('GH_TOKEN')}`
         }
@@ -49,7 +49,7 @@ Cypress.Commands.add('getCommitCheckRuns', ({ commitId, checkName, status }) => 
     )
     .then((response) => {
       expect(response.status)
-        .to.equal(expectedCode, 'the response code received when getting the commits is not expected.')
+        .to.equal(expectedCode, 'the response code received when getting the check runs is not expected.')
 
       return response.body.check_runs
     })
