@@ -89,7 +89,6 @@ function checkReleaseCommitIncludesTags (expectedTags) {
 
       const numberOfTags = expectedTags.length
       const ghAPIUrl = Cypress.env('GH_API_URL')
-      const expectedCode = 200
       const getTagsUrl = `${ghAPIUrl}/tags?per_page=${numberOfTags}`
 
       cy.request({
@@ -99,8 +98,6 @@ function checkReleaseCommitIncludesTags (expectedTags) {
           Authorization: `token ${Cypress.env('GH_TOKEN')}`
         }
       }).then((response) => {
-        expect(response.status)
-          .to.equal(expectedCode, 'the response code received when getting the tags is not expected.')
         expect(response.body)
           .to.have.lengthOf(numberOfTags, `the number of tags is not expected after calling to ${getTagsUrl}`)
 

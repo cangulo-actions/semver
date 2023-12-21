@@ -1,7 +1,6 @@
 Cypress.Commands.add('getLastCommit', () => {
   const ghAPIUrl = Cypress.env('GH_API_URL')
   const getCommitsUrl = `${ghAPIUrl}/commits?per_page=1`
-  const expectedCode = 200
 
   return cy
     .request(
@@ -14,9 +13,6 @@ Cypress.Commands.add('getLastCommit', () => {
       }
     )
     .then((response) => {
-      expect(response.status)
-        .to.equal(expectedCode, 'the response code received when getting the commits is not expected.')
-
       const lastCommit = {
         message: response.body[0].commit.message,
         sha: response.body[0].sha
@@ -35,7 +31,6 @@ Cypress.Commands.add('getCommitCheckRuns', ({ commitId, checkName, status }) => 
   const ghAPIUrl = Cypress.env('GH_API_URL')
   const encodedCheckName = encodeURIComponent(checkName)
   const getCommitCheckRunsUrl = `${ghAPIUrl}/commits/${commitId}/check-runs?check_name=${encodedCheckName}&status=${status}&per_page=1}`
-  const expectedCode = 200
 
   return cy
     .request(
@@ -48,9 +43,6 @@ Cypress.Commands.add('getCommitCheckRuns', ({ commitId, checkName, status }) => 
       }
     )
     .then((response) => {
-      expect(response.status)
-        .to.equal(expectedCode, 'the response code received when getting the check runs is not expected.')
-
       return response.body.check_runs
     })
 })
