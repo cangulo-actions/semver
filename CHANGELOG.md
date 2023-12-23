@@ -1,3 +1,8 @@
+# 0.7.1 fix: fixed schema (#71)
+
+## patches:
+* fix: fixed schema (#71)
+
 # 0.7.0 feat: #37 added configuration validation using schema. Fixes #37 (#57)
 
 ## new features:
