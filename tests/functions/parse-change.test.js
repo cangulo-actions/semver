@@ -9,7 +9,7 @@ describe('changes are properly parsed', () => {
   testData.forEach(data => {
     it(`change:\n\t${data.input}\nis parsed into:\n\t${JSON.stringify(data.output, null, 2)}`,
       () => {
-        const defaultConfigContent = fs.readFileSync('default-config.yml')
+        const defaultConfigContent = fs.readFileSync('config.default.yml')
         const defaultConf = yaml.load(defaultConfigContent)
         const commitsConfig = defaultConf.commits
         const change = parseChange(data.input, commitsConfig)

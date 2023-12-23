@@ -1,251 +1,209 @@
-{
-    "custom-config": {
-        "commits": [
-            {
-                "type": "break",
-                "release": "major"
-            },
-            {
-                "type": "major",
-                "release": "major"
-            },
-            {
-                "type": "feat",
-                "release": "minor"
-            },
-            {
-                "type": "fix",
-                "release": "patch"
-            },
-            {
-                "type": "refactor",
-                "release": "none"
-            },
-            {
-                "type": "docs",
-                "release": "none"
-            }
-        ],
-        "scopes": [
-            {
-                "key": "tfm",
-                "versioning": {
-                    "file": "terraform/version.json",
-                    "changelog": "terraform/CHANGELOG.md"
+[
+    {
+        "enabled": true,
+        "scenario": "PR with one commit",
+        "files": {
+            "CHANGELOG.md": "<previous changelog content>",
+            "version.json": "{\n\t\"version\": \"1.2.3\"\n}"
+        },
+        "inputs": {
+            "title": "fix: #123 solved error querying the payment service (#5)",
+            "changes": [
+                {
+                    "type": "fix",
+                    "releaseAssociated": "patch",
+                    "scopes": [],
+                    "description": "#123 solved error querying the payment service (#5)",
+                    "originalCommit": "fix: #123 solved error querying the payment service (#5)"
                 }
-            },
-            {
-                "key": "src"
-            }
-        ]
-    },
-    "scenarios": [
-        {
-            "enabled": true,
-            "scenario": "PR with one commit",
-            "files": {
-                "CHANGELOG.md": "<previous changelog content>",
-                "version.json": "{\n\t\"version\": \"1.2.3\"\n}"
-            },
-            "inputs": {
-                "title": "fix: #123 solved error querying the payment service (#5)",
-                "changes": [
-                    {
-                        "type": "fix",
-                        "releaseAssociated": "patch",
-                        "scopes": [],
-                        "description": "#123 solved error querying the payment service (#5)",
-                        "originalCommit": "fix: #123 solved error querying the payment service (#5)"
-                    }
-                ]
-            },
-            "result": {
-                "version": "1.2.4",
-                "releaseRequired": true,
-                "releaseType": "patch",
-                "changelogRecord": "# 1.2.4 fix: #123 solved error querying the payment service (#5)\n\n## patches:\n* fix: #123 solved error querying the payment service (#5)\n",
-                "scopes": {}
-            },
-            "filesModified": {
-                "version.json": "{\n\t\"version\": \"1.2.4\"\n}",
-                "CHANGELOG.md": "# 1.2.4 fix: #123 solved error querying the payment service (#5)\n\n## patches:\n* fix: #123 solved error querying the payment service (#5)\n\n<previous changelog content>"
-            }
+            ]
         },
-        {
-            "enabled": true,
-            "scenario": "PR with multiple commits",
-            "files": {
-                "CHANGELOG.md": "<previous changelog content>",
-                "version.json": "{\n\t\"version\": \"0.0.0\"\n}"
-            },
-            "inputs": {
-                "title": "squashed commit title (#8)",
-                "changes": [
-                    {
-                        "type": "feat",
-                        "releaseAssociated": "minor",
-                        "scopes": [
-                            "src"
-                        ],
-                        "description": "#234 added new endpoint for deleting user",
-                        "originalCommit": "feat(src): #234 added new endpoint for deleting user"
-                    },
-                    {
-                        "type": "fix",
-                        "releaseAssociated": "patch",
-                        "scopes": [],
-                        "description": "#224 solved error handling invalid account id",
-                        "originalCommit": "fix: #224 solved error handling invalid account id"
-                    }
-                ]
-            },
-            "result": {
-                "version": "0.1.0",
-                "releaseRequired": true,
-                "releaseType": "minor",
-                "changelogRecord": "# 0.1.0 squashed commit title (#8)\n\n## new features:\n* feat(src): #234 added new endpoint for deleting user\n## patches:\n* fix: #224 solved error handling invalid account id\n",
-                "scopes": {}
-            },
-            "filesModified": {
-                "version.json": "{\n\t\"version\": \"0.1.0\"\n}",
-                "CHANGELOG.md": "# 0.1.0 squashed commit title (#8)\n\n## new features:\n* feat(src): #234 added new endpoint for deleting user\n## patches:\n* fix: #224 solved error handling invalid account id\n\n<previous changelog content>"
-            }
+        "result": {
+            "version": "1.2.4",
+            "releaseRequired": true,
+            "releaseType": "patch",
+            "changelogRecord": "# 1.2.4 fix: #123 solved error querying the payment service (#5)\n\n## patches:\n* fix: #123 solved error querying the payment service (#5)\n",
+            "scopes": {}
         },
-        {
-            "enabled": true,
-            "scenario": "PR with one commit without scopes",
-            "configuration": "custom-config",
-            "files": {
-                "version.json": "{\n\t\"version\": \"1.2.3\"\n}",
-                "CHANGELOG.md": "<previous changelog content>"
-            },
-            "inputs": {
-                "title": "fix: #123 solved error querying the payment service (#5)",
-                "changes": [
-                    {
-                        "type": "fix",
-                        "releaseAssociated": "patch",
-                        "scopes": [],
-                        "description": "#123 solved error querying the payment service (#5)",
-                        "originalCommit": "fix: #123 solved error querying the payment service (#5)"
-                    }
-                ]
-            },
-            "result": {
-                "version": "1.2.4",
-                "releaseRequired": true,
-                "releaseType": "patch",
-                "changelogRecord": "# 1.2.4 fix: #123 solved error querying the payment service (#5)\n\n## patches:\n* fix: #123 solved error querying the payment service (#5)\n",
-                "scopes": {}
-            },
-            "filesModified": {
-                "version.json": "{\n\t\"version\": \"1.2.4\"\n}",
-                "CHANGELOG.md": "# 1.2.4 fix: #123 solved error querying the payment service (#5)\n\n## patches:\n* fix: #123 solved error querying the payment service (#5)\n\n<previous changelog content>"
-            }
-        },
-        {
-            "enabled": true,
-            "scenario": "PR with multiple commits with 2 scopes",
-            "configuration": "custom-config",
-            "files": {
-                "version.json": "{\n\t\"version\": \"0.3.0\"\n}",
-                "CHANGELOG.md": "<previous changelog content>",
-                "src/version.json": "{\n\t\"version\": \"0.1.0\"\n}",
-                "src/CHANGELOG.md": "<previous changelog content>",
-                "terraform/version.json": "{\n\t\"version\": \"1.0.0\"\n}",
-                "terraform/CHANGELOG.md": "<previous changelog content>"
-            },
-            "inputs": {
-                "title": "squashed commit title with custom config (#9)",
-                "changes": [
-                    {
-                        "type": "fix",
-                        "releaseAssociated": "patch",
-                        "scopes": [
-                            "src"
-                        ],
-                        "description": "#221 solved DB timeout issue",
-                        "originalCommit": "fix(src): #221 solved DB timeout issue"
-                    },
-                    {
-                        "type": "feat",
-                        "releaseAssociated": "minor",
-                        "scopes": [
-                            "src"
-                        ],
-                        "description": "#232 added reporting feature",
-                        "originalCommit": "feat(src): #232 added reporting feature"
-                    },
-                    {
-                        "type": "fix",
-                        "releaseAssociated": "patch",
-                        "scopes": [
-                            "tfm"
-                        ],
-                        "description": "#212 increased default DB size",
-                        "originalCommit": "fix(tfm): #212 increased default DB size"
-                    }
-                ]
-            },
-            "result": {
-                "version": "0.4.0",
-                "releaseRequired": true,
-                "releaseType": "minor",
-                "changelogRecord": "# 0.4.0 squashed commit title with custom config (#9)\n\n## new features:\n* feat(src): #232 added reporting feature\n## patches:\n* fix(src): #221 solved DB timeout issue\n* fix(tfm): #212 increased default DB size\n",
-                "scopes": {
-                    "src": {
-                        "version": "0.2.0",
-                        "tag": "src-0.2.0",
-                        "releaseType": "minor",
-                        "changes": [
-                            {
-                                "type": "fix",
-                                "releaseAssociated": "patch",
-                                "scopes": [
-                                    "src"
-                                ],
-                                "description": "#221 solved DB timeout issue",
-                                "originalCommit": "fix(src): #221 solved DB timeout issue"
-                            },
-                            {
-                                "type": "feat",
-                                "releaseAssociated": "minor",
-                                "scopes": [
-                                    "src"
-                                ],
-                                "description": "#232 added reporting feature",
-                                "originalCommit": "feat(src): #232 added reporting feature"
-                            }
-                        ],
-                        "changelogRecord": "# 0.2.0 squashed commit title with custom config (#9)\n\n## new features:\n* feat(src): #232 added reporting feature\n## patches:\n* fix(src): #221 solved DB timeout issue\n"
-                    },
-                    "tfm": {
-                        "version": "1.0.1",
-                        "tag": "tfm-1.0.1",
-                        "releaseType": "patch",
-                        "changes": [
-                            {
-                                "type": "fix",
-                                "releaseAssociated": "patch",
-                                "scopes": [
-                                    "tfm"
-                                ],
-                                "description": "#212 increased default DB size",
-                                "originalCommit": "fix(tfm): #212 increased default DB size"
-                            }
-                        ],
-                        "changelogRecord": "# 1.0.1 squashed commit title with custom config (#9)\n\n## patches:\n* fix(tfm): #212 increased default DB size\n"
-                    }
-                }
-            },
-            "filesModified": {
-                "version.json": "{\n\t\"version\": \"0.4.0\"\n}",
-                "CHANGELOG.md": "# 0.4.0 squashed commit title with custom config (#9)\n\n## new features:\n* feat(src): #232 added reporting feature\n## patches:\n* fix(src): #221 solved DB timeout issue\n* fix(tfm): #212 increased default DB size\n\n<previous changelog content>",
-                "src/version.json": "{\n\t\"version\": \"0.2.0\"\n}",
-                "src/CHANGELOG.md": "# 0.2.0 squashed commit title with custom config (#9)\n\n## new features:\n* feat(src): #232 added reporting feature\n## patches:\n* fix(src): #221 solved DB timeout issue\n\n<previous changelog content>",
-                "terraform/version.json": "{\n\t\"version\": \"1.0.1\"\n}",
-                "terraform/CHANGELOG.md": "# 1.0.1 squashed commit title with custom config (#9)\n\n## patches:\n* fix(tfm): #212 increased default DB size\n\n<previous changelog content>"
-            }
+        "filesModified": {
+            "version.json": "{\n\t\"version\": \"1.2.4\"\n}",
+            "CHANGELOG.md": "# 1.2.4 fix: #123 solved error querying the payment service (#5)\n\n## patches:\n* fix: #123 solved error querying the payment service (#5)\n\n<previous changelog content>"
         }
-    ]
-}
+    },
+    {
+        "enabled": true,
+        "scenario": "PR with multiple commits",
+        "files": {
+            "CHANGELOG.md": "<previous changelog content>",
+            "version.json": "{\n\t\"version\": \"0.0.0\"\n}"
+        },
+        "inputs": {
+            "title": "squashed commit title (#8)",
+            "changes": [
+                {
+                    "type": "feat",
+                    "releaseAssociated": "minor",
+                    "scopes": [
+                        "src"
+                    ],
+                    "description": "#234 added new endpoint for deleting user",
+                    "originalCommit": "feat(src): #234 added new endpoint for deleting user"
+                },
+                {
+                    "type": "fix",
+                    "releaseAssociated": "patch",
+                    "scopes": [],
+                    "description": "#224 solved error handling invalid account id",
+                    "originalCommit": "fix: #224 solved error handling invalid account id"
+                }
+            ]
+        },
+        "result": {
+            "version": "0.1.0",
+            "releaseRequired": true,
+            "releaseType": "minor",
+            "changelogRecord": "# 0.1.0 squashed commit title (#8)\n\n## new features:\n* feat(src): #234 added new endpoint for deleting user\n## patches:\n* fix: #224 solved error handling invalid account id\n",
+            "scopes": {}
+        },
+        "filesModified": {
+            "version.json": "{\n\t\"version\": \"0.1.0\"\n}",
+            "CHANGELOG.md": "# 0.1.0 squashed commit title (#8)\n\n## new features:\n* feat(src): #234 added new endpoint for deleting user\n## patches:\n* fix: #224 solved error handling invalid account id\n\n<previous changelog content>"
+        }
+    },
+    {
+        "enabled": true,
+        "scenario": "PR with one commit without scopes",
+        "configuration": "tests/index/test.data.custom-config.yml",
+        "files": {
+            "version.json": "{\n\t\"version\": \"1.2.3\"\n}",
+            "CHANGELOG.md": "<previous changelog content>"
+        },
+        "inputs": {
+            "title": "fix: #123 solved error querying the payment service (#5)",
+            "changes": [
+                {
+                    "type": "fix",
+                    "releaseAssociated": "patch",
+                    "scopes": [],
+                    "description": "#123 solved error querying the payment service (#5)",
+                    "originalCommit": "fix: #123 solved error querying the payment service (#5)"
+                }
+            ]
+        },
+        "result": {
+            "version": "1.2.4",
+            "releaseRequired": true,
+            "releaseType": "patch",
+            "changelogRecord": "# 1.2.4 fix: #123 solved error querying the payment service (#5)\n\n## patches:\n* fix: #123 solved error querying the payment service (#5)\n",
+            "scopes": {}
+        },
+        "filesModified": {
+            "version.json": "{\n\t\"version\": \"1.2.4\"\n}",
+            "CHANGELOG.md": "# 1.2.4 fix: #123 solved error querying the payment service (#5)\n\n## patches:\n* fix: #123 solved error querying the payment service (#5)\n\n<previous changelog content>"
+        }
+    },
+    {
+        "enabled": true,
+        "scenario": "PR with multiple commits with 2 scopes",
+        "configuration": "tests/index/test.data.custom-config.yml",
+        "files": {
+            "version.json": "{\n\t\"version\": \"0.3.0\"\n}",
+            "CHANGELOG.md": "<previous changelog content>",
+            "src/version.json": "{\n\t\"version\": \"0.1.0\"\n}",
+            "src/CHANGELOG.md": "<previous changelog content>",
+            "terraform/version.json": "{\n\t\"version\": \"1.0.0\"\n}",
+            "terraform/CHANGELOG.md": "<previous changelog content>"
+        },
+        "inputs": {
+            "title": "squashed commit title with custom config (#9)",
+            "changes": [
+                {
+                    "type": "fix",
+                    "releaseAssociated": "patch",
+                    "scopes": [
+                        "src"
+                    ],
+                    "description": "#221 solved DB timeout issue",
+                    "originalCommit": "fix(src): #221 solved DB timeout issue"
+                },
+                {
+                    "type": "feat",
+                    "releaseAssociated": "minor",
+                    "scopes": [
+                        "src"
+                    ],
+                    "description": "#232 added reporting feature",
+                    "originalCommit": "feat(src): #232 added reporting feature"
+                },
+                {
+                    "type": "fix",
+                    "releaseAssociated": "patch",
+                    "scopes": [
+                        "tfm"
+                    ],
+                    "description": "#212 increased default DB size",
+                    "originalCommit": "fix(tfm): #212 increased default DB size"
+                }
+            ]
+        },
+        "result": {
+            "version": "0.4.0",
+            "releaseRequired": true,
+            "releaseType": "minor",
+            "changelogRecord": "# 0.4.0 squashed commit title with custom config (#9)\n\n## new features:\n* feat(src): #232 added reporting feature\n## patches:\n* fix(src): #221 solved DB timeout issue\n* fix(tfm): #212 increased default DB size\n",
+            "scopes": {
+                "src": {
+                    "version": "0.2.0",
+                    "tag": "src-0.2.0",
+                    "releaseType": "minor",
+                    "changes": [
+                        {
+                            "type": "fix",
+                            "releaseAssociated": "patch",
+                            "scopes": [
+                                "src"
+                            ],
+                            "description": "#221 solved DB timeout issue",
+                            "originalCommit": "fix(src): #221 solved DB timeout issue"
+                        },
+                        {
+                            "type": "feat",
+                            "releaseAssociated": "minor",
+                            "scopes": [
+                                "src"
+                            ],
+                            "description": "#232 added reporting feature",
+                            "originalCommit": "feat(src): #232 added reporting feature"
+                        }
+                    ],
+                    "changelogRecord": "# 0.2.0 squashed commit title with custom config (#9)\n\n## new features:\n* feat(src): #232 added reporting feature\n## patches:\n* fix(src): #221 solved DB timeout issue\n"
+                },
+                "tfm": {
+                    "version": "1.0.1",
+                    "tag": "tfm-1.0.1",
+                    "releaseType": "patch",
+                    "changes": [
+                        {
+                            "type": "fix",
+                            "releaseAssociated": "patch",
+                            "scopes": [
+                                "tfm"
+                            ],
+                            "description": "#212 increased default DB size",
+                            "originalCommit": "fix(tfm): #212 increased default DB size"
+                        }
+                    ],
+                    "changelogRecord": "# 1.0.1 squashed commit title with custom config (#9)\n\n## patches:\n* fix(tfm): #212 increased default DB size\n"
+                }
+            }
+        },
+        "filesModified": {
+            "version.json": "{\n\t\"version\": \"0.4.0\"\n}",
+            "CHANGELOG.md": "# 0.4.0 squashed commit title with custom config (#9)\n\n## new features:\n* feat(src): #232 added reporting feature\n## patches:\n* fix(src): #221 solved DB timeout issue\n* fix(tfm): #212 increased default DB size\n\n<previous changelog content>",
+            "src/version.json": "{\n\t\"version\": \"0.2.0\"\n}",
+            "src/CHANGELOG.md": "# 0.2.0 squashed commit title with custom config (#9)\n\n## new features:\n* feat(src): #232 added reporting feature\n## patches:\n* fix(src): #221 solved DB timeout issue\n\n<previous changelog content>",
+            "terraform/version.json": "{\n\t\"version\": \"1.0.1\"\n}",
+            "terraform/CHANGELOG.md": "# 1.0.1 squashed commit title with custom config (#9)\n\n## patches:\n* fix(tfm): #212 increased default DB size\n\n<previous changelog content>"
+        }
+    }
+]
