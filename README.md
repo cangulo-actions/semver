@@ -47,7 +47,7 @@ This GH action aims to make the version increase depend on the commits merged. F
 | `docs`     | none      |
 | `ci`       | none      |
 
-You can check the default config [here](default-config.yml)
+You can check the default config [here](config.default.yml)
 
 - Please note if more than one commit is merged. The one with the higher release type will be taken into account. Example: You merge a `fix: ...` and a `break: ...` the next version will be a major.
 - ⚠️ Commits merged with a different type than the previous one won't trigger a release

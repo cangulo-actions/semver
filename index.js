@@ -31,7 +31,7 @@ function Index (changes, title, conf) {
     result.changelogRecord = newChangelogRecord
 
     const commitsContainAnyScope = changes.some(change => change.scopes.length > 0)
-    if (commitsContainAnyScope && (conf.scopes ?? []).length > 0) {
+    if (commitsContainAnyScope && conf.scopes.length > 0) {
       const scopesConfig = conf.scopes
       const scopesResult = {}
       const changesByScope = changes

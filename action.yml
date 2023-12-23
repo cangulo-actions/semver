@@ -76,34 +76,30 @@ runs:
       run: |
         npm install --omit=dev
 
-    - name: Validate inputs
-      if: ${{ inputs.configuration != '' }}
+    - name: Process configuration
       uses: actions/github-script@v7
+      id: config
       env:
-        CONFIG: ${{ inputs.configuration }}
+        INPUT_CONFIG: ${{ inputs.configuration }}
+        DEFAULT_CONFIG : ${{ github.action_path }}/config.default.yml
         NODE_MODULES_PATH: ${{ github.action_path }}/node_modules
         SCHEMA: ${{ github.action_path }}/config.schema.yml
       with:
         script: |
-          core.startGroup('Validating input configuration')
-
           const yml = require(`${process.env.NODE_MODULES_PATH}/js-yaml`)
           const Ajv = require(`${process.env.NODE_MODULES_PATH}/ajv`)
           const fs  = require('fs')
 
-          const schemaPath  = process.env.SCHEMA
-          const configPath  = process.env.CONFIG
-
-          if (!fs.existsSync(configPath)) {
-            core.setFailed(`configuration file not found: ${configPath}`)
-          }
+          const schemaPath    = process.env.SCHEMA
+          const inputConfig   = process.env.INPUT_CONFIG
+          const configPath    = inputConfig !== '' ? inputConfig : process.env.DEFAULT_CONFIG;
 
           const schemaContent = fs.readFileSync(schemaPath)
           const configContent = fs.readFileSync(configPath)
           const schema        = yml.load(schemaContent)
           const config        = yml.load(configContent)
 
-          const ajv       = new Ajv()
+          const ajv       = new Ajv({ useDefaults: true })  // add default values to the config properties
           const validate  = ajv.compile(schema)
           const valid     = validate(config)
 
@@ -112,26 +108,26 @@ runs:
             core.setFailed(`configuration file is not valid: ${errorsJson}`)
           }
 
+          core.startGroup('Configuration')
           console.log('config:', JSON.stringify(config, null, 2))
           core.endGroup()
+
+          core.setOutput('config', config)
 
     - name: Parse Changes from last commit
       uses: actions/github-script@v7
       id: parse-changes
       env:
-        CONFIG: ${{ inputs.configuration != '' && inputs.configuration || format('{0}/default-config.yml', github.action_path) }}
+        CONFIG: ${{ steps.config.outputs.config }}
         NODE_MODULES_PATH: ${{ github.action_path }}/node_modules
       with:
         script: |
           core.startGroup('Parsing changes from last commit')
 
-          const fs                  = require('fs')        
-          const yaml                = require(`${process.env.NODE_MODULES_PATH}/js-yaml`)
           const { parseChange }     = require('${{ github.action_path }}/functions/parse-change')
           const { parseLastCommit } = require('${{ github.action_path }}/functions/parse-last-commit')
 
-          const configContent = fs.readFileSync(process.env.CONFIG)
-          const conf          = yaml.load(configContent)
+          const conf          = JSON.parse(process.env.CONFIG)
           const commits       = context.payload.commits
           const commitMsg     = commits[0].message
 
@@ -155,19 +151,16 @@ runs:
       uses: actions/github-script@v7
       id: semver
       env:
-        CONFIG: ${{ inputs.configuration != '' && inputs.configuration || format('{0}/default-config.yml', github.action_path) }}
+        CONFIG: ${{ steps.config.outputs.config }}
         NODE_MODULES_PATH: ${{ github.action_path }}/node_modules
         CHANGELOG_RECORD_TEMPLATE: ${{ github.action_path }}/templates/changelog-record.md
         CHANGES: ${{ steps.parse-changes.outputs.changes }}
         RELEASE_TITLE: ${{ steps.parse-changes.outputs.release-title }}
       with:
         script: |
-          const fs                  = require('fs')       
-          const yaml                = require(`${process.env.NODE_MODULES_PATH}/js-yaml`) 
           const { Index }           = require('${{ github.action_path }}/index.js')
 
-          const configContent = fs.readFileSync(process.env.CONFIG)
-          const conf          = yaml.load(configContent)
+          const conf          = JSON.parse(process.env.CONFIG)
           const changes       = JSON.parse(process.env.CHANGES)
           const title         = process.env.RELEASE_TITLE
 

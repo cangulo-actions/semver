@@ -25,6 +25,7 @@ properties:
       The list of scopes that can be used in commit messages.
     minItems: 1
     uniqueItems: true
+    default: []
     items:
       type: object
       properties:
