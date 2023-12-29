@@ -1,19 +1,16 @@
 const { When } = require('@badeball/cypress-cucumber-preprocessor')
 
-When('I create a PR with title {string} and merge it', (title) => {
-  const semverPRNumber = Cypress.env('SEMVER_PR_NUMBER')
-  const branch = Cypress.env('BRANCH_TO_CREATE')
-  const description = `PR created for testing the cangulo-actions/semver GH action. Triggered by ci.yml in the PR cangulo-actions/semver#${semverPRNumber}`
-
+When('I merge it', () => {
   cy
-    .createPR({ title, description, branch })
-    .then((pr) => {
-      console.log(`PR created: ${pr.number}`)
+    .task('getSharedData')
+    .then((sharedData) => {
+      const { OWNER, REPO, PR_NUMBER } = sharedData
       cy
-        .mergePR(pr.number)
+        .mergePR({ owner: OWNER, repo: REPO, number: PR_NUMBER })
         .then((mergeCommitSHA) => {
-          console.log(`PR merged! merge commit SHA: ${mergeCommitSHA}`)
-          cy.task('appendSharedData', `PR_MERGE_COMMIT_ID=${mergeCommitSHA}`)
+          cy
+            .log(`PR merged! merge commit SHA: ${mergeCommitSHA}`)
+            .task('appendSharedData', `PR_MERGE_COMMIT_ID=${mergeCommitSHA}`)
         })
     })
 })
