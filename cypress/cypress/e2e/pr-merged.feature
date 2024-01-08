@@ -1,7 +1,7 @@
 Feature: release version after a PR is merged
 
   Scenario: Merge a PR with one commit
-    Given I checkout a branch
+    Given I checkout a branch from main
     And I commit the next change "<commitMsg>"
     When I create a PR with title "<prTitle>" and merge it
     Then the CD workflow triggered must succeed
@@ -15,7 +15,7 @@ Feature: release version after a PR is merged
       | break: commit that introduces a breaking change | 1 break commit |           1.0.0 |
 
   Scenario: Merge a PR with multiple commits without scopes
-    Given I checkout a branch
+    Given I checkout a branch from main
     And I commit the next changes
       | ci: commit that fixes something                |
       | fix: commit that fixes something               |
@@ -30,7 +30,7 @@ Feature: release version after a PR is merged
       |           2.0.0 |
 
   Scenario: Merge a PR with multiple commits with scopes
-    Given I checkout a branch
+    Given I checkout a branch from main
     And I commit the next changes
       | ci(tfm): commit that fixes something in terraform    |
       | fix(src): commit that fixes something in the lambdas |
