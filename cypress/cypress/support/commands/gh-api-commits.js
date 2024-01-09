@@ -1,6 +1,6 @@
-Cypress.Commands.add('getLastCommit', () => {
+Cypress.Commands.add('getLastCommit', ({ owner, repo }) => {
   const ghAPIUrl = Cypress.env('GH_API_URL')
-  const getCommitsUrl = `${ghAPIUrl}/commits?per_page=1`
+  const getCommitsUrl = `${ghAPIUrl}/repos/${owner}/${repo}/commits?per_page=1`
 
   return cy
     .request(
@@ -21,16 +21,9 @@ Cypress.Commands.add('getLastCommit', () => {
     })
 })
 
-Cypress.Commands.add('ensureCommitReleasesANewVersion', (commitMsg) => {
-  const releaseCommitMsgPrefix = '[skip ci] created release'
-  expect(commitMsg)
-    .to.include(releaseCommitMsgPrefix, 'the last commit did not release a new version.')
-})
-
-Cypress.Commands.add('getCommitCheckRuns', ({ commitId, checkName, status }) => {
+Cypress.Commands.add('getCommitCheckRuns', ({ owner, repo, commitId }) => {
   const ghAPIUrl = Cypress.env('GH_API_URL')
-  const encodedCheckName = encodeURIComponent(checkName)
-  const getCommitCheckRunsUrl = `${ghAPIUrl}/commits/${commitId}/check-runs?check_name=${encodedCheckName}&status=${status}&per_page=1}`
+  const getCommitCheckRunsUrl = `${ghAPIUrl}/repos/${owner}/${repo}/commits/${commitId}/check-runs`
 
   return cy
     .request(

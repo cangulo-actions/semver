@@ -1,6 +1,6 @@
-Feature: Smoke tests
+Feature: Print Summary
 
-  Background: The GH action runs is set with the default configuration
+  Background: 
     Given I create a repository named "semver-PR-{PR_NUMBER}-{TEST_KEY}"
     And I push the file ".github/workflows/semver-test.yml" to the branch "main" with the content:
       """
@@ -22,13 +22,14 @@ Feature: Smoke tests
       
             - name: Release new version
               uses: cangulo-actions/semver@<TARGET_BRANCH>
+              with:
+                print-summary: true
       """
 
-  Scenario: Merge a PR with a commit fixing something
-    Given I create a branch named "smoke-test"
-    And I commit "fix: commit that fixes something in the lambda1" modifying the file "src/lambda1/lambda1.py"
-    And I create a PR with title "semver smoke test"
+  Scenario: Merge a PR with a breaking change
+    Given I create a branch named "feat-print-summary"
+    And I commit "break: changed API structure" modifying the file "api.tf"
+    And I create a PR with title "changed API structure"
     When I merge it
     Then the workflow "cangulo-actions/semver test" must conclude in "success"
-    And the last commit message must start with "[skip ci] created release 0.0.1"
-    And the last commit must be tagged with "0.0.1"
+    # ⚠️🤷 THERE IS NO WAY TO CHECK THE SUMMARY IS LISTED USING THE GH API

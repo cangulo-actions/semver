@@ -1,6 +1,6 @@
-Cypress.Commands.add('createPR', ({ title, description, branch }) => {
+Cypress.Commands.add('createPR', ({ owner, repo, title, description, head }) => {
   const ghAPIUrl = Cypress.env('GH_API_URL')
-  const pullsUrl = `${ghAPIUrl}/pulls`
+  const pullsUrl = `${ghAPIUrl}/repos/${owner}/${repo}/pulls`
 
   return cy
     .request(
@@ -12,7 +12,7 @@ Cypress.Commands.add('createPR', ({ title, description, branch }) => {
         },
         body: {
           base: 'main',
-          head: branch,
+          head,
           title,
           body: description
         }
@@ -21,15 +21,16 @@ Cypress.Commands.add('createPR', ({ title, description, branch }) => {
     .then((response) => {
       const pr = {
         id: response.body.id,
-        number: response.body.number
+        number: response.body.number,
+        headSha: response.body.head.sha
       }
       return pr
     })
 })
 
-Cypress.Commands.add('mergePR', (number) => {
+Cypress.Commands.add('mergePR', ({ owner, repo, number }) => {
   const ghAPIUrl = Cypress.env('GH_API_URL')
-  const pullsUrl = `${ghAPIUrl}/pulls/${number}/merge`
+  const pullsUrl = `${ghAPIUrl}/repos/${owner}/${repo}/pulls/${number}/merge`
 
   return cy
     .request(
@@ -40,7 +41,8 @@ Cypress.Commands.add('mergePR', (number) => {
           Authorization: `token ${Cypress.env('GH_TOKEN')}`
         },
         body: {
-          merge_method: 'squash'
+          merge_method: 'squash',
+          delete_branch: true
         }
       }
     )
@@ -50,36 +52,44 @@ Cypress.Commands.add('mergePR', (number) => {
     })
 })
 
-Cypress.Commands.add('closeAnyPendingPR', () => {
+Cypress.Commands.add('closePR', ({ owner, repo, number }) => {
   const ghAPIUrl = Cypress.env('GH_API_URL')
-  const branch = Cypress.env('BRANCH_TO_CREATE')
-  const pullsUrl = `${ghAPIUrl}/pulls`
+  const pullsUrl = `${ghAPIUrl}/repos/${owner}/${repo}/pulls/${number}`
+
+  return cy
+    .request(
+      {
+        method: 'PATCH',
+        url: pullsUrl,
+        headers: {
+          Authorization: `token ${Cypress.env('GH_TOKEN')}`
+        },
+        body: {
+          state: 'closed'
+        }
+      }
+    )
+    .then((response) => {
+      const mergeCommit = response.body.sha
+      return mergeCommit
+    })
+})
+
+Cypress.Commands.add('getPR', ({ owner, repo, number }) => {
+  const ghAPIUrl = Cypress.env('GH_API_URL')
+  const pullsUrl = `${ghAPIUrl}/repos/${owner}/${repo}/pulls/${number}`
 
   return cy
     .request(
       {
         method: 'GET',
-        url: `${pullsUrl}?state=open&head=cangulo-actions:${branch}`,
+        url: pullsUrl,
         headers: {
           Authorization: `token ${Cypress.env('GH_TOKEN')}`
         }
       }
     )
     .then((response) => {
-      const prNumbers = response.body.map((pr) => pr.number)
-      for (const prNumber of prNumbers) {
-        cy.request(
-          {
-            method: 'PATCH',
-            url: `${pullsUrl}/${prNumber}`,
-            headers: {
-              Authorization: `token ${Cypress.env('GH_TOKEN')}`
-            },
-            body: {
-              state: 'closed'
-            }
-          }
-        )
-      }
+      return response.body
     })
 })

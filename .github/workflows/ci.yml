@@ -4,6 +4,10 @@ on:
   pull_request:
     branches: [main]
 
+env:
+  GH_E2E_user: cangulo-semver-e2e-test[bot]
+  GH_E2E_email: cangulo-semver-e2e-test[bot]@users.noreply.github.com
+
 jobs:
   get-changes:
     name: 🔎 Get Changes
@@ -32,7 +36,7 @@ jobs:
           echo "# CI failed validating code style"    >> $GITHUB_STEP_SUMMARY
           echo "To fix the code style, run:"          >> $GITHUB_STEP_SUMMARY
           echo "npm run lint-fix"                     >> $GITHUB_STEP_SUMMARY
-          echo "[ESLINT Tutorail]($ESLINT_TUTORIAL)"  >> $GITHUB_STEP_SUMMARY
+          echo "[ESLINT Tutorial]($ESLINT_TUTORIAL)"  >> $GITHUB_STEP_SUMMARY
 
   test-JS:
     name: 🧪 JS Tests
@@ -57,77 +61,79 @@ jobs:
           path: reports/jest-*.xml
           reporter: jest-junit
 
-  prepare-test-e2e:
-    name: 🥡 zip cypress tests
-    needs: get-changes
+  test-e2e:
+    name: ${{ matrix.scenario }}
+    needs:
+      - get-changes
     if: needs.get-changes.outputs.action-modified == 'true'
+    concurrency:  # concurrency set to avoid conflicts pushing to each repo
+      group: e2e-tests-${{ matrix.spec }}
+      cancel-in-progress: false
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - scenario: 🚬 smoke tests
+            spec: cypress/e2e/smoke-test.feature
+            key: smoke-test
+
+          - scenario: "Feat: GH release"
+            spec: cypress/e2e/feat-gh-release.feature
+            key: feat-gh-release
+
+          - scenario: "Feat: GH release for Scopes"
+            spec: cypress/e2e/feat-gh-release-scopes.feature
+            key: feat-gh-release-scopes
+
+          - scenario: "Feat: Skip release new version"
+            spec: cypress/e2e/feat-skip-new-version.feature
+            key: feat-skip-new-version
+
+          - scenario: "Feat: Print Summary"
+            spec: cypress/e2e/feat-print-summary.feature
+            key: feat-print-summary
+
+          - scenario: "Feat: Print Annotations"
+            spec: cypress/e2e/feat-print-annotations.feature
+            key: feat-print-annotations
+
+          - scenario: "Feat: Commit Scopes"
+            spec: cypress/e2e/feat-commit-scopes.feature
+            key: feat-commit-scopes
+
     runs-on: ubuntu-latest
     steps:
       - name: Checkout semver repository
         uses: actions/checkout@v4.1.1
 
-      - name: create cypress artifact
-        uses: actions/upload-artifact@v3.1.3
+      - name: 🧹 delete any temporary repository
+        uses: ./.github/actions/delete-temp-repos
         with:
-          name: cypress
-          path: cypress
+          org: cangulo-actions-test
+          repo-prefix: semver-PR-${{ github.event.number }}-${{ matrix.key }}
+          gh-token: ${{ secrets.GH_AUTOMATION_TOKEN }}
 
-  test-e2e:
-    name: 📽️ Execute Cypress in CrazyActionsTests repo
-    needs:
-      - prepare-test-e2e
-      - get-changes
-    if: needs.get-changes.outputs.action-modified == 'true'
-    concurrency:  # concurrency set to avoid conflicts pushing to CrazyActionsTests repo
-      group: e2e-tests
-      cancel-in-progress: true
-    runs-on: ubuntu-latest
-    env:
-      CYPRESS_GH_TOKEN: ${{ secrets.GH_AUTOMATION_TOKEN }}
-      CYPRESS_GH_API_URL: https://api.github.com/repos/cangulo-actions/CrazyActionsTests
-      CYPRESS_WAIT_TIME_CD_WORKFLOW: 25000  # wait 25 seconds before checking the CD workflow
-      CYPRESS_API_RETRY_INTERVAL_MS: 10000  # retry every 10 seconds
-      CYPRESS_API_RETRY_TIMEOUT_MS: 40000   # timeout after 40 seconds of retry
-      CYPRESS_SEMVER_BRANCH: ${{ github.head_ref }}
-      CYPRESS_SEMVER_PR_NUMBER: ${{ github.event.number }}
-      CYPRESS_BRANCH_TO_CREATE: test-semver-pr-${{ github.event.number }}
-    steps:
-      - name: Checkout cangulo-actions/CrazyActionsTests repository
-        uses: actions/checkout@v4.1.1
-        with:
-          repository: cangulo-actions/CrazyActionsTests
-          ref: main
-          token: ${{ secrets.GH_AUTOMATION_TOKEN }}
-
-      - name: configure git credentials
-        run: |
-          git config user.name  "cangulo-semver-e2e-test[bot]"
-          git config user.email "cangulo-semver-e2e-test[bot]@users.noreply.github.com"
-
-      - name: 🥡 Download cypress artifact
-        uses: actions/download-artifact@v3.0.2
-        with:
-          name: cypress
-          path: cypress-semver
-
-      - name: move cypress folder to root
-        run: |
-          rm -rf cypress                            # remove any local cypress folder
-          mv cypress-semver/* . --force --verbose   # move cypress from artifact to root
-
-      - name: 🚬 smoke tests
+      - name: 🧪 e2e tests
         uses: cypress-io/github-action@v6.6.0
-        env:
-          CYPRESS_BEFORE_ALL_CLOSE_ANY_PR: "true" # execute reset-repo before and after tests
         with:
-          spec: cypress/e2e/smoke-test.feature
+          spec: ${{ matrix.spec }}
+          working-directory: cypress
+        env:
+          CYPRESS_TEST_KEY: ${{ matrix.key }}
+          CYPRESS_GH_ORG: cangulo-actions-test
+          CYPRESS_GH_TOKEN: ${{ secrets.GH_AUTOMATION_TOKEN }}
+          CYPRESS_GH_API_URL: https://api.github.com
+          CYPRESS_WAIT_TIME_CD_WORKFLOW: 25000  # wait 25 seconds before checking the CD workflow
+          CYPRESS_API_RETRY_INTERVAL_MS: 10000  # retry every 10 seconds
+          CYPRESS_API_RETRY_TIMEOUT_MS: 40000   # timeout after 40 seconds of retry
+          CYPRESS_SEMVER_BRANCH: ${{ github.head_ref }}
+          CYPRESS_SEMVER_PR_NUMBER: ${{ github.event.number }}
+          CYPRESS_GH_USER_NAME: ${{ env.GH_E2E_user }}
+          CYPRESS_GH_USER_EMAIL: ${{ env.GH_E2E_email }}
 
-      - name: 🎪 e2e tests
-        uses: cypress-io/github-action@v6.6.0
-        env:
-          CYPRESS_BEFORE_ALL_RESET_REPO_ENABLED: "true" # execute reset-repo before and after tests
-          CYPRESS_AFTER_ALL_RESET_REPO_ENABLED: "true"  # execute reset-repo before and after tests
-          CYPRESS_AFTER_ALL_CLOSE_ANY_PR: "true" # execute reset-repo before and after tests
-          CYPRESS_GH_WORKFLOW_RESET_REPO_TIMEOUT: 30000 # wait 30 seconds before checking the reset repo workflow
+      - name: 🧹 delete any temporary repository
+        uses: ./.github/actions/delete-temp-repos
         with:
-          spec: cypress/e2e/pr-merged.feature
+          org: cangulo-actions-test
+          repo-prefix: semver-PR-${{ github.event.number }}-${{ matrix.key }}
+          gh-token: ${{ secrets.GH_AUTOMATION_TOKEN }}
