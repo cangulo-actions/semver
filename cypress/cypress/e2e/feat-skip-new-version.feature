@@ -1,4 +1,4 @@
-Feature: Smoke tests
+Feature: Skip create a new version when the commit type does not trigger a release
 
   Background: The GH action runs is set with the default configuration
     Given I create a repository named "semver-PR-{PR_NUMBER}-{TEST_KEY}"
@@ -24,11 +24,11 @@ Feature: Smoke tests
               uses: cangulo-actions/semver@<TARGET_BRANCH>
       """
 
-  Scenario: Merge a PR with a commit fixing something
-    Given I create a branch named "smoke-test"
-    And I commit "fix: commit that fixes something in the lambda1" modifying the file "src/lambda1/lambda1.py"
-    And I create a PR with title "semver smoke test"
+  Scenario: Merge a PR with a commit type that does not trigger a release
+    Given I create a branch named "skip-new-version"
+    And I commit "docs: updated readme" modifying the file "docs/notes.md"
+    And I create a PR with title "Updated docs"
     When I merge it
     Then the workflow "cangulo-actions/semver test" must conclude in "success"
-    And the last commit message must start with "[skip ci] created release 0.0.1"
-    And the last commit must be tagged with "0.0.1"
+    And the last commit message must start with "docs: updated readme"
+    And the repository must have "0" tags

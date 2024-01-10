@@ -8,13 +8,13 @@ inputs:
   create-gh-release:
     description: 'flag for creating GH release'
     required: true
-    default: 'true'
+    default: 'false'
   print-summary:
     description: 'flag for printing the release details to the GITHUB_STEP_SUMMARY'
     required: true
-    default: 'true'
+    default: 'false'
   print-annotations:
-    description: 'flag for printing the release details to the GITHUB_STEP_SUMMARY'
+    description: 'flag for printing the release details as annotations'
     required: false
     default: 'false'
   gh-user-name:
@@ -81,7 +81,6 @@ runs:
       id: config
       env:
         INPUT_CONFIG: ${{ inputs.configuration }}
-        DEFAULT_CONFIG : ${{ github.action_path }}/config.default.yml
         NODE_MODULES_PATH: ${{ github.action_path }}/node_modules
         SCHEMA: ${{ github.action_path }}/config.schema.yml
       with:
@@ -92,12 +91,15 @@ runs:
 
           const schemaPath    = process.env.SCHEMA
           const inputConfig   = process.env.INPUT_CONFIG
-          const configPath    = inputConfig !== '' ? inputConfig : process.env.DEFAULT_CONFIG;
-
           const schemaContent = fs.readFileSync(schemaPath)
-          const configContent = fs.readFileSync(configPath)
           const schema        = yml.load(schemaContent)
-          const config        = yml.load(configContent)
+          let   config        = {}
+
+          if(inputConfig !== '') {
+            const configPath    = inputConfig
+            const configContent = fs.readFileSync(configPath)
+            config              = yml.load(configContent)
+          }
 
           const ajv       = new Ajv({ useDefaults: true })  // add default values to the config properties
           const validate  = ajv.compile(schema)

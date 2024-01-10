@@ -14,9 +14,9 @@ Cypress.Commands.add('ensureLastReleaseMatchCommit', (commitSha) => {
   })
 })
 
-Cypress.Commands.add('getGHReleases', (pageSize) => {
+Cypress.Commands.add('getGHReleases', ({ owner, repo }) => {
   const ghAPIUrl = Cypress.env('GH_API_URL')
-  const getReleases = `${ghAPIUrl}/releases?per_page=${pageSize}`
+  const getReleases = `${ghAPIUrl}/repos/${owner}/${repo}/releases`
 
   return cy.request({
     method: 'GET',
@@ -26,5 +26,18 @@ Cypress.Commands.add('getGHReleases', (pageSize) => {
     }
   }).then((response) => {
     return response.body
+  })
+})
+
+Cypress.Commands.add('deleteGHRelease', ({ owner, repo, releaseId }) => {
+  const ghAPIUrl = Cypress.env('GH_API_URL')
+  const deleteRelease = `${ghAPIUrl}/repos/${owner}/${repo}/releases/${releaseId}`
+
+  return cy.request({
+    method: 'DELETE',
+    url: deleteRelease,
+    headers: {
+      Authorization: `token ${Cypress.env('GH_TOKEN')}`
+    }
   })
 })
