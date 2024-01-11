@@ -13,6 +13,17 @@ jobs:
     name: 🔎 Get Changes
     uses: ./.github/workflows/shared-get-changes.yml
 
+  validate-commits:
+    name: validate commits
+    runs-on: ubuntu-latest
+    steps:
+      - name: Validate Conventional Commits 
+        uses: cangulo-actions/conventional-commits-validator@main
+        with:
+          calculate-next-release: true
+          label-pr-with-release-type: true
+          label-pr-with-commit-types: true
+
   lint-code:
     name: 🕺 Lint Code
     needs: get-changes
@@ -63,8 +74,7 @@ jobs:
 
   test-e2e:
     name: ${{ matrix.scenario }}
-    needs:
-      - get-changes
+    needs: get-changes
     if: needs.get-changes.outputs.action-modified == 'true'
     concurrency:  # concurrency set to avoid conflicts pushing to each repo
       group: e2e-tests-${{ matrix.spec }}
@@ -113,7 +123,7 @@ jobs:
           repo-prefix: semver-PR-${{ github.event.number }}-${{ matrix.key }}
           gh-token: ${{ secrets.GH_AUTOMATION_TOKEN }}
 
-      - name: 🧪 e2e tests
+      - name: 🧪 run cypress e2e tests
         uses: cypress-io/github-action@v6.6.0
         with:
           spec: ${{ matrix.spec }}

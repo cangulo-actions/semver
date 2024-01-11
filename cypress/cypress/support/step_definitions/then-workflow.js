@@ -40,10 +40,6 @@ Then('the workflow {string} must conclude in {string}', (workflowName, conclusio
 })
 
 Then('the next annotation must be listed:', (table) => {
-  const title = table.rows()[0][0]
-  const message = table.rows()[0][1]
-  const annotationLevel = table.rows()[0][2]
-
   cy
     .task('getSharedData')
     .then((sharedData) => {
@@ -57,11 +53,21 @@ Then('the next annotation must be listed:', (table) => {
           cy
             .getCheckRunAnnotations({ owner: OWNER, repo: REPO, checkRunId })
             .then((annotations) => {
-              expect(annotations.length).to.equal(1, 'there must be only one annotation')
-              const annotation = annotations[0]
-              expect(annotation.title).to.equal(title, 'the annotation title must match')
-              expect(annotation.message).to.equal(message, 'the annotation message must match')
-              expect(annotation.annotation_level).to.equal(annotationLevel, 'the annotation level must match')
+              const expectedAnnotations = table.rows().length
+              expect(annotations.length).to.equal(expectedAnnotations, 'the number of annotations must match')
+
+              table.rows().forEach((row) => {
+                const title = row[0]
+                const message = row[1]
+                const annotationLevel = row[2]
+
+                expect(
+                  annotations.some((annotation) =>
+                    annotation.title === title &&
+                    annotation.message === message &&
+                    annotation.annotation_level === annotationLevel))
+                  .to.be.equal(true, 'the annotation must be listed')
+              })
             })
         })
     })
