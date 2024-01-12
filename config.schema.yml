@@ -1,9 +1,12 @@
 type: object
+
+required:
+  - commits
+
 properties:
   commits:
     type: array
-    description: |
-      The list of commit types and their corresponding release types.
+    description: The list of commit types and their corresponding release types.
     default:
     - type: break
       release: major
@@ -36,32 +39,59 @@ properties:
       required:
         - type
         - release
-
   scopes:
-    type: array
-    description: |
-      The list of scopes that can be used in commit messages.
-    uniqueItems: true
-    default: []
-    items:
-      type: object
-      properties:
-        key:
-          type: string
-          description: |
-            "key provided in the commit messages example: 'feat(core): add new feature'"
-        versioning:
+    type: object
+    required:
+      - list
+    default:
+      createGHRelease: false
+      printSummary: false
+      list: []
+    description: Scope configuration 
+    properties:
+      createTags:
+        type: boolean
+        description: flag to tag the release commit with all the scopes affected
+        default: true
+      createGHRelease:
+        type: boolean
+        description: flag to create a github release for all the scopes
+        default: false
+      printSummary:
+        type: boolean
+        description: flag to print the release summary for all the scopes
+        default: false
+      list:
+        type: array
+        description: The scopes list
+        uniqueItems: true
+        items:
           type: object
-          description: |
-            The versioning configuration for the scope.
           properties:
-            file:
+            key:
               type: string
-              description: |
-                JSON file where the version is stored
-            changelog:
-              type: string
-              description: |
-                markdown file where the changelog is stored
-required:
-  - commits
+              description: "The scope key provided in the commit message. Example: `feat(scope): message`"
+            versioning:
+              type: object
+              description: The versioning configuration for the scope.
+              properties:
+                file:
+                  type: string
+                  description: JSON file where the version is stored
+                changelog:
+                  type: string
+                  description: changelog markdown file
+                createTag:
+                  type: boolean
+                  description: flag to tag the release commit for this scope
+                createGHRelease:
+                  type: boolean
+                  description: flag to create a github release for this scope
+              required:
+                - file
+                - changelog
+          required:
+            - key
+            - versioning
+
+

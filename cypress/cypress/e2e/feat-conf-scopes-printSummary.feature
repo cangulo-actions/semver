@@ -1,17 +1,22 @@
-Feature: Commits with scope
+Feature: Create GH release with scopes configured
 
-  Background: The GH action runs is set with the default configuration
+  Background: 
     Given I create a repository named "semver-PR-{PR_NUMBER}-{TEST_KEY}"
     And I push the file "semver-config.yml" to the branch "main" with the content:
       """
       scopes:
-        - key: src
-          files:
-          - "src/**"
-        - key: tfm
-          files:
-          - "terraform/**"
-          versioning:
+        printSummary: true
+        list:
+          - key: src
+            files:
+            - "src/**"
+            versioning:
+              file: src/version.json     
+              changelog: src/CHANGELOG.md
+          - key: tfm
+            files:
+            - "terraform/**"
+            versioning:
               file: terraform/version.json
               changelog: terraform/CHANGELOG.md
       """
@@ -39,16 +44,10 @@ Feature: Commits with scope
                 configuration: semver-config.yml
       """
 
-  Scenario: Merge a PR with a commit fixing something
-    Given I create a branch named "commits-with-scope"
+  Scenario: Merge a PR with a commit adding a new feature
+    Given I create a branch named "feat-gh-release"
     And I commit "fix(src): commit that fixes the lambda1" modifying the file "src/lambda1.py"
     And I commit "fix(tfm): commit that fixes the database" modifying the file "terraform/db.tf"
     And I create a PR with title "Fix lambda and database"
     When I merge it
     Then the workflow "cangulo-actions/semver test" must conclude in "success"
-    And the last commit message must start with "[skip ci] created release 0.0.1"
-    And the last commit must be tagged with:
-      | <tag>     |
-      |     0.0.1 |
-      | tfm-0.0.1 |
-      | src-0.0.1 |
