@@ -1,3 +1,8 @@
+# 0.7.3 fix: refresh GH action - no changes (#78)
+
+## patches:
+* fix: refresh GH action - no changes (#78)
+
 # 0.7.2 fix: updated cd workflow (#77)
 
 ## patches:
