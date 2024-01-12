@@ -13,7 +13,7 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v4.1.1
       with:
-        token: ${{ secrets.CANGULO_BOT_PUSH_COMMITS }}
+        token: ${{ secrets.CANGULO_BOT_PUSH_COMMITS }} # required for pushing to main, it is a protected branch
 
     - name: release new version
       uses: cangulo-actions/semver@main
@@ -37,3 +37,5 @@ jobs:
             .addHeading('Semver Output:')
             .addCodeBlock(JSON.stringify(semverOutputs, null, 2), 'json')
             .write()      
+
+# refresh 20240112-1
