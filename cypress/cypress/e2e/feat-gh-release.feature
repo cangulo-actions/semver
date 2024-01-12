@@ -23,6 +23,7 @@ Feature: Create GH release with no scopes configured
             - name: Release new version
               uses: cangulo-actions/semver@<TARGET_BRANCH>
               with:
+                print-summary: true
                 create-gh-release: true
       """
 

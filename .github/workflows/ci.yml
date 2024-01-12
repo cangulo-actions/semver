@@ -17,6 +17,9 @@ jobs:
     name: validate commits
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout
+        uses: actions/checkout@v4.1.1
+    
       - name: Validate Conventional Commits 
         uses: cangulo-actions/conventional-commits-validator@main
         with:
@@ -87,17 +90,25 @@ jobs:
             spec: cypress/e2e/smoke-test.feature
             key: smoke-test
 
+          - scenario: "Feat: Skip release new version"
+            spec: cypress/e2e/skip-release.feature
+            key: skip-release
+
+          - scenario: "Feat: conf.scopes"
+            spec: cypress/e2e/feat-conf-scopes.feature
+            key: feat-conf-scopes
+
           - scenario: "Feat: GH release"
             spec: cypress/e2e/feat-gh-release.feature
             key: feat-gh-release
 
-          - scenario: "Feat: GH release for Scopes"
-            spec: cypress/e2e/feat-gh-release-scopes.feature
-            key: feat-gh-release-scopes
+          - scenario: "Feat: conf.scopes.createGHRelease"
+            spec: cypress/e2e/feat-conf-scopes-createGHRelease.feature
+            key: feat-conf-scopes-createGHRelease
 
-          - scenario: "Feat: Skip release new version"
-            spec: cypress/e2e/feat-skip-new-version.feature
-            key: feat-skip-new-version
+          - scenario: "Feat: conf.scopes.printSummary"
+            spec: cypress/e2e/feat-conf-scopes-printSummary.feature
+            key: feat-conf-scopes-printSummary
 
           - scenario: "Feat: Print Summary"
             spec: cypress/e2e/feat-print-summary.feature
@@ -106,10 +117,6 @@ jobs:
           - scenario: "Feat: Print Annotations"
             spec: cypress/e2e/feat-print-annotations.feature
             key: feat-print-annotations
-
-          - scenario: "Feat: Commit Scopes"
-            spec: cypress/e2e/feat-commit-scopes.feature
-            key: feat-commit-scopes
 
     runs-on: ubuntu-latest
     steps:
@@ -120,7 +127,7 @@ jobs:
         uses: ./.github/actions/delete-temp-repos
         with:
           org: cangulo-actions-test
-          repo-prefix: semver-PR-${{ github.event.number }}-${{ matrix.key }}
+          repo: semver-PR-${{ github.event.number }}-${{ matrix.key }}
           gh-token: ${{ secrets.CANGULO_BOT_DELETE_REPO }}
 
       - name: 🧪 run cypress e2e tests
@@ -145,5 +152,5 @@ jobs:
         uses: ./.github/actions/delete-temp-repos
         with:
           org: cangulo-actions-test
-          repo-prefix: semver-PR-${{ github.event.number }}-${{ matrix.key }}
+          repo: semver-PR-${{ github.event.number }}-${{ matrix.key }}
           gh-token: ${{ secrets.CANGULO_BOT_DELETE_REPO }}
