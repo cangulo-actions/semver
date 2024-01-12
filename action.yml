@@ -355,4 +355,4 @@ runs:
             core.notice('Changes did not triggered a new release', {title: 'cangulo-actions/semver result'})
           }
 
-# refresh_GH_action_version 20240112-2
+# refresh_GH_action_version 20240112-3
