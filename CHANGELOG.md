@@ -1,3 +1,8 @@
+# 0.7.2 fix: updated tokens for workflows (#76)
+
+## patches:
+* fix: updated tokens for workflows (#76)
+
 # 0.7.1 fix: fixed schema (#71)
 
 ## patches:
