@@ -1,3 +1,8 @@
+# 0.7.2 fix: updated cd workflow (#77)
+
+## patches:
+* fix: updated cd workflow (#77)
+
 # 0.7.1 fix: fixed schema (#71)
 
 ## patches:
