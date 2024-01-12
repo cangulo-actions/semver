@@ -48,7 +48,7 @@ jobs:
 # refresh-20240112
 ```
 
-## Error
+## It works
 
 No error 🥳
 

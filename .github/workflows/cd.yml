@@ -13,7 +13,7 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v4.1.1
       with:
-          token: ${{ secrets.CANGULO_BOT_PUSH_COMMITS }}
+        token: ${{ secrets.CANGULO_BOT_PUSH_COMMITS }}
 
     - name: release new version
       uses: cangulo-actions/semver@main
