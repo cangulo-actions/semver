@@ -1,3 +1,8 @@
+# 0.7.6 fix: refresh GH action - no changes (#81)
+
+## patches:
+* fix: refresh GH action - no changes (#81)
+
 # 0.7.5 fix: refresh GH action - no changes (#79)
 
 ## patches:
