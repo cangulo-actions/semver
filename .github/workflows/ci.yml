@@ -123,6 +123,9 @@ jobs:
             key: feat-print-annotations
 
     runs-on: ubuntu-latest
+    env:
+      GH_ORG: cangulo-actions-test
+      GH_REPO_TO_RUN_E2E: semver-PR-${{ github.event.number }}-${{ matrix.key }}
     steps:
       - name: Checkout semver repository
         uses: actions/checkout@v4.1.1
@@ -130,8 +133,8 @@ jobs:
       - name: 🧹 delete any temporary repository
         uses: ./.github/actions/delete-temp-repos
         with:
-          org: cangulo-actions-test
-          repo: semver-PR-${{ github.event.number }}-${{ matrix.key }}
+          org: ${{ env.GH_ORG }}
+          repo: ${{ env.GH_REPO_TO_RUN_E2E }}
           gh-token: ${{ secrets.CANGULO_BOT_DELETE_REPO }}
 
       - name: 🧪 run cypress e2e tests
@@ -139,6 +142,7 @@ jobs:
         with:
           spec: ${{ matrix.spec }}
           working-directory: cypress
+          publish-summary: false
         env:
           CYPRESS_TEST_KEY: ${{ matrix.key }}
           CYPRESS_GH_ORG: cangulo-actions-test
@@ -152,9 +156,32 @@ jobs:
           CYPRESS_GH_USER_NAME: ${{ env.GH_E2E_user }}
           CYPRESS_GH_USER_EMAIL: ${{ env.GH_E2E_email }}
 
+      - name: Print link to the repo
+        uses: actions/github-script@v7.0.1
+        if: failure()
+        env:
+          OWNER: ${{ env.GH_ORG }}
+          REPO: ${{ env.GH_REPO_TO_RUN_E2E }}
+          TEST_SCENARIO: ${{ matrix.scenario }}
+          TEST_SPEC: ${{ matrix.spec }}
+        with:
+          script: |
+            const owner     = process.env.OWNER
+            const repo      = process.env.REPO
+            const scenario  = process.env.TEST_SCENARIO
+            const spec      = process.env.TEST_SPEC
+            const linkRepo  = `https://github.com/${owner}/${repo}/actions`
+
+            core
+              .summary
+              .addHeading(`🛑⚠️ Failed test for '${scenario}' (${spec})`)
+              .addLink(`Link to ${owner}/${repo} repo`, linkRepo)
+              .write()
+
+
       - name: 🧹 delete any temporary repository
         uses: ./.github/actions/delete-temp-repos
         with:
-          org: cangulo-actions-test
-          repo: semver-PR-${{ github.event.number }}-${{ matrix.key }}
+          org: ${{ env.GH_ORG }}
+          repo: ${{ env.GH_REPO_TO_RUN_E2E }}
           gh-token: ${{ secrets.CANGULO_BOT_DELETE_REPO }}
