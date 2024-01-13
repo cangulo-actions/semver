@@ -1,3 +1,8 @@
+# 0.7.9 fix: added new flag for tag-repo-version. renamed other input variables (#87)
+
+## patches:
+* fix: added new flag for tag-repo-version. renamed other input variables (#87)
+
 # 0.7.8 fix: added test with branch protection enabled (#86)
 
 ## patches:
