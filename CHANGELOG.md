@@ -1,3 +1,8 @@
+# 0.7.8 fix: added test with branch protection enabled (#86)
+
+## patches:
+* fix: added test with branch protection enabled (#86)
+
 # 0.7.7 fix: refresh GH action - no changes (#82)
 
 ## patches:
