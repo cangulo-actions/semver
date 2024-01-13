@@ -1,4 +1,4 @@
-Feature: tag-version disabled
+Feature: tag-prefix set to "v"
 
   Background: The GH action runs is set with the default configuration
     Given I create a "public" repository named "semver-PR-{PR_NUMBER}-{TEST_KEY}"
@@ -6,6 +6,8 @@ Feature: tag-version disabled
     And I push the file "semver-config.yml" to the branch "main" with the content:
       """
       scopes:
+        tag-version: true
+        tag-prefix: 'v'
         list:
           - key: src
             files:
@@ -42,7 +44,7 @@ Feature: tag-version disabled
               uses: cangulo-actions/semver@<TARGET_BRANCH>
               with:
                 configuration: semver-config.yml
-                tag-version: false                            # we don't want to create a tag for the whole repo. We only want tags for the scopes.
+                tag-prefix: 'v'                     # we expect the repo tag to be prefixed with "v"
       """
 
   Scenario: Merge a PR with a commit fixing something
@@ -54,8 +56,9 @@ Feature: tag-version disabled
     When I merge it
     Then the workflow "cangulo-actions/semver test" must conclude in "success"
     And the last commit message must start with "[skip ci] created release 0.0.1"
-    And the repository must have "2" tags 
+    And the repository must have "3" tags 
     And the last commit must be tagged with:
       | <tag>     |
-      | tfm-0.0.1 |
-      | src-0.0.1 |
+      | v0.0.1 |
+      | tfm-v0.0.1 |
+      | src-v0.0.1 |

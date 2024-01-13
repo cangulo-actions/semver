@@ -118,6 +118,10 @@ jobs:
             spec: cypress/e2e/feat-tag-version.feature
             key: feat-tag-version
 
+          - scenario: "Feat: tag version with prefix"
+            spec: cypress/e2e/feat-tag-prefix.feature
+            key: feat-tag-prefix
+
           - scenario: "Feat: Print Annotations"
             spec: cypress/e2e/feat-print-annotations.feature
             key: feat-print-annotations

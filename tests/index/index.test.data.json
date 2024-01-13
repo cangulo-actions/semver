@@ -154,7 +154,6 @@
             "scopes": {
                 "src": {
                     "version": "0.2.0",
-                    "tag": "src-0.2.0",
                     "releaseType": "minor",
                     "changes": [
                         {
@@ -180,7 +179,6 @@
                 },
                 "tfm": {
                     "version": "1.0.1",
-                    "tag": "tfm-1.0.1",
                     "releaseType": "patch",
                     "changes": [
                         {

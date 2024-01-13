@@ -52,7 +52,6 @@ function Index (changes, title, conf) {
           updateVersionJsonFile(nextVersion, versionJsonPath)
           scopesResult[scope] = {
             version: nextVersion,
-            tag: `${scope}-${nextVersion}`,
             releaseType: nextReleaseType,
             changes,
             changelogRecord: newChangelogRecord
