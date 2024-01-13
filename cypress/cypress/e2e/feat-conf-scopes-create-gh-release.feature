@@ -2,11 +2,11 @@ Feature: Create GH release with scopes configured
 
   Background: 
     Given I create a "public" repository named "semver-PR-{PR_NUMBER}-{TEST_KEY}"
-    And I add a branch protection rule for "main" 
     And I push the file "semver-config.yml" to the branch "main" with the content:
       """
       scopes:
-        tag-version: true                     # we want all the scopes to be tagged, except the ones that are specifically disabled
+        print-summary: true
+        create-gh-release: true
         list:
           - key: src
             files:
@@ -26,7 +26,7 @@ Feature: Create GH release with scopes configured
             versioning:
               file: conf/dev/version.json
               changelog: conf/dev/CHANGELOG.md
-              tag-version: false                 # avoid creating tag for this scope
+              create-gh-release: false            # avoid creating GH release for this scope
       """
     And I push the file ".github/workflows/semver-test.yml" to the branch "main" with the content:
       """
@@ -50,6 +50,7 @@ Feature: Create GH release with scopes configured
               uses: cangulo-actions/semver@<TARGET_BRANCH>
               with:
                 configuration: semver-config.yml
+                github-token: ${{ secrets.CANGULO_BOT_PUSH_COMMITS }}
       """
 
   Scenario: Merge a PR with a commit adding a new feature
@@ -60,9 +61,8 @@ Feature: Create GH release with scopes configured
     And I create a PR with title "Fix lambda and database"
     When I merge it
     Then the workflow "cangulo-actions/semver test" must conclude in "success"
-    And the repository must have "3" tags 
-    And the last commit must be tagged with:
-      | <tag>     |
-      |     0.0.1 |
-      | tfm-0.0.1 |
-      | src-0.0.1 |
+    And the repository must have "2" gh release
+    And the gh releases are:
+      | <name>                                 | <tag>     |
+      | src-0.0.1 Fix lambda and database (#1) | src-0.0.1 |
+      | tfm-0.0.1 Fix lambda and database (#1) | tfm-0.0.1 |

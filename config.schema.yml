@@ -44,20 +44,20 @@ properties:
     required:
       - list
     default:
-      createGHRelease: false
-      printSummary: false
+      create-gh-release: false
+      print-summary: false
       list: []
     description: Scope configuration 
     properties:
-      createTags:
+      tag-version:
         type: boolean
         description: flag to tag the release commit with all the scopes affected
         default: true
-      createGHRelease:
+      create-gh-release:
         type: boolean
         description: flag to create a github release for all the scopes
         default: false
-      printSummary:
+      print-summary:
         type: boolean
         description: flag to print the release summary for all the scopes
         default: false
@@ -81,10 +81,10 @@ properties:
                 changelog:
                   type: string
                   description: changelog markdown file
-                createTag:
+                tag-version:
                   type: boolean
                   description: flag to tag the release commit for this scope
-                createGHRelease:
+                create-gh-release:
                   type: boolean
                   description: flag to create a github release for this scope
               required:
