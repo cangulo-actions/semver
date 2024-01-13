@@ -17,6 +17,9 @@ inputs:
     description: 'flag for printing release details as annotations in the GH workflow'
     required: false
     default: 'false'
+  github-token:
+    description: 'GitHub token for creating release'
+    required: false
   gh-user-name:
     description: 'GH user name for the semver commit'
     required: false
@@ -272,6 +275,7 @@ runs:
       env:
         RELEASE_CHANGELOG: ${{ steps.semver.outputs.changelog-record }}
       with:
+        github-token: ${{ inputs.github-token || github.token }}
         script: |
           const response = await github.rest.repos.createRelease({
             owner: context.repo.owner,
@@ -340,6 +344,7 @@ runs:
         CONFIG: ${{ steps.config.outputs.config }}
         SCOPES: ${{ steps.semver.outputs.scopes }}
       with:
+        github-token: ${{ inputs.github-token || github.token }}
         script: |
           const conf                        = JSON.parse(process.env.CONFIG)
           const scopes                      = JSON.parse(process.env.SCOPES)

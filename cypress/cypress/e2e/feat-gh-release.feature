@@ -1,7 +1,8 @@
 Feature: Create GH release with no scopes configured
 
   Background: 
-    Given I create a repository named "semver-PR-{PR_NUMBER}-{TEST_KEY}"
+    Given I create a "public" repository named "semver-PR-{PR_NUMBER}-{TEST_KEY}"
+    And I add a branch protection rule for "main" 
     And I push the file ".github/workflows/semver-test.yml" to the branch "main" with the content:
       """
       name: cangulo-actions/semver test
@@ -14,17 +15,18 @@ Feature: Create GH release with no scopes configured
         test-semver:
           name: Release new version
           runs-on: ubuntu-latest
-          permissions:
-            contents: write
           steps:
             - name: checkout
               uses: actions/checkout@v4
+              with:
+                token: ${{ secrets.CANGULO_BOT_PUSH_COMMITS }} # required for pushing to main, it is a protected branch
       
             - name: Release new version
               uses: cangulo-actions/semver@<TARGET_BRANCH>
               with:
                 print-summary: true
                 create-gh-release: true
+                github-token: ${{ secrets.CANGULO_BOT_PUSH_COMMITS }}
       """
 
   Scenario: Merge a PR with a commit adding a new feature

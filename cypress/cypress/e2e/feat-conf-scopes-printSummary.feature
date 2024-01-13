@@ -1,7 +1,8 @@
 Feature: Create GH release with scopes configured
 
   Background: 
-    Given I create a repository named "semver-PR-{PR_NUMBER}-{TEST_KEY}"
+    Given I create a "public" repository named "semver-PR-{PR_NUMBER}-{TEST_KEY}"
+    And I add a branch protection rule for "main" 
     And I push the file "semver-config.yml" to the branch "main" with the content:
       """
       scopes:
@@ -32,11 +33,11 @@ Feature: Create GH release with scopes configured
         test-semver:
           name: Release new version
           runs-on: ubuntu-latest
-          permissions:
-            contents: write
           steps:
             - name: checkout
               uses: actions/checkout@v4
+              with:
+                token: ${{ secrets.CANGULO_BOT_PUSH_COMMITS }} # required for pushing to main, it is a protected branch
       
             - name: Release new version
               uses: cangulo-actions/semver@<TARGET_BRANCH>
