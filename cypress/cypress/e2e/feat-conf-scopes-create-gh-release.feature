@@ -50,7 +50,7 @@ Feature: Create GH release with scopes configured
               uses: cangulo-actions/semver@<TARGET_BRANCH>
               with:
                 configuration: semver-config.yml
-                github-token: ${{ secrets.CANGULO_BOT_PUSH_COMMITS }}
+                github-token: ${{ secrets.CANGULO_BOT_PUSH_COMMITS }}   # required for creating the GH release
       """
 
   Scenario: Merge a PR with a commit adding a new feature
