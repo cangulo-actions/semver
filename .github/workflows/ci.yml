@@ -102,17 +102,21 @@ jobs:
             spec: cypress/e2e/feat-gh-release.feature
             key: feat-gh-release
 
-          - scenario: "Feat: conf.scopes.createGHRelease"
-            spec: cypress/e2e/feat-conf-scopes-createGHRelease.feature
-            key: feat-conf-scopes-createGHRelease
+          - scenario: "Feat: conf.scopes.create-gh-release"
+            spec: cypress/e2e/feat-conf-scopes-create-gh-release.feature
+            key: feat-conf-scopes-create-gh-release
 
-          - scenario: "Feat: conf.scopes.printSummary"
-            spec: cypress/e2e/feat-conf-scopes-printSummary.feature
-            key: feat-conf-scopes-printSummary
+          - scenario: "Feat: conf.scopes.print-summary"
+            spec: cypress/e2e/feat-conf-scopes-print-summary.feature
+            key: feat-conf-scopes-print-summary
 
           - scenario: "Feat: Print Summary"
             spec: cypress/e2e/feat-print-summary.feature
             key: feat-print-summary
+
+          - scenario: "Feat: disable tag-version"
+            spec: cypress/e2e/feat-tag-version.feature
+            key: feat-tag-version
 
           - scenario: "Feat: Print Annotations"
             spec: cypress/e2e/feat-print-annotations.feature

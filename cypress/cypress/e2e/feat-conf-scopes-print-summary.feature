@@ -6,7 +6,7 @@ Feature: Create GH release with scopes configured
     And I push the file "semver-config.yml" to the branch "main" with the content:
       """
       scopes:
-        printSummary: true
+        print-summary: true
         list:
           - key: src
             files:
