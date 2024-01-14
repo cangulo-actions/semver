@@ -1,3 +1,10 @@
+# 0.10.0 feat: #93 make the GH action return the whole changelog-record with title, entries and body. Fixes #93 (#94)
+
+## new features:
+* feat: #93 make the GH action return the whole changelog-record with title, entries and body. Fixes #93
+## patches:
+* fix: fixed issue with release body when the last commit includes &quot;---------&quot;
+
 # 0.9.0 feat: #72 make the release include previous non releasable commits. Fixes #72 (#92)
 
 ## new features:
