@@ -209,8 +209,7 @@ runs:
           const { parseLastCommit } = require('${{ github.action_path }}/functions/parse-last-commit')
 
           const conf            = JSON.parse(process.env.CONFIG)
-          const commits         = context.payload.commits
-          const commitMsg       = commits[0].message
+          const commitMsg       = context.payload.commits[0].message
           const previousChanges = JSON.parse(process.env.PREVIOUS_CHANGES)
 
           const { title, entries } = parseLastCommit(commitMsg)

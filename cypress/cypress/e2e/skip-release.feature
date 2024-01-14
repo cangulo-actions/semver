@@ -31,5 +31,10 @@ Feature: Skip create a new version when the commit type does not trigger a relea
     And I create a PR with title "Updated docs"
     When I merge it
     Then the workflow "cangulo-actions/semver test" must conclude in "success"
-    And the last commit message must start with "docs: updated readme"
+    And the last commit message must be:
+      """
+      docs: updated readme (#1)
+      
+      Co-authored-by: cangulo-semver-e2e-test[bot] <cangulo-semver-e2e-test[bot]@users.noreply.github.com>
+      """
     And the repository must have "0" tags

@@ -1,14 +1,18 @@
 [
   {
     "scenario": "one commit squashed",
+    "enabled": true,
     "input": "fix: #123 solved error querying the payment service (#5)    ",
     "output": {
       "title": "fix: #123 solved error querying the payment service (#5)",
-      "entries": ["fix: #123 solved error querying the payment service (#5)"]
+      "entries": [
+        "fix: #123 solved error querying the payment service (#5)"
+      ]
     }
   },
   {
     "scenario": "multiple commits squashed",
+    "enabled": true,
     "input": "squashed commit title (#8)  \n\n* feat(src): #234 added new endpoint for deleting user \r\n* fix(src): #224 INIT 2023-11-03 00:08:46 \r\n* break(src,tfm): #564 updated API endpoints structure \r\n* fix: #123 solved error when querying DB  \r\n* docs(src,tfm): #231 Updated readme for tfm and src   \r\n* refactor(tfm): #234 simplified terraform solution \r\n* #2345 Commit that do not follow conventional commits \r\n* line1   \r\n\r\n* line2",
     "output": {
       "title": "squashed commit title (#8)",
@@ -22,6 +26,19 @@
         "#2345 Commit that do not follow conventional commits",
         "line1",
         "line2"
+      ]
+    }
+  },
+  {
+    "scenario": "multiple commits squashed including extra contributor",
+    "enabled": true,
+    "input": "Fix lambda and database (#1)\n\n* fix(src): commit that fixes the lambda1\r\n* fix(tfm): commit that fixes the database\r\n* fix(conf-dev): updated tfm configuration for dev\r\n---------\r\nCo-authored-by: cangulo-semver-e2e-test[bot] <cangulo-semver-e2e-test[bot]@users.noreply.github.com>",
+    "output": {
+      "title": "Fix lambda and database (#1)",
+      "entries": [
+        "fix(src): commit that fixes the lambda1",
+        "fix(tfm): commit that fixes the database",
+        "fix(conf-dev): updated tfm configuration for dev"
       ]
     }
   }

@@ -1,3 +1,8 @@
+const linesToIgnoreRegex = [
+  '^Co-authored-by',
+  '^---------$'
+]
+
 function parseLastCommit (commitMsg) {
   const cleanCommitMsg = commitMsg.trim()
   const commitHasMultipleParts = cleanCommitMsg.includes('\n\n')
@@ -19,7 +24,7 @@ function parseLastCommit (commitMsg) {
       .split('\r\n')
       .filter(x => x !== '')
       .map(x => x.replace('* ', '').trim())
-      .filter(x => !x.startsWith('Co-authored-by:'))
+      .filter(x => !linesToIgnoreRegex.some(regex => x.match(regex)))
 
     if (entries.length === 0) {
       entries.push(result.title)

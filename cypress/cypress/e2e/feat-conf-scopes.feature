@@ -51,7 +51,14 @@ Feature: Commits with scope
     And I create a PR with title "Fix lambda and database"
     When I merge it
     Then the workflow "cangulo-actions/semver test" must conclude in "success"
-    And the last commit message must start with "[skip ci] created release 0.0.1"
+    And the last commit message must be:
+      """
+      [skip ci] created release 0.0.1 - Fix lambda and database (#1)
+      
+      ## patches:
+      * fix(src): commit that fixes the lambda1
+      * fix(tfm): commit that fixes the database
+      """
     And the repository must have "3" tags 
     And the last commit must be tagged with:
       | <tag>     |
