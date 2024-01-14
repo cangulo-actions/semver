@@ -177,4 +177,4 @@ Let's say you have a solution with 2 layers: terraform infrastructure and source
 | `feat(src): Added new payments dialog to simplify`                 | `*.js,*.html` modified |
 | `fix(src): fixed animation when a new user is created`             | `*.css` modified       |
 
-For doing so, you can 
+For doing so, you have to provide the con
