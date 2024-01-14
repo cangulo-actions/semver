@@ -1,5 +1,7 @@
 [
   {
+    "scenario": "Single commit",
+    "enabled" : true,
     "input": "fix: #123 solved error when querying DB",
     "output": {
       "type": "fix",
@@ -10,6 +12,8 @@
     }
   },
   {
+    "scenario": "Single commit with 1 scope",
+    "enabled" : true,
     "input": "feat(src): #234 added new endpoint for deleting user",
     "output": {
       "type": "feat",
@@ -20,6 +24,8 @@
     }
   },
   {
+    "scenario": "Single commit with 2 scopes - breaking change",
+    "enabled" : true,
     "input": "break(src,tfm): #564 updated API endpoints structure",
     "output": {
       "type": "break",
@@ -30,6 +36,8 @@
     }
   },
   {
+    "scenario": "Single commit with 2 scopes - no release associated",
+    "enabled" : true,
     "input": "docs(src,tfm): #231 Updated readme for tfm and src",
     "output": {
       "type": "docs",
@@ -40,6 +48,8 @@
     }
   },
   {
+    "scenario": "Single commit with 1 scope - no release associated",
+    "enabled" : true,
     "input": "refactor(tfm): #234 simplified terraform solution",
     "output": {
       "type": "refactor",
@@ -50,6 +60,8 @@
     }
   },
   {
+    "scenario": "Single commit that do not follow conventions",
+    "enabled" : true,
     "input": "#2345 Commit that do not follow conventional commits",
     "output": {
       "type": "",

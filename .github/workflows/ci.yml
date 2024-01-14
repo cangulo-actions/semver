@@ -99,8 +99,8 @@ jobs:
             key: feat-conf-scopes
 
           - scenario: "Feat: GH release"
-            spec: cypress/e2e/feat-gh-release.feature
-            key: feat-gh-release
+            spec: cypress/e2e/feat-create-gh-release.feature
+            key: feat-create-gh-release
 
           - scenario: "Feat: Include Previous Commits"
             spec: cypress/e2e/feat-include-previous-non-releasable-commits.feature
@@ -186,9 +186,9 @@ jobs:
               .addLink(`Link to ${owner}/${repo} repo`, linkRepo)
               .write()
 
-      - name: 🧹 delete any temporary repository
-        uses: ./.github/actions/delete-temp-repos
-        with:
-          org: ${{ env.GH_ORG }}
-          repo: ${{ env.GH_REPO_TO_RUN_E2E }}
-          gh-token: ${{ secrets.CANGULO_BOT_DELETE_REPO }}
+      # - name: 🧹 delete any temporary repository
+      #   uses: ./.github/actions/delete-temp-repos
+      #   with:
+      #     org: ${{ env.GH_ORG }}
+      #     repo: ${{ env.GH_REPO_TO_RUN_E2E }}
+      #     gh-token: ${{ secrets.CANGULO_BOT_DELETE_REPO }}

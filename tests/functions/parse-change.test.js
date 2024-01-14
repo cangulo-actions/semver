@@ -6,14 +6,20 @@ describe('changes are properly parsed', () => {
   const testDataContent = fs.readFileSync('tests/functions/parse-change.test.data.json')
   const testData = JSON.parse(testDataContent)
 
-  testData.forEach(data => {
-    it(`change:\n\t${data.input}\nis parsed into:\n\t${JSON.stringify(data.output, null, 2)}`,
-      () => {
-        const defaultConfigContent = fs.readFileSync('config.default.yml')
-        const defaultConf = yaml.load(defaultConfigContent)
-        const commitsConfig = defaultConf.commits
-        const change = parseChange(data.input, commitsConfig)
-        expect(change).toEqual(data.output)
-      })
-  })
+  // arrange
+  const defaultConfigContent = fs.readFileSync('config.default.yml')
+  const defaultConf = yaml.load(defaultConfigContent)
+  const commitsConfig = defaultConf.commits
+
+  testData
+    .filter(data => data.enabled)
+    .forEach(data => {
+      it(`${data.scenario}`,
+        () => {
+          // act
+          const change = parseChange(data.input, commitsConfig)
+          // assert
+          expect(change).toEqual(data.output)
+        })
+    })
 })

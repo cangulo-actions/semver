@@ -31,5 +31,11 @@ Feature: Smoke tests
     And I create a PR with title "semver smoke test"
     When I merge it
     Then the workflow "cangulo-actions/semver test" must conclude in "success"
-    And the last commit message must start with "[skip ci] created release 0.0.1"
+    And the last commit message must be:
+      """
+      [skip ci] created release 0.0.1 - fix: commit that fixes something in the lambda1 (#1)
+      
+      ## patches:
+      * fix: commit that fixes something in the lambda1 (#1)
+      """
     And the last commit must be tagged with "0.0.1"

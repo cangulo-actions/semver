@@ -72,7 +72,11 @@ outputs:
     description: 'changes parsed: [{type,releaseAssociated,scopes,description,originalCommit}]'
   changelog-record:
     value: ${{ steps.semver.outputs.changelog-record }}
-    description: 'changelog-record in markdown content'
+    description: |
+      changelog-record JSON object with title, body and content
+      title   -> '# {version} {release title}'
+      body    -> 'changes entries listed in grouped and listed by release type in markdown format'
+      content -> title + body
   scopes:
     value: ${{ steps.semver.outputs.scopes }}
     description: 'Only available if scopes configuration provided. Format: {scopename:{version,changes,changelog-record}}'
@@ -205,8 +209,7 @@ runs:
           const { parseLastCommit } = require('${{ github.action_path }}/functions/parse-last-commit')
 
           const conf            = JSON.parse(process.env.CONFIG)
-          const commits         = context.payload.commits
-          const commitMsg       = commits[0].message
+          const commitMsg       = context.payload.commits[0].message
           const previousChanges = JSON.parse(process.env.PREVIOUS_CHANGES)
 
           const { title, entries } = parseLastCommit(commitMsg)
@@ -229,18 +232,23 @@ runs:
       env:
         CONFIG: ${{ steps.config.outputs.config }}
         NODE_MODULES_PATH: ${{ github.action_path }}/node_modules
-        CHANGELOG_RECORD_TEMPLATE: ${{ github.action_path }}/templates/changelog-record.md
+        CHANGELOG_RECORD_TITLE_TEMPLATE: ${{ github.action_path }}/templates/changelog-record-title.md
+        CHANGELOG_RECORD_BODY_TEMPLATE: ${{ github.action_path }}/templates/changelog-record-body.md
         CHANGES: ${{ steps.parse-changes.outputs.changes }}
         RELEASE_TITLE: ${{ steps.parse-changes.outputs.release-title }}
       with:
         script: |
           const { Index }     = require('${{ github.action_path }}/index.js')
 
-          const conf          = JSON.parse(process.env.CONFIG)
-          const changes       = JSON.parse(process.env.CHANGES)
-          const title         = process.env.RELEASE_TITLE
+          const conf                  = JSON.parse(process.env.CONFIG)
+          const changes               = JSON.parse(process.env.CHANGES)
+          const title                 = process.env.RELEASE_TITLE
+          const changelogTemplates    = {
+            title: process.env.CHANGELOG_RECORD_TITLE_TEMPLATE,
+            body: process.env.CHANGELOG_RECORD_BODY_TEMPLATE
+          }
 
-          const releaseDetails = Index(changes, title, conf)
+          const releaseDetails = Index(changes, title, conf, changelogTemplates)
 
           if(releaseDetails.releaseRequired){
             core.startGroup(`Next version is ${releaseDetails.version}. Details (click here):`)
@@ -268,7 +276,7 @@ runs:
         TAG_PREFIX: ${{ inputs.tag-prefix }}
         CONFIG: ${{ steps.config.outputs.config }}
         RELEASE_TITLE: ${{ steps.parse-changes.outputs.release-title }}
-        CHANGELOG_RECORD: ${{ steps.semver.outputs.changelog-record }}
+        CHANGELOG_RECORD_BODY: ${{ fromJSON(steps.semver.outputs.changelog-record).body }}
         REPO_TAG_VERSION: ${{ steps.semver.outputs.version }}
         SCOPES: ${{ steps.semver.outputs.scopes }}
       with:
@@ -277,7 +285,7 @@ runs:
           const conf                    = JSON.parse(process.env.CONFIG)
           const supportedScopesConfig   = conf.scopes.list
           const releaseTitle            = process.env.RELEASE_TITLE
-          const changelogRecord         = process.env.CHANGELOG_RECORD
+          const changelogRecordBody     = process.env.CHANGELOG_RECORD_BODY
           const repoTagVersion          = process.env.REPO_TAG_VERSION
           const repoTagPrefix           = process.env.TAG_PREFIX
           const scopes                  = JSON.parse(process.env.SCOPES)
@@ -285,14 +293,14 @@ runs:
 
           const releaseCommit = {
             title: `[skip ci] created release ${repoTagVersion} - ${releaseTitle}`,
-            body: changelogRecord
+            body: changelogRecordBody
           }
 
           if(tagRepoVersion) {
             const repoVersionTag = {
               name: `${repoTagPrefix}${repoTagVersion}`,
               title: releaseTitle,
-              body: changelogRecord
+              body: changelogRecordBody
             }
             tags.push(repoVersionTag)
           }
@@ -308,7 +316,7 @@ runs:
               const scopeTag     = {
                 name: tagName,
                 title: releaseTitle,
-                body: properties.changelogRecord
+                body: properties.changelogRecord.body
               }
               tags.push(scopeTag)
             }
@@ -355,7 +363,7 @@ runs:
       uses: actions/github-script@v7
       id: create-repo-release
       env:
-        RELEASE_CHANGELOG: ${{ steps.semver.outputs.changelog-record }}
+        CHANGELOG_RECORD_BODY: ${{ fromJSON(steps.semver.outputs.changelog-record).body }}
       with:
         github-token: ${{ inputs.github-token || github.token }}
         script: |
@@ -365,7 +373,7 @@ runs:
             tag_name: `${{ steps.semver.outputs.version}}`,
             target_commitish: '${{ steps.commit.outputs.last_commit_id }}',
             name: `${{ steps.semver.outputs.version}} ${{ steps.parse-changes.outputs.release-title}}`,
-            body: process.env.RELEASE_CHANGELOG,
+            body: process.env.CHANGELOG_RECORD_BODY,
           })
 
           const releaseUrl = response.data.html_url
@@ -446,7 +454,7 @@ runs:
                 tag_name: scopeTags[scope],
                 target_commitish: '${{ steps.commit.outputs.last_commit_id }}',
                 name: `${scopeTags[scope]} ${{ steps.parse-changes.outputs.release-title }}`,
-                body: properties.changelogRecord,
+                body: properties.changelogRecord.body,
               })
               ghReleasesUrls[scope] = response.data.html_url
             }

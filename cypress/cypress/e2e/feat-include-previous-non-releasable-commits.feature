@@ -61,5 +61,12 @@ Feature: Include previous non-releasable commits
     And I create a PR with title "fixed lambda2"
     And I merge it
     Then the workflow "cangulo-actions/semver test" must conclude in "success"
-    And the last commit message must start with "[skip ci] created release 0.0.2"
-    And the last commit message contain "docs: updated readme"
+    And the last commit message must be:
+      """
+      [skip ci] created release 0.0.2 - fix: lambda2 updated (#3)
+      
+      ## patches:
+      * fix: lambda2 updated (#3)
+      ## others
+      * docs: updated readme (#2)
+      """
