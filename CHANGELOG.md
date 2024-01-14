@@ -1,3 +1,10 @@
+# 0.9.0 feat: #72 make the release include previous non releasable commits. Fixes #72 (#92)
+
+## new features:
+* feat: #72 make the release include previous non releasable commits. Fixes #72 (#92)
+## others
+* docs: updated readme (#91)
+
 # 0.8.0 feat: #89 allow allow prefix for git tags. Fixes #89 (#90)
 
 ## new features:
