@@ -28,6 +28,10 @@ describe('index.js Happy Paths', () => {
 
         const changes = data.inputs.changes
         const title = data.inputs.title
+        const templates = {
+          title: 'templates/changelog-record-title.md',
+          body: 'templates/changelog-record-body.md'
+        }
 
         const configPath = data.configuration || 'config.default.yml'
         const schemaPath = 'config.schema.yml'
@@ -42,7 +46,7 @@ describe('index.js Happy Paths', () => {
         validate(config) // add default values to the config properties
 
         // act
-        const result = Index(changes, title, config)
+        const result = Index(changes, title, config, templates)
 
         // assert
         const numFilesModified = Object.keys(data.filesModified).length

@@ -40,8 +40,6 @@ Feature: Create GH release with no scopes configured
     And the only gh release must have the title "0.1.0 feat: new feature for creating reports (#1)"
     And the only gh release must have the body:
       """
-      # 0.1.0 feat: new feature for creating reports (#1)
-      
       ## new features:
       * feat: new feature for creating reports (#1)
       

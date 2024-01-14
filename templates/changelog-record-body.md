@@ -1,5 +1,3 @@
-# {{ version }} {{ title }}
-
 {% if changesPerReleaseType['major'] -%}
 ## breaking changes:
 {% for change in changesPerReleaseType['major'] -%}
