@@ -1,3 +1,8 @@
+# 0.8.0 feat: #89 allow allow prefix for git tags. Fixes #89 (#90)
+
+## new features:
+* feat: #89 allow allow prefix for git tags. Fixes #89 (#90)
+
 # 0.7.9 fix: added new flag for tag-repo-version. renamed other input variables (#87)
 
 ## patches:
