@@ -102,6 +102,10 @@ jobs:
             spec: cypress/e2e/feat-gh-release.feature
             key: feat-gh-release
 
+          - scenario: "Feat: Include Previous Commits"
+            spec: cypress/e2e/feat-include-previous-non-releasable-commits.feature
+            key: feat-include-previous-non-releasable-commits
+
           - scenario: "Feat: conf.scopes.create-gh-release"
             spec: cypress/e2e/feat-conf-scopes-create-gh-release.feature
             key: feat-conf-scopes-create-gh-release
@@ -181,7 +185,6 @@ jobs:
               .addHeading(`🛑⚠️ Failed test for '${scenario}' (${spec})`)
               .addLink(`Link to ${owner}/${repo} repo`, linkRepo)
               .write()
-
 
       - name: 🧹 delete any temporary repository
         uses: ./.github/actions/delete-temp-repos

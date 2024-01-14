@@ -16,12 +16,13 @@ jobs:
         token: ${{ secrets.CANGULO_BOT_PUSH_COMMITS }} # required for pushing to main, it is a protected branch
 
     - name: release new version
-      uses: cangulo-actions/semver@main
+      uses: ./
       id: semver
       with:
         create-gh-release: true
         print-summary: true
         print-annotations: true
+        include-previous-non-releasable-commits: true
 
     - name: add semver output to GH summary
       uses: actions/github-script@v7

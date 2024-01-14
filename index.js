@@ -84,6 +84,12 @@ function checkForNextRelease (changes, versionJsonPath) {
 }
 
 function updateVersionJsonFile (nextVersion, versionJsonPath) {
-  const versionJson = JSON.stringify({ version: nextVersion }, null, '\t')
+  let versionJsonContent = {}
+  if (fs.existsSync(versionJsonPath)) {
+    const currentContent = fs.readFileSync(versionJsonPath)
+    versionJsonContent = JSON.parse(currentContent)
+  }
+  versionJsonContent.version = nextVersion
+  const versionJson = JSON.stringify(versionJsonContent, null, '\t')
   fs.writeFileSync(versionJsonPath, versionJson)
 }
