@@ -33,17 +33,20 @@ describe('index.js Happy Paths', () => {
           body: 'templates/changelog-record-body.md'
         }
 
-        const configPath = data.configuration || 'config.default.yml'
         const schemaPath = 'config.schema.yml'
-
         const schemaContent = fs.readFileSync(schemaPath)
-        const configContent = fs.readFileSync(configPath)
         const schema = yml.load(schemaContent)
-        const config = yml.load(configContent)
+        let config = {}
 
-        const ajv = new Ajv({ useDefaults: true })
-        const validate = ajv.compile(schema)
-        validate(config) // add default values to the config properties
+        if (data.configuration) {
+          const configPath = data.configuration
+          const configContent = fs.readFileSync(configPath)
+          config = yml.load(configContent)
+        }
+
+        const ajv = new Ajv({ useDefaults: true }) // add default values to the config properties
+        const addDefaultValues = ajv.compile(schema)
+        addDefaultValues(config)
 
         // act
         const result = Index(changes, title, config, templates)
