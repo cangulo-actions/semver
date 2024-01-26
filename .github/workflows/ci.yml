@@ -153,7 +153,7 @@ jobs:
           publish-summary: false
         env:
           CYPRESS_TEST_KEY: ${{ matrix.key }}
-          CYPRESS_GH_ORG: cangulo-actions-test
+          CYPRESS_GH_ORG: ${{ env.GH_ORG }}
           CYPRESS_GH_TOKEN: ${{ secrets.CANGULO_BOT_MODIFY_GH_WORKFLOWS }}
           CYPRESS_GH_API_URL: https://api.github.com
           CYPRESS_WAIT_TIME_CD_WORKFLOW: 25000  # wait 25 seconds before checking the CD workflow
