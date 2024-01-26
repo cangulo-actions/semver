@@ -68,7 +68,7 @@ jobs:
         run: npm run test
 
       - name: Test Report
-        uses: dorny/test-reporter@v1
+        uses: dorny/test-reporter@86a20101473378575dcbaa709a4f2b772001fbbb  # commit with node20 support - not released yet
         if: success() || failure()
         with:
           name: JS Tests # Name of the check run which will be created
