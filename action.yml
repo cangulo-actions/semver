@@ -1,10 +1,10 @@
-name: '🚀 semver create release'
-description: 'Get the commits from the last commit'
+name: "🚀 semver create release"
+description: "Get the commits from the last commit"
 inputs:
   configuration:
-    description: 'path to the configuration.yml which store the scopes and commit types'
+    description: "path to the configuration.yml which store the scopes and commit types"
     required: false
-    default: ''
+    default: ""
   create-gh-release:
     description: |
       flag for creating a GH release for the whole repository. 
@@ -12,64 +12,64 @@ inputs:
       Make sure the workflow has permissions for creating a GH release
       or provide a GH token with permissions for doing it.
     required: true
-    default: 'false'
+    default: "false"
   github-token:
-    description: 'GitHub token for creating GH release'
+    description: "GitHub token for creating GH release"
     required: false
   include-previous-non-releasable-commits:
     description: 'flag for including non-release commits in the changelog. Those are commits with release type "none"'
     required: false
-    default: 'false'
+    default: "false"
   print-annotations:
-    description: 'flag for printing release details as annotations in the GH workflow'
+    description: "flag for printing release details as annotations in the GH workflow"
     required: false
-    default: 'false'
+    default: "false"
   print-summary:
-    description: 'flag for printing whole repository release details'
+    description: "flag for printing whole repository release details"
     required: true
-    default: 'false'
+    default: "false"
   tag-version:
-    description: 'flag for tagging the repo version in the release commit'
+    description: "flag for tagging the repo version in the release commit"
     required: false
-    default: 'true'
+    default: "true"
   tag-prefix:
     description: |
       string to be added as prefix to the tag. 
       Only available if tag-version is true.
       Example: v -> tag: v1.0.0
     required: false
-    default: ''
+    default: ""
   gh-user-name:
-    description: 'GH user name for the semver commit'
+    description: "GH user name for the semver commit"
     required: false
-    default: 'github-actions-semver[bot]'
+    default: "github-actions-semver[bot]"
   gh-user-email:
-    description: 'GH user email for the semver commit'
+    description: "GH user email for the semver commit"
     required: false
-    default: 'github-actions-semver[bot]@users.noreply.github.com'
+    default: "github-actions-semver[bot]@users.noreply.github.com"
 
 outputs:
   new-version-released:
     value: ${{ steps.semver.outputs.release-required }}
-    description: 'flag for creating GH release'
+    description: "flag for creating GH release"
   version:
     value: ${{ steps.semver.outputs.version }}
-    description: 'repository version'
+    description: "repository version"
   release-title:
     value: ${{ steps.parse-changes.outputs.release-title }}
-    description: 'release title extracted from the squashed commit title'
+    description: "release title extracted from the squashed commit title"
   release-type:
     value: ${{ steps.semver.outputs.release-type }}
-    description: 'release type as major, minor or patch'
+    description: "release type as major, minor or patch"
   release-url:
     value: ${{ steps.create-repo-release.outputs.gh-release-url }}
-    description: 'GH release url. Only available if create-gh-release is true'
+    description: "GH release url. Only available if create-gh-release is true"
   commit-id:
     value: ${{ steps.commit.outputs.last_commit_id }}
-    description: 'Commit ID that includes the version.json and changelog updated'
+    description: "Commit ID that includes the version.json and changelog updated"
   changes:
     value: ${{ steps.parse-changes.outputs.changes }}
-    description: 'changes parsed: [{type,releaseAssociated,scopes,description,originalCommit}]'
+    description: "changes parsed: [{type,releaseAssociated,scopes,description,originalCommit}]"
   changelog-record:
     value: ${{ steps.semver.outputs.changelog-record }}
     description: |
@@ -79,7 +79,7 @@ outputs:
       content -> title + body
   scopes:
     value: ${{ steps.semver.outputs.scopes }}
-    description: 'Only available if scopes configuration provided. Format: {scopename:{version,changes,changelog-record}}'
+    description: "Only available if scopes configuration provided. Format: {scopename:{version,changes,changelog-record}}"
 
 runs:
   using: "composite"
@@ -189,7 +189,7 @@ runs:
                 .map(x => parseChange(x, conf.commits))
               previousChanges.push(...changes)
             })
-          
+
           console.log('previousChanges:', JSON.stringify(previousChanges, null, 2))
           core.endGroup()
           core.setOutput('previous-changes', previousChanges)
@@ -222,7 +222,7 @@ runs:
             .concat(previousChanges)
           console.log('changes:', JSON.stringify(changes, null, 2))
           core.endGroup()
-          
+
           core.setOutput('changes',       changes)
           core.setOutput('release-title', title)
 
@@ -337,20 +337,20 @@ runs:
         # committing the changes in semver files
         git config user.name  "${{ inputs.gh-user-name }}"
         git config user.email "${{ inputs.gh-user-email }}"
-        
+
         commit_title=$(echo $COMMIT | jq -r '.title')
         commit_body=$(echo $COMMIT  | jq -r '.body')
 
         git add . 
         git commit -m "$commit_title" -m "$commit_body"
-        
+
         echo $TAGS | jq -c '.[]' | while read -r tag; do
           _tag=$(echo $tag | jq -r '.name')
           _tag_title=$(echo $tag | jq -r '.title')
           _tag_body=$(echo $tag | jq -r '.body')
           git tag -a "$_tag" -m "$_tag_title" -m "$_tag_body"
         done
-        
+
         git push --follow-tags
 
         last_commit_id=$(git rev-parse HEAD)
@@ -459,13 +459,13 @@ runs:
               ghReleasesUrls[scope] = response.data.html_url
             }
           }
-          
+
           if(ghReleasesUrls.length > 0) {
             core.startGroup('GH Releases per scope')
             console.log(JSON.stringify(ghReleasesUrls, null, 2))
             core.endGroup()
           }
-          
+
           core.setOutput('gh-releases-urls', ghReleasesUrls)
 
     - name: printing summary for Scopes Releases
@@ -492,7 +492,7 @@ runs:
             tableHeaders.push({data: 'GH Release', header: true})
           }
           const tableRows    = []
-          
+
           Object
             .entries(scopes)
             .forEach(([scope, properties]) => {

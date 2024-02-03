@@ -19,8 +19,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4.1.1
-    
-      - name: Validate Conventional Commits 
+
+      - name: Validate Conventional Commits
         uses: cangulo-actions/conventional-commits-validator@main
         with:
           calculate-next-release: true
@@ -68,7 +68,7 @@ jobs:
         run: npm run test
 
       - name: Test Report
-        uses: dorny/test-reporter@86a20101473378575dcbaa709a4f2b772001fbbb  # commit with node20 support - not released yet
+        uses: dorny/test-reporter@86a20101473378575dcbaa709a4f2b772001fbbb # commit with node20 support - not released yet
         if: success() || failure()
         with:
           name: JS Tests # Name of the check run which will be created
@@ -79,7 +79,7 @@ jobs:
     name: ${{ matrix.scenario }}
     needs: get-changes
     if: needs.get-changes.outputs.action-modified == 'true'
-    concurrency:  # concurrency set to avoid conflicts pushing to each repo
+    concurrency: # concurrency set to avoid conflicts pushing to each repo
       group: e2e-tests-${{ matrix.spec }}
       cancel-in-progress: false
     strategy:
@@ -156,9 +156,9 @@ jobs:
           CYPRESS_GH_ORG: ${{ env.GH_ORG }}
           CYPRESS_GH_TOKEN: ${{ secrets.CANGULO_BOT_MODIFY_GH_WORKFLOWS }}
           CYPRESS_GH_API_URL: https://api.github.com
-          CYPRESS_WAIT_TIME_CD_WORKFLOW: 25000  # wait 25 seconds before checking the CD workflow
-          CYPRESS_API_RETRY_INTERVAL_MS: 10000  # retry every 10 seconds
-          CYPRESS_API_RETRY_TIMEOUT_MS: 40000   # timeout after 40 seconds of retry
+          CYPRESS_WAIT_TIME_CD_WORKFLOW: 25000 # wait 25 seconds before checking the CD workflow
+          CYPRESS_API_RETRY_INTERVAL_MS: 10000 # retry every 10 seconds
+          CYPRESS_API_RETRY_TIMEOUT_MS: 40000 # timeout after 40 seconds of retry
           CYPRESS_SEMVER_BRANCH: ${{ github.head_ref }}
           CYPRESS_SEMVER_PR_NUMBER: ${{ github.event.number }}
           CYPRESS_GH_USER_NAME: ${{ env.GH_E2E_user }}
