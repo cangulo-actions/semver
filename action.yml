@@ -85,7 +85,7 @@ runs:
   using: "composite"
   steps:
     - name: Validate Context and squashed commit received
-      uses: actions/github-script@v7
+      uses: actions/github-script@v7.0.1
       with:
         script: |
           if (context.eventName !== 'push') {
@@ -103,51 +103,19 @@ runs:
         npm install --omit=dev
 
     - name: Process configuration
-      uses: actions/github-script@v7
-      id: config
-      env:
-        INPUT_CONFIG: ${{ inputs.configuration }}
-        NODE_MODULES_PATH: ${{ github.action_path }}/node_modules
-        SCHEMA: ${{ github.action_path }}/config.schema.yml
+      uses: actions/github-script@v7.0.1
+      id: get-config
       with:
         script: |
-          const yml = require(`${process.env.NODE_MODULES_PATH}/js-yaml`)
-          const Ajv = require(`${process.env.NODE_MODULES_PATH}/ajv`)
-          const fs  = require('fs')
-
-          const schemaPath    = process.env.SCHEMA
-          const inputConfig   = process.env.INPUT_CONFIG
-          const schemaContent = fs.readFileSync(schemaPath)
-          const schema        = yml.load(schemaContent)
-          let   config        = {}
-
-          if(inputConfig !== '') {
-            const configPath    = inputConfig
-            const configContent = fs.readFileSync(configPath)
-            config              = yml.load(configContent)
-          }
-
-          const ajv       = new Ajv({ useDefaults: true })  // add default values to the config properties
-          const validate  = ajv.compile(schema)
-          const valid     = validate(config)
-
-          if (!valid) {
-            const errorsJson = JSON.stringify(validate.errors, null, 2)
-            core.setFailed(`configuration file is not valid: ${errorsJson}`)
-          }
-
-          core.startGroup('Configuration')
-          console.log('config:', JSON.stringify(config, null, 2))
-          core.endGroup()
-
-          core.setOutput('config', config)
+          const GetConfig = require('${{ github.action_path }}/github-scripts/get-config.js')          
+          GetConfig({github, context, core})
 
     - name: Getting changes from previous Commits
-      uses: actions/github-script@v7
+      uses: actions/github-script@v7.0.1
       if: ${{ inputs.include-previous-non-releasable-commits == 'true' }}
       id: get-previous-changes
       env:
-        CONFIG: ${{ steps.config.outputs.config }}
+        CONFIG: ${{ steps.get-config.outputs.config }}
         NODE_MODULES_PATH: ${{ github.action_path }}/node_modules
       with:
         script: |
@@ -195,10 +163,10 @@ runs:
           core.setOutput('previous-changes', previousChanges)
 
     - name: Parsing Changes from current commit
-      uses: actions/github-script@v7
+      uses: actions/github-script@v7.0.1
       id: parse-changes
       env:
-        CONFIG: ${{ steps.config.outputs.config }}
+        CONFIG: ${{ steps.get-config.outputs.config }}
         NODE_MODULES_PATH: ${{ github.action_path }}/node_modules
         PREVIOUS_CHANGES: ${{ steps.get-previous-changes.outputs.previous-changes || '[]' }}
       with:
@@ -227,10 +195,10 @@ runs:
           core.setOutput('release-title', title)
 
     - name: Semver
-      uses: actions/github-script@v7
+      uses: actions/github-script@v7.0.1
       id: semver
       env:
-        CONFIG: ${{ steps.config.outputs.config }}
+        CONFIG: ${{ steps.get-config.outputs.config }}
         NODE_MODULES_PATH: ${{ github.action_path }}/node_modules
         CHANGELOG_RECORD_TITLE_TEMPLATE: ${{ github.action_path }}/templates/changelog-record-title.md
         CHANGELOG_RECORD_BODY_TEMPLATE: ${{ github.action_path }}/templates/changelog-record-body.md
@@ -270,11 +238,11 @@ runs:
     - name: Build release commit
       if: ${{ steps.semver.outputs.release-required == 'true' }}
       id: build-commit-and-tags
-      uses: actions/github-script@v7
+      uses: actions/github-script@v7.0.1
       env:
         TAG_REPO_VERSION: ${{ inputs.tag-version }}
         TAG_PREFIX: ${{ inputs.tag-prefix }}
-        CONFIG: ${{ steps.config.outputs.config }}
+        CONFIG: ${{ steps.get-config.outputs.config }}
         RELEASE_TITLE: ${{ steps.parse-changes.outputs.release-title }}
         CHANGELOG_RECORD_BODY: ${{ fromJSON(steps.semver.outputs.changelog-record).body }}
         REPO_TAG_VERSION: ${{ steps.semver.outputs.version }}
@@ -360,7 +328,7 @@ runs:
 
     - name: Create GH Release for the whole repository
       if: ${{ inputs.create-gh-release == 'true' &&  steps.semver.outputs.release-required == 'true' }}
-      uses: actions/github-script@v7
+      uses: actions/github-script@v7.0.1
       id: create-repo-release
       env:
         CHANGELOG_RECORD_BODY: ${{ fromJSON(steps.semver.outputs.changelog-record).body }}
@@ -381,7 +349,7 @@ runs:
 
     - name: printing summary for Repo Release
       if: ${{ inputs.print-summary == 'true' }}
-      uses: actions/github-script@v7
+      uses: actions/github-script@v7.0.1
       env:
         NEW_VERSION_RELEASED: ${{ steps.semver.outputs.release-required }}
         RELEASE_VERSION: ${{ steps.semver.outputs.version }}
@@ -428,10 +396,10 @@ runs:
 
     - name: Create GH releases for scopes
       if: ${{ steps.semver.outputs.scopes != '{}' }}
-      uses: actions/github-script@v7
+      uses: actions/github-script@v7.0.1
       id: create-scopes-releases
       env:
-        CONFIG: ${{ steps.config.outputs.config }}
+        CONFIG: ${{ steps.get-config.outputs.config }}
         SCOPES: ${{ steps.semver.outputs.scopes }}
         SCOPE_TAGS: ${{ steps.build-commit-and-tags.outputs.tags-per-scope }}
       with:
@@ -469,8 +437,8 @@ runs:
           core.setOutput('gh-releases-urls', ghReleasesUrls)
 
     - name: printing summary for Scopes Releases
-      if: ${{ steps.semver.outputs.scopes != '{}' && fromJSON(steps.config.outputs.config).scopes['print-summary'] }}
-      uses: actions/github-script@v7
+      if: ${{ steps.semver.outputs.scopes != '{}' && fromJSON(steps.get-config.outputs.config).scopes['print-summary'] }}
+      uses: actions/github-script@v7.0.1
       env:
         SCOPES: ${{ steps.semver.outputs.scopes }}
         GH_RELEASES_URLS: ${{ steps.create-scopes-releases.outputs.gh-releases-urls }}
@@ -515,7 +483,7 @@ runs:
             .write()
 
     - name: Write Check Annotations
-      uses: actions/github-script@v7
+      uses: actions/github-script@v7.0.1
       if: ${{ inputs.print-annotations == 'true' }}
       env:
         NEW_VERSION_RELEASED: ${{ steps.semver.outputs.release-required }}
