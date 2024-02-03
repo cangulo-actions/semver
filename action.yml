@@ -13,6 +13,10 @@ inputs:
       or provide a GH token with permissions for doing it.
     required: true
     default: 'false'
+  attach-changes-as-assets:
+    description: flag to attach the changes as assets to the github release
+    required: false
+    default: 'false'
   github-token:
     description: 'GitHub token for creating GH release'
     required: false

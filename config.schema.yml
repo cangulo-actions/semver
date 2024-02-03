@@ -102,6 +102,9 @@ properties:
                 create-gh-release:
                   type: boolean
                   description: flag to create a github release for this scope
+                attach-changes-as-assets:
+                  type: boolean
+                  description: flag to attach the changes as assets to the github release
               required:
                 - file
                 - changelog
