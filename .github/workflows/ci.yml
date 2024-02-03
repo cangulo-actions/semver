@@ -102,9 +102,9 @@ jobs:
           #   spec: cypress/e2e/feat-create-gh-release.feature
           #   key: feat-create-gh-release
 
-          # - scenario: "Feat: Include Previous Commits"
-          #   spec: cypress/e2e/feat-include-previous-non-releasable-commits.feature
-          #   key: feat-include-previous-non-releasable-commits
+          - scenario: "Feat: Include Previous Commits"
+            spec: cypress/e2e/feat-include-previous-non-releasable-commits.feature
+            key: feat-include-previous-non-releasable-commits
 
           # - scenario: "Feat: conf.scopes.create-gh-release"
           #   spec: cypress/e2e/feat-conf-scopes-create-gh-release.feature
