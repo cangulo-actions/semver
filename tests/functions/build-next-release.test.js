@@ -1,4 +1,4 @@
-const { Index } = require('../../index')
+const { BuildNextRelease } = require('../../functions/build-next-release')
 const fs = require('fs')
 const yml = require('js-yaml')
 const Ajv = require('ajv')
@@ -11,10 +11,10 @@ jest.mock('fs', () => {
   }
 })
 
-describe('index.js Happy Paths', () => {
+describe('build-next-release Happy Paths', () => {
   // arrange
   const originalModule = jest.requireActual('fs')
-  const testDataContent = originalModule.readFileSync('tests/index/index.test.data.json')
+  const testDataContent = originalModule.readFileSync('tests/functions/build-next-release.test.data.json')
   const testData = JSON.parse(testDataContent)
 
   process.env.CHANGELOG_RECORD_TEMPLATE = 'templates/changelog-record.md'
@@ -49,7 +49,7 @@ describe('index.js Happy Paths', () => {
         addDefaultValues(config)
 
         // act
-        const result = Index(changes, title, config, templates)
+        const result = BuildNextRelease(changes, title, config, templates)
 
         // assert
         const numFilesModified = Object.keys(data.filesModified).length

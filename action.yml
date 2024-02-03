@@ -238,7 +238,7 @@ runs:
         RELEASE_TITLE: ${{ steps.parse-changes.outputs.release-title }}
       with:
         script: |
-          const { Index }     = require('${{ github.action_path }}/index.js')
+          const { BuildNextRelease }  = require('${{ github.action_path }}/functions/build-next-release')
 
           const conf                  = JSON.parse(process.env.CONFIG)
           const changes               = JSON.parse(process.env.CHANGES)
@@ -248,7 +248,7 @@ runs:
             body: process.env.CHANGELOG_RECORD_BODY_TEMPLATE
           }
 
-          const releaseDetails = Index(changes, title, conf, changelogTemplates)
+          const releaseDetails = BuildNextRelease(changes, title, conf, changelogTemplates)
 
           if(releaseDetails.releaseRequired){
             core.startGroup(`Next version is ${releaseDetails.version}. Details (click here):`)
