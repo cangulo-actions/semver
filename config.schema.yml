@@ -8,24 +8,24 @@ properties:
     type: array
     description: The list of commit types and their corresponding release types.
     default:
-    - type: break
-      release: major
-    - type: feat
-      release: minor
-    - type: fix
-      release: patch
-    - type: revert
-      release: patch
-    - type: refactor
-      release: none      
-    - type: chore
-      release: none
-    - type: test
-      release: none
-    - type: docs
-      release: none
-    - type: ci
-      release: none
+      - type: break
+        release: major
+      - type: feat
+        release: minor
+      - type: fix
+        release: patch
+      - type: revert
+        release: patch
+      - type: refactor
+        release: none
+      - type: chore
+        release: none
+      - type: test
+        release: none
+      - type: docs
+        release: none
+      - type: ci
+        release: none
     uniqueItems: true
     items:
       type: object
@@ -45,11 +45,11 @@ properties:
       - list
     default:
       tag-version: true
-      tag-prefix: ''
+      tag-prefix: ""
       create-gh-release: false
       print-summary: false
       list: []
-    description: Scope configuration 
+    description: Scope configuration
     properties:
       tag-version:
         type: boolean
@@ -61,7 +61,7 @@ properties:
           string to be added as prefix to all scopes tags.
           Only available if tag-version is true.
           Example: v -> tag: scope-v1.0.0
-        default: ''
+        default: ""
       create-gh-release:
         type: boolean
         description: flag to create a github release for all the scopes
@@ -108,5 +108,3 @@ properties:
           required:
             - key
             - versioning
-
-

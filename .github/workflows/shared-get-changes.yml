@@ -1,13 +1,12 @@
 name: shared-get-changes
 
 on:
-  workflow_call: 
+  workflow_call:
     outputs:
-      js-modified: 
+      js-modified:
         value: ${{ jobs.get-changes.outputs.js-modified }}
-      action-modified: 
+      action-modified:
         value: ${{ jobs.get-changes.outputs.action-modified }}
-
 
 jobs:
   get-changes:

@@ -1,44 +1,44 @@
-name: 'Delete temp repositories'
+name: "Delete temp repositories"
 inputs:
-  org: 
-    description: 'Who to greet'
+  org:
+    description: "Who to greet"
     required: true
   repo:
-    description: 'repository name'
+    description: "repository name"
     required: true
   gh-token:
-    description: 'GitHub token with permissions to delete repositories'
+    description: "GitHub token with permissions to delete repositories"
     required: true
 
 runs:
   using: "composite"
   steps:
-  - name: Delete any temporary repositories
-    uses: actions/github-script@v7.0.1
-    env:
-      OWNER: ${{ inputs.org }}
-      REPO: ${{ inputs.repo }}
-    with:
-      github-token: ${{ inputs.gh-token }}
-      script: |
-        const owner = process.env.OWNER
-        const repo  = process.env.REPO
+    - name: Delete any temporary repositories
+      uses: actions/github-script@v7.0.1
+      env:
+        OWNER: ${{ inputs.org }}
+        REPO: ${{ inputs.repo }}
+      with:
+        github-token: ${{ inputs.gh-token }}
+        script: |
+          const owner = process.env.OWNER
+          const repo  = process.env.REPO
 
-        try {
-          const matchingRepo = await github.rest.repos.get({
-            owner: owner,
-            repo: repo
-          })
+          try {
+            const matchingRepo = await github.rest.repos.get({
+              owner: owner,
+              repo: repo
+            })
 
-          console.log(`Deleting repo ${repo}`)
-          await github.rest.repos.delete({
-            owner: owner,
-            repo: repo
-          })
-        } catch (error) {
-          if (error.status === 404) {
-            console.log(`Repo ${repo} does not exist`)
-          } else {
-            throw error
+            console.log(`Deleting repo ${repo}`)
+            await github.rest.repos.delete({
+              owner: owner,
+              repo: repo
+            })
+          } catch (error) {
+            if (error.status === 404) {
+              console.log(`Repo ${repo} does not exist`)
+            } else {
+              throw error
+            }
           }
-        }
