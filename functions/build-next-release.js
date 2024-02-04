@@ -1,5 +1,5 @@
-const { calculateNextVersion, getReleaseType } = require('./functions/calculate-next-version')
-const { buildChangelogRecord, updateChangelog } = require('./functions/changelog')
+const { calculateNextVersion, getReleaseType } = require('./calculate-next-version')
+const { buildChangelogRecord, updateChangelog } = require('./changelog')
 
 // eslint-disable-next-line no-unused-vars
 const { groupBy } = require('core-js/actual/array/group-by')
@@ -10,7 +10,7 @@ const repoChangesConfig = {
   versionJsonPath: 'version.json'
 }
 
-function Index (changes, title, conf, changelogTemplates) {
+function BuildNextRelease (changes, title, conf, changelogTemplates) {
   const result = {
     releaseRequired: false,
     version: '',
@@ -68,10 +68,6 @@ function Index (changes, title, conf, changelogTemplates) {
   return result
 }
 
-module.exports = {
-  Index
-}
-
 function checkForNextRelease (changes, versionJsonPath) {
   let currentVersion = '0.0.0'
   if (fs.existsSync(versionJsonPath)) {
@@ -95,4 +91,8 @@ function updateVersionJsonFile (nextVersion, versionJsonPath) {
   versionJsonContent.version = nextVersion
   const versionJson = JSON.stringify(versionJsonContent, null, '\t')
   fs.writeFileSync(versionJsonPath, versionJson)
+}
+
+module.exports = {
+  BuildNextRelease
 }

@@ -104,227 +104,66 @@ runs:
 
     - name: Process configuration
       uses: actions/github-script@v7
-      id: config
       env:
         INPUT_CONFIG: ${{ inputs.configuration }}
-        NODE_MODULES_PATH: ${{ github.action_path }}/node_modules
-        SCHEMA: ${{ github.action_path }}/config.schema.yml
+      id: get-config
       with:
         script: |
-          const yml = require(`${process.env.NODE_MODULES_PATH}/js-yaml`)
-          const Ajv = require(`${process.env.NODE_MODULES_PATH}/ajv`)
-          const fs  = require('fs')
-
-          const schemaPath    = process.env.SCHEMA
-          const inputConfig   = process.env.INPUT_CONFIG
-          const schemaContent = fs.readFileSync(schemaPath)
-          const schema        = yml.load(schemaContent)
-          let   config        = {}
-
-          if(inputConfig !== '') {
-            const configPath    = inputConfig
-            const configContent = fs.readFileSync(configPath)
-            config              = yml.load(configContent)
-          }
-
-          const ajv       = new Ajv({ useDefaults: true })  // add default values to the config properties
-          const validate  = ajv.compile(schema)
-          const valid     = validate(config)
-
-          if (!valid) {
-            const errorsJson = JSON.stringify(validate.errors, null, 2)
-            core.setFailed(`configuration file is not valid: ${errorsJson}`)
-          }
-
-          core.startGroup('Configuration')
-          console.log('config:', JSON.stringify(config, null, 2))
-          core.endGroup()
-
-          core.setOutput('config', config)
+          const GetConfig = require('${{ github.action_path }}/github-scripts/get-config.js')          
+          GetConfig({core})
 
     - name: Getting changes from previous Commits
       uses: actions/github-script@v7
       if: ${{ inputs.include-previous-non-releasable-commits == 'true' }}
       id: get-previous-changes
       env:
-        CONFIG: ${{ steps.config.outputs.config }}
-        NODE_MODULES_PATH: ${{ github.action_path }}/node_modules
+        CONFIG: ${{ steps.get-config.outputs.config }}
       with:
         script: |
-          core.startGroup('Getting changes from previous commits')
-
-          const { parseChange }     = require('${{ github.action_path }}/functions/parse-change')
-          const { parseLastCommit } = require('${{ github.action_path }}/functions/parse-last-commit')
-
-          const conf                = JSON.parse(process.env.CONFIG)
-
-          const { data: versionJSONCommits } = await github.rest.repos.listCommits({
-            owner: context.repo.owner,
-            repo: context.repo.repo,
-            path: 'version.json'
-          })
-
-          if(versionJSONCommits.length === 0) {
-            core.notice('version.json file not found. Getting Previous changes is not supported in this case', {title: 'cangulo-actions/semver notice'})
-            return
-          }
-
-          const lastReleaseCommitSHA  = versionJSONCommits[0].sha
-          const currentCommitSHA      = context.payload.commits[0].id
-
-          const { data: comparison } = await github.rest.repos.compareCommits({
-            owner: context.repo.owner,
-            repo: context.repo.repo,
-            base: lastReleaseCommitSHA,
-            head: currentCommitSHA
-          })
-
-          const previousChanges = []
-          comparison.commits
-            .filter(x => x.sha !== currentCommitSHA)    // ignore the current commit because it will be parsed later
-            .map(x => x.commit.message)
-            .forEach(commitMsg => {
-              const { entries } = parseLastCommit(commitMsg)
-              const changes = entries
-                .map(x => parseChange(x, conf.commits))
-              previousChanges.push(...changes)
-            })
-
-          console.log('previousChanges:', JSON.stringify(previousChanges, null, 2))
-          core.endGroup()
-          core.setOutput('previous-changes', previousChanges)
+          const GetPreviousChanges = require('${{ github.action_path }}/github-scripts/get-previous-changes.js')
+          await GetPreviousChanges({core, github, context})
 
     - name: Parsing Changes from current commit
       uses: actions/github-script@v7
       id: parse-changes
       env:
-        CONFIG: ${{ steps.config.outputs.config }}
-        NODE_MODULES_PATH: ${{ github.action_path }}/node_modules
+        CONFIG: ${{ steps.get-config.outputs.config }}
         PREVIOUS_CHANGES: ${{ steps.get-previous-changes.outputs.previous-changes || '[]' }}
       with:
         script: |
-          core.startGroup('Parsing changes from last commit')
-
-          const { parseChange }     = require('${{ github.action_path }}/functions/parse-change')
-          const { parseLastCommit } = require('${{ github.action_path }}/functions/parse-last-commit')
-
-          const conf            = JSON.parse(process.env.CONFIG)
-          const commitMsg       = context.payload.commits[0].message
-          const previousChanges = JSON.parse(process.env.PREVIOUS_CHANGES)
-
-          const { title, entries } = parseLastCommit(commitMsg)
-          console.log(`title: ${title}`)
-          console.log('entries:', JSON.stringify(entries, null, 2))
-
-
-          const changes = entries
-            .map(x => parseChange(x, conf.commits))
-            .concat(previousChanges)
-          console.log('changes:', JSON.stringify(changes, null, 2))
-          core.endGroup()
-
-          core.setOutput('changes',       changes)
-          core.setOutput('release-title', title)
+          const ParseChanges = require('${{ github.action_path }}/github-scripts/parse-changes.js')
+          ParseChanges({core, context})
 
     - name: Semver
       uses: actions/github-script@v7
       id: semver
       env:
-        CONFIG: ${{ steps.config.outputs.config }}
-        NODE_MODULES_PATH: ${{ github.action_path }}/node_modules
+        CONFIG: ${{ steps.get-config.outputs.config }}
         CHANGELOG_RECORD_TITLE_TEMPLATE: ${{ github.action_path }}/templates/changelog-record-title.md
         CHANGELOG_RECORD_BODY_TEMPLATE: ${{ github.action_path }}/templates/changelog-record-body.md
         CHANGES: ${{ steps.parse-changes.outputs.changes }}
         RELEASE_TITLE: ${{ steps.parse-changes.outputs.release-title }}
       with:
         script: |
-          const { Index }     = require('${{ github.action_path }}/index.js')
-
-          const conf                  = JSON.parse(process.env.CONFIG)
-          const changes               = JSON.parse(process.env.CHANGES)
-          const title                 = process.env.RELEASE_TITLE
-          const changelogTemplates    = {
-            title: process.env.CHANGELOG_RECORD_TITLE_TEMPLATE,
-            body: process.env.CHANGELOG_RECORD_BODY_TEMPLATE
-          }
-
-          const releaseDetails = Index(changes, title, conf, changelogTemplates)
-
-          if(releaseDetails.releaseRequired){
-            core.startGroup(`Next version is ${releaseDetails.version}. Details (click here):`)
-            console.log(JSON.stringify(releaseDetails, null, 2))
-            core.endGroup()
-          }else{
-            core.startGroup(`Commit merged did not trigger a new release. Commit details (click here):`)
-            const commitMerged = context.payload.commits[0]
-            console.log(JSON.stringify(commitMerged, null, 2))
-            core.endGroup()
-          }
-
-          core.setOutput('version',           releaseDetails.version)
-          core.setOutput('release-type',      releaseDetails.releaseType)
-          core.setOutput('release-required',  releaseDetails.releaseRequired)
-          core.setOutput('changelog-record',  releaseDetails.changelogRecord)
-          core.setOutput('scopes',            releaseDetails.scopes)
+          const Semver = require('${{ github.action_path }}/github-scripts/semver.js')
+          Semver({core, context})
 
     - name: Build release commit
       if: ${{ steps.semver.outputs.release-required == 'true' }}
       id: build-commit-and-tags
       uses: actions/github-script@v7
       env:
-        TAG_REPO_VERSION: ${{ inputs.tag-version }}
+        TAG_VERSION: ${{ inputs.tag-version }}
         TAG_PREFIX: ${{ inputs.tag-prefix }}
-        CONFIG: ${{ steps.config.outputs.config }}
+        CONFIG: ${{ steps.get-config.outputs.config }}
         RELEASE_TITLE: ${{ steps.parse-changes.outputs.release-title }}
         CHANGELOG_RECORD_BODY: ${{ fromJSON(steps.semver.outputs.changelog-record).body }}
         REPO_TAG_VERSION: ${{ steps.semver.outputs.version }}
         SCOPES: ${{ steps.semver.outputs.scopes }}
       with:
         script: |
-          const tagRepoVersion          = process.env.TAG_REPO_VERSION === 'true'
-          const conf                    = JSON.parse(process.env.CONFIG)
-          const supportedScopesConfig   = conf.scopes.list
-          const releaseTitle            = process.env.RELEASE_TITLE
-          const changelogRecordBody     = process.env.CHANGELOG_RECORD_BODY
-          const repoTagVersion          = process.env.REPO_TAG_VERSION
-          const repoTagPrefix           = process.env.TAG_PREFIX
-          const scopes                  = JSON.parse(process.env.SCOPES)
-          const tags                    = []
-
-          const releaseCommit = {
-            title: `[skip ci] created release ${repoTagVersion} - ${releaseTitle}`,
-            body: changelogRecordBody
-          }
-
-          if(tagRepoVersion) {
-            const repoVersionTag = {
-              name: `${repoTagPrefix}${repoTagVersion}`,
-              title: releaseTitle,
-              body: changelogRecordBody
-            }
-            tags.push(repoVersionTag)
-          }
-
-          const tagsPerScope = {}
-          for (const [scope, properties] of Object.entries(scopes)) {
-            const scopeConfig   = supportedScopesConfig.find(x => x.key === scope)
-            const tagVersion    = scopeConfig.versioning['tag-version'] ?? conf.scopes['tag-version']
-            const tagPrefix     = scopeConfig.versioning['tag-prefix']  ?? conf.scopes['tag-prefix']
-            if(tagVersion){
-              const tagName       = `${scope}-${tagPrefix}${properties.version}`
-              tagsPerScope[scope] =  tagName
-              const scopeTag     = {
-                name: tagName,
-                title: releaseTitle,
-                body: properties.changelogRecord.body
-              }
-              tags.push(scopeTag)
-            }
-          }
-
-          core.setOutput('release-commit',  releaseCommit)
-          core.setOutput('tags',            tags)
-          core.setOutput('tags-per-scope',  tagsPerScope)
+          const BuildCommitAndTags = require('${{ github.action_path }}/github-scripts/build-commit-and-tags.js')
+          BuildCommitAndTags({core})
 
     - name: Commit changes
       if: ${{ steps.semver.outputs.release-required == 'true' }}
@@ -431,7 +270,7 @@ runs:
       uses: actions/github-script@v7
       id: create-scopes-releases
       env:
-        CONFIG: ${{ steps.config.outputs.config }}
+        CONFIG: ${{ steps.get-config.outputs.config }}
         SCOPES: ${{ steps.semver.outputs.scopes }}
         SCOPE_TAGS: ${{ steps.build-commit-and-tags.outputs.tags-per-scope }}
       with:
@@ -469,7 +308,7 @@ runs:
           core.setOutput('gh-releases-urls', ghReleasesUrls)
 
     - name: printing summary for Scopes Releases
-      if: ${{ steps.semver.outputs.scopes != '{}' && fromJSON(steps.config.outputs.config).scopes['print-summary'] }}
+      if: ${{ steps.semver.outputs.scopes != '{}' && fromJSON(steps.get-config.outputs.config).scopes['print-summary'] }}
       uses: actions/github-script@v7
       env:
         SCOPES: ${{ steps.semver.outputs.scopes }}
