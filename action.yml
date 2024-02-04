@@ -104,6 +104,8 @@ runs:
 
     - name: Process configuration
       uses: actions/github-script@v7
+      env:
+        INPUT_CONFIG: ${{ inputs.configuration }}
       id: get-config
       with:
         script: |
@@ -137,48 +139,21 @@ runs:
       id: semver
       env:
         CONFIG: ${{ steps.get-config.outputs.config }}
-        NODE_MODULES_PATH: ${{ github.action_path }}/node_modules
         CHANGELOG_RECORD_TITLE_TEMPLATE: ${{ github.action_path }}/templates/changelog-record-title.md
         CHANGELOG_RECORD_BODY_TEMPLATE: ${{ github.action_path }}/templates/changelog-record-body.md
         CHANGES: ${{ steps.parse-changes.outputs.changes }}
         RELEASE_TITLE: ${{ steps.parse-changes.outputs.release-title }}
       with:
         script: |
-          const { BuildNextRelease }  = require('${{ github.action_path }}/functions/build-next-release')
-
-          const conf                  = JSON.parse(process.env.CONFIG)
-          const changes               = JSON.parse(process.env.CHANGES)
-          const title                 = process.env.RELEASE_TITLE
-          const changelogTemplates    = {
-            title: process.env.CHANGELOG_RECORD_TITLE_TEMPLATE,
-            body: process.env.CHANGELOG_RECORD_BODY_TEMPLATE
-          }
-
-          const releaseDetails = BuildNextRelease(changes, title, conf, changelogTemplates)
-
-          if(releaseDetails.releaseRequired){
-            core.startGroup(`Next version is ${releaseDetails.version}. Details (click here):`)
-            console.log(JSON.stringify(releaseDetails, null, 2))
-            core.endGroup()
-          }else{
-            core.startGroup(`Commit merged did not trigger a new release. Commit details (click here):`)
-            const commitMerged = context.payload.commits[0]
-            console.log(JSON.stringify(commitMerged, null, 2))
-            core.endGroup()
-          }
-
-          core.setOutput('version',           releaseDetails.version)
-          core.setOutput('release-type',      releaseDetails.releaseType)
-          core.setOutput('release-required',  releaseDetails.releaseRequired)
-          core.setOutput('changelog-record',  releaseDetails.changelogRecord)
-          core.setOutput('scopes',            releaseDetails.scopes)
+          const Semver = require('${{ github.action_path }}/github-scripts/semver.js')
+          Semver({core, context})
 
     - name: Build release commit
       if: ${{ steps.semver.outputs.release-required == 'true' }}
       id: build-commit-and-tags
       uses: actions/github-script@v7
       env:
-        TAG_REPO_VERSION: ${{ inputs.tag-version }}
+        TAG_VERSION: ${{ inputs.tag-version }}
         TAG_PREFIX: ${{ inputs.tag-prefix }}
         CONFIG: ${{ steps.get-config.outputs.config }}
         RELEASE_TITLE: ${{ steps.parse-changes.outputs.release-title }}
@@ -187,50 +162,8 @@ runs:
         SCOPES: ${{ steps.semver.outputs.scopes }}
       with:
         script: |
-          const tagRepoVersion          = process.env.TAG_REPO_VERSION === 'true'
-          const conf                    = JSON.parse(process.env.CONFIG)
-          const supportedScopesConfig   = conf.scopes.list
-          const releaseTitle            = process.env.RELEASE_TITLE
-          const changelogRecordBody     = process.env.CHANGELOG_RECORD_BODY
-          const repoTagVersion          = process.env.REPO_TAG_VERSION
-          const repoTagPrefix           = process.env.TAG_PREFIX
-          const scopes                  = JSON.parse(process.env.SCOPES)
-          const tags                    = []
-
-          const releaseCommit = {
-            title: `[skip ci] created release ${repoTagVersion} - ${releaseTitle}`,
-            body: changelogRecordBody
-          }
-
-          if(tagRepoVersion) {
-            const repoVersionTag = {
-              name: `${repoTagPrefix}${repoTagVersion}`,
-              title: releaseTitle,
-              body: changelogRecordBody
-            }
-            tags.push(repoVersionTag)
-          }
-
-          const tagsPerScope = {}
-          for (const [scope, properties] of Object.entries(scopes)) {
-            const scopeConfig   = supportedScopesConfig.find(x => x.key === scope)
-            const tagVersion    = scopeConfig.versioning['tag-version'] ?? conf.scopes['tag-version']
-            const tagPrefix     = scopeConfig.versioning['tag-prefix']  ?? conf.scopes['tag-prefix']
-            if(tagVersion){
-              const tagName       = `${scope}-${tagPrefix}${properties.version}`
-              tagsPerScope[scope] =  tagName
-              const scopeTag     = {
-                name: tagName,
-                title: releaseTitle,
-                body: properties.changelogRecord.body
-              }
-              tags.push(scopeTag)
-            }
-          }
-
-          core.setOutput('release-commit',  releaseCommit)
-          core.setOutput('tags',            tags)
-          core.setOutput('tags-per-scope',  tagsPerScope)
+          const BuildCommitAndTags = require('${{ github.action_path }}/github-scripts/build-commit-and-tags.js')
+          BuildCommitAndTags({core})
 
     - name: Commit changes
       if: ${{ steps.semver.outputs.release-required == 'true' }}

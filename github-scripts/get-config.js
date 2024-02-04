@@ -8,7 +8,7 @@ module.exports = ({ core }) => {
   core.startGroup('getting configuration')
 
   const schemaPath = `${process.env.GITHUB_ACTION_PATH}/config.schema.yml`
-  const inputConfig = core.getInput('configuration')
+  const inputConfig = process.env.INPUT_CONFIG
   const schemaContent = fs.readFileSync(schemaPath)
   const schema = yml.load(schemaContent)
   let config = {}
