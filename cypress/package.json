@@ -3,7 +3,7 @@
   "dependencies": {
     "@badeball/cypress-cucumber-preprocessor": "19.2.0",
     "@cypress/browserify-preprocessor": "3.0.2",
-    "cypress": "13.6.1"
+    "cypress": "^13.6.1"
   },
   "devDependencies": {
     "cypress-terminal-report": "^5.3.9",

@@ -2,7 +2,7 @@ Feature: Print Summary
 
   Background: 
     Given I create a "public" repository named "semver-PR-{PR_NUMBER}-{TEST_KEY}"
-    And I add a branch protection rule for "main" 
+    And I add a branch protection rule for "main"
     And I push the file ".github/workflows/semver-test.yml" to the branch "main" with the content:
       """
       name: cangulo-actions/semver test
@@ -33,4 +33,22 @@ Feature: Print Summary
     And I create a PR with title "changed API structure"
     When I merge it
     Then the workflow "cangulo-actions/semver test" must conclude in "success"
-    # ⚠️🤷 THERE IS NO WAY TO CHECK THE SUMMARY IS LISTED USING THE GH API
+    And the workflow must print a summary that includes the next HTML:
+      """
+        <h1>🚀 New release</h1>
+        <table role="table">
+          <tbody>
+            <tr>
+              <th>version</th>
+              <th>title</th>
+              <th>type</th>
+            </tr>
+            <tr>
+              <td>1.0.0</td>
+              <td>break: changed API structure (#1)</td>
+              <td>major</td>
+            </tr>
+          </tbody>
+          </table>
+          <h3>commit id:</h3>
+      """
