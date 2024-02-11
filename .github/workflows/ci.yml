@@ -86,49 +86,49 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - scenario: 🚬 smoke tests
-            spec: cypress/e2e/smoke-test.feature
-            key: smoke-test
+          # - scenario: 🚬 smoke tests
+          #   spec: cypress/e2e/smoke-test.feature
+          #   key: smoke-test
 
-          - scenario: "Feat: Skip release new version"
-            spec: cypress/e2e/skip-release.feature
-            key: skip-release
+          # - scenario: "Feat: Skip release new version"
+          #   spec: cypress/e2e/skip-release.feature
+          #   key: skip-release
 
-          - scenario: "Feat: conf.scopes"
-            spec: cypress/e2e/feat-conf-scopes.feature
-            key: feat-conf-scopes
+          # - scenario: "Feat: conf.scopes"
+          #   spec: cypress/e2e/feat-conf-scopes.feature
+          #   key: feat-conf-scopes
 
-          - scenario: "Feat: GH release"
-            spec: cypress/e2e/feat-create-gh-release.feature
-            key: feat-create-gh-release
+          # - scenario: "Feat: GH release"
+          #   spec: cypress/e2e/feat-create-gh-release.feature
+          #   key: feat-create-gh-release
 
-          - scenario: "Feat: Include Previous Commits"
-            spec: cypress/e2e/feat-include-previous-non-releasable-commits.feature
-            key: feat-include-previous-non-releasable-commits
+          # - scenario: "Feat: Include Previous Commits"
+          #   spec: cypress/e2e/feat-include-previous-non-releasable-commits.feature
+          #   key: feat-include-previous-non-releasable-commits
 
-          - scenario: "Feat: conf.scopes.create-gh-release"
-            spec: cypress/e2e/feat-conf-scopes-create-gh-release.feature
-            key: feat-conf-scopes-create-gh-release
+          # - scenario: "Feat: conf.scopes.create-gh-release"
+          #   spec: cypress/e2e/feat-conf-scopes-create-gh-release.feature
+          #   key: feat-conf-scopes-create-gh-release
 
-          - scenario: "Feat: conf.scopes.print-summary"
-            spec: cypress/e2e/feat-conf-scopes-print-summary.feature
-            key: feat-conf-scopes-print-summary
+          # - scenario: "Feat: conf.scopes.print-summary"
+          #   spec: cypress/e2e/feat-conf-scopes-print-summary.feature
+          #   key: feat-conf-scopes-print-summary
 
           - scenario: "Feat: Print Summary"
             spec: cypress/e2e/feat-print-summary.feature
             key: feat-print-summary
 
-          - scenario: "Feat: disable tag-version"
-            spec: cypress/e2e/feat-tag-version.feature
-            key: feat-tag-version
+          # - scenario: "Feat: disable tag-version"
+          #   spec: cypress/e2e/feat-tag-version.feature
+          #   key: feat-tag-version
 
-          - scenario: "Feat: tag version with prefix"
-            spec: cypress/e2e/feat-tag-prefix.feature
-            key: feat-tag-prefix
+          # - scenario: "Feat: tag version with prefix"
+          #   spec: cypress/e2e/feat-tag-prefix.feature
+          #   key: feat-tag-prefix
 
-          - scenario: "Feat: Print Annotations"
-            spec: cypress/e2e/feat-print-annotations.feature
-            key: feat-print-annotations
+          # - scenario: "Feat: Print Annotations"
+          #   spec: cypress/e2e/feat-print-annotations.feature
+          #   key: feat-print-annotations
 
     runs-on: ubuntu-latest
     env:

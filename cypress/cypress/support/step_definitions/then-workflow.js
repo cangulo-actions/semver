@@ -34,6 +34,8 @@ Then('the workflow {string} must conclude in {string}', (workflowName, conclusio
             .then((runs) => {
               const commitValidationRun = runs.workflow_runs.find((run) => run.name === workflowName)
               expect(commitValidationRun.conclusion).to.equal(conclusion, `the ${workflowName} workflow must result in ${conclusion}`)
+              const htmlUrl = commitValidationRun.html_url
+              cy.task('appendSharedData', `WORKFLOW_RUN_HTML_URL=${htmlUrl}`)
             })
         })
     })
@@ -70,5 +72,26 @@ Then('the next annotation must be listed:', (table) => {
               })
             })
         })
+    })
+})
+
+Then('the workflow must print a summary that includes the next HTML:', (summaryHtml) => {
+  cy
+    .task('getSharedData')
+    .then((sharedData) => {
+      const { WORKFLOW_RUN_HTML_URL } = sharedData
+      cy.log(`visiting the web page ${WORKFLOW_RUN_HTML_URL}`)
+      // cy.visit(WORKFLOW_RUN_HTML_URL)
+
+      expect(true).to.equal(false, 'cy.visit is not working')
+
+      // ERROR FOUND, cy.visit is not working
+      // cy
+      //   .visit(WORKFLOW_RUN_HTML_URL)
+      //   .then(() => {
+      //     cy
+      //       .get('.markdown-body')
+      //       .should('exist')
+      //   })
     })
 })
