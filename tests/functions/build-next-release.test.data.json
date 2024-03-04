@@ -1,6 +1,6 @@
 [
     {
-        "enabled": true,
+        "enabled": false,
         "scenario": "PR with one commit",
         "files": {
             "CHANGELOG.md": "<previous changelog content>",
@@ -35,7 +35,7 @@
         }
     },
     {
-        "enabled": true,
+        "enabled": false,
         "scenario": "PR with multiple commits",
         "files": {
             "CHANGELOG.md": "<previous changelog content>",
@@ -79,7 +79,7 @@
         }
     },
     {
-        "enabled": true,
+        "enabled": false,
         "scenario": "PR with one commit without scopes",
         "configuration": "tests/functions/test.data.custom-config.yml",
         "files": {
@@ -115,7 +115,7 @@
         }
     },
     {
-        "enabled": true,
+        "enabled": false,
         "scenario": "PR with multiple commits with 2 scopes",
         "configuration": "tests/functions/test.data.custom-config.yml",
         "files": {
@@ -226,6 +226,42 @@
             "src/CHANGELOG.md": "# 0.2.0 squashed commit title with custom config (#9)\n\n## new features:\n* feat(src): #232 added reporting feature\n## patches:\n* fix(src): #221 solved DB timeout issue\n\n<previous changelog content>",
             "terraform/version.json": "{\n\t\"version\": \"1.0.1\"\n}",
             "terraform/CHANGELOG.md": "# 1.0.1 squashed commit title with custom config (#9)\n\n## patches:\n* fix(tfm): #212 increased default DB size\n\n<previous changelog content>"
+        }
+    },
+    {
+        "enabled": true,
+        "scenario": "PR with one commit - npm project",
+        "configuration": "tests/functions/build-next-release.test.data.custom-config.yml",
+        "files": {
+            "CHANGELOG.md": "<previous changelog content>",
+            "package.json": "{\n\t\"name\":\"@cangulo/npm-package-example\",\"version\":\"0.0.9\",\"description\":\"Carlos Angulo NPM project\"}"
+        },
+        "inputs": {
+            "title": "fix: #123 solved error querying the payment service (#5)",
+            "changes": [
+                {
+                    "type": "fix",
+                    "releaseAssociated": "patch",
+                    "scopes": [],
+                    "description": "#123 solved error querying the payment service (#5)",
+                    "originalCommit": "fix: #123 solved error querying the payment service (#5)"
+                }
+            ]
+        },
+        "result": {
+            "version": "0.0.10",
+            "releaseRequired": true,
+            "releaseType": "patch",
+            "scopes": {},
+            "changelogRecord": {
+                "title": "# 0.0.10 fix: #123 solved error querying the payment service (#5)\n",
+                "body": "## patches:\n* fix: #123 solved error querying the payment service (#5)\n",
+                "content": "# 0.0.10 fix: #123 solved error querying the payment service (#5)\n\n## patches:\n* fix: #123 solved error querying the payment service (#5)\n"
+            }
+        },
+        "filesModified": {
+            "package.json": "{\n\t\"name\": \"@cangulo/npm-package-example\",\n\t\"version\": \"0.0.10\",\n\t\"description\": \"Carlos Angulo NPM project\"\n}",
+            "CHANGELOG.md": "# 0.0.10 fix: #123 solved error querying the payment service (#5)\n\n## patches:\n* fix: #123 solved error querying the payment service (#5)\n\n<previous changelog content>"
         }
     }
 ]

@@ -4,6 +4,23 @@ required:
   - commits
 
 properties:
+  versioning:
+    type: object
+    description: Configuration for versioning
+    properties:
+      file:
+        type: string
+        description: JSON file where the version is stored
+        default: version.json
+      changelog:
+        type: string
+        description: changelog markdown file
+        default: CHANGELOG.md
+    required:
+      - file
+    default:
+      file: version.json
+      changelog: CHANGELOG.md
   commits:
     type: array
     description: The list of commit types and their corresponding release types.

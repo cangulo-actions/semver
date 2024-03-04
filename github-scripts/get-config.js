@@ -4,11 +4,10 @@ const fs = require('fs')
 
 // @ts-check
 /** @param {import('github-script').AsyncFunctionArguments} AsyncFunctionArguments */
-module.exports = ({ core }) => {
+module.exports = ({ core, inputConfig }) => {
   core.startGroup('getting configuration')
 
   const schemaPath = `${process.env.GITHUB_ACTION_PATH}/config.schema.yml`
-  const inputConfig = process.env.INPUT_CONFIG
   const schemaContent = fs.readFileSync(schemaPath)
   const schema = yml.load(schemaContent)
   let config = {}

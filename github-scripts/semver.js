@@ -2,8 +2,7 @@ const { BuildNextRelease } = require('../functions/build-next-release')
 
 // @ts-check
 /** @param {import('github-script').AsyncFunctionArguments} AsyncFunctionArguments */
-module.exports = async ({ core, context }) => {
-  const conf = JSON.parse(process.env.CONFIG)
+module.exports = async ({ core, context, config }) => {
   const changes = JSON.parse(process.env.CHANGES)
   const title = process.env.RELEASE_TITLE
   const changelogTemplates = {
@@ -11,7 +10,7 @@ module.exports = async ({ core, context }) => {
     body: process.env.CHANGELOG_RECORD_BODY_TEMPLATE
   }
 
-  const releaseDetails = BuildNextRelease(changes, title, conf, changelogTemplates)
+  const releaseDetails = BuildNextRelease(changes, title, config, changelogTemplates)
 
   if (releaseDetails.releaseRequired) {
     core.startGroup(`Next version is ${releaseDetails.version}. Details (click here):`)

@@ -1,0 +1,4 @@
+# yaml-language-server: $schema=../../config.schema.yml
+
+versioning:
+  file: package.json

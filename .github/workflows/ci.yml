@@ -106,6 +106,10 @@ jobs:
             spec: cypress/e2e/feat-include-previous-non-releasable-commits.feature
             key: feat-include-previous-non-releasable-commits
 
+          - scenario: "Feat: conf.versioning.file"
+            spec: cypress/e2e/feat-conf-versioning-file.feature
+            key: feat-conf-versioning-file
+
           - scenario: "Feat: conf.scopes.create-gh-release"
             spec: cypress/e2e/feat-conf-scopes-create-gh-release.feature
             key: feat-conf-scopes-create-gh-release
