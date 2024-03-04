@@ -1,3 +1,18 @@
+# 0.11.0 feat: #106 allow custom file for storing version. Useful for NPM projects. Fixes #106 (#107)
+
+## new features:
+* feat: #106 allow custom file for storing version. Useful for NPM projects. Fixes #106 (#107)
+## others
+* ci: undo error committed in the ci.yml that avoid deleting temporary repos for e2e tests (#95)
+* test: clean test and delete config.default.yml (#97)
+* ci: [ci.yml] minor change (#98)
+* refactor: format yml files (#103)
+* refactor: #101 created build-next-release.js function
+* refactor: #101 [get-config] created github-scripts script for storing js code executed in actions/github-scripts step
+* refactor: #101 [get-previous-changes] migrated gh step step to script
+* refactor: #101 [parse-changes] migrated gh step step to script
+* refactor: #101 [semver][build-commit-and-tags] migrated gh step step to script
+
 # 0.10.0 feat: #93 make the GH action return the whole changelog-record with title, entries and body. Fixes #93 (#94)
 
 ## new features:
