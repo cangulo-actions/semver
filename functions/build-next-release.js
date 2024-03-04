@@ -17,10 +17,10 @@ function BuildNextRelease (changes, title, config, changelogTemplates) {
 
   const repoChangesConfig = {
     changelog: config.versioning.changelog,
-    versionJsonPath: config.versioning.file
+    versionFile: config.versioning.file
   }
 
-  const { requiresNewRelease, nextVersion, nextReleaseType } = checkForNextRelease(changes, repoChangesConfig.versionJsonPath)
+  const { requiresNewRelease, nextVersion, nextReleaseType } = checkForNextRelease(changes, repoChangesConfig.versionFile)
   result.releaseRequired = requiresNewRelease
 
   if (requiresNewRelease) {
@@ -29,7 +29,7 @@ function BuildNextRelease (changes, title, config, changelogTemplates) {
 
     const newChangelogRecord = buildChangelogRecord(changes, nextVersion, title, changelogTemplates)
     updateChangelog(newChangelogRecord.content, repoChangesConfig.changelog)
-    updateVersionJsonFile(nextVersion, repoChangesConfig.versionJsonPath)
+    updateVersionFile(nextVersion, repoChangesConfig.versionFile)
     result.changelogRecord = newChangelogRecord
 
     const commitsContainAnyScope = changes.some(change => change.scopes.length > 0)
@@ -52,7 +52,7 @@ function BuildNextRelease (changes, title, config, changelogTemplates) {
         if (requiresNewRelease) {
           const newChangelogRecord = buildChangelogRecord(changes, nextVersion, title, changelogTemplates)
           updateChangelog(newChangelogRecord.content, changelogPath)
-          updateVersionJsonFile(nextVersion, versionJsonPath)
+          updateVersionFile(nextVersion, versionJsonPath)
 
           scopesResult[scope] = {
             version: nextVersion,
@@ -83,7 +83,7 @@ function checkForNextRelease (changes, versionFilePath) {
   return { requiresNewRelease, nextVersion, nextReleaseType }
 }
 
-function updateVersionJsonFile (nextVersion, versionFilePath) {
+function updateVersionFile (nextVersion, versionFilePath) {
   let versionFileContent = {}
   if (fs.existsSync(versionFilePath)) {
     const currentContent = fs.readFileSync(versionFilePath)
