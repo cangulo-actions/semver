@@ -1,5 +1,9 @@
 name: "🚀 semver create release"
-description: "Get the commits from the last commit"
+description: >
+  Release versions following semver and conventional commits.
+  Version is calculated in the last squashed commit message. 
+  Support GH release creation and release notes.
+  Support for multiple releases per commits scope.
 inputs:
   configuration:
     description: "path to the configuration.yml which store the scopes and commit types"
