@@ -1,3 +1,10 @@
+# 0.11.1 fix: Updated GH action description (#108)
+
+## patches:
+* fix: Updated GH action description
+## others
+* refactor: minor refactor in version build-next-release.js
+
 # 0.11.0 feat: #106 allow custom file for storing version. Useful for NPM projects. Fixes #106 (#107)
 
 ## new features:
