@@ -15,9 +15,9 @@ Given('if any of the next files exist, they are deleted:', (table) => {
               if (exists) {
                 cy
                   .getContent({ owner: OWNER, repo: REPO, file })
-                  .then((content) => {
-                    cy.log(`Deleting file ${content.path}`)
-                    cy.deleteContent({ owner: OWNER, repo: REPO, file: content.path, sha: content.sha })
+                  .then((response) => {
+                    cy.log(`Deleting file ${response.path}`)
+                    cy.deleteContent({ owner: OWNER, repo: REPO, file: response.path, sha: response.sha })
                   })
               }
             })

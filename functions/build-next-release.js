@@ -5,18 +5,19 @@ const { buildChangelogRecord, updateChangelog } = require('./changelog')
 const { groupBy } = require('core-js/actual/array/group-by')
 
 const fs = require('fs')
-const repoChangesConfig = {
-  changelog: 'CHANGELOG.md',
-  versionJsonPath: 'version.json'
-}
 
-function BuildNextRelease (changes, title, conf, changelogTemplates) {
+function BuildNextRelease (changes, title, config, changelogTemplates) {
   const result = {
     releaseRequired: false,
     version: '',
     releaseType: '',
     changelogRecord: {},
     scopes: {}
+  }
+
+  const repoChangesConfig = {
+    changelog: config.versioning.changelog,
+    versionJsonPath: config.versioning.file
   }
 
   const { requiresNewRelease, nextVersion, nextReleaseType } = checkForNextRelease(changes, repoChangesConfig.versionJsonPath)
@@ -32,8 +33,8 @@ function BuildNextRelease (changes, title, conf, changelogTemplates) {
     result.changelogRecord = newChangelogRecord
 
     const commitsContainAnyScope = changes.some(change => change.scopes.length > 0)
-    if (commitsContainAnyScope && conf.scopes.list.length > 0) {
-      const scopesSupported = conf.scopes.list
+    if (commitsContainAnyScope && config.scopes.list.length > 0) {
+      const scopesSupported = config.scopes.list
       const scopesResult = {}
       const changesByScope = changes
         .flatMap(change => change.scopes.map(scope => ({ scope, change })))
@@ -68,11 +69,11 @@ function BuildNextRelease (changes, title, conf, changelogTemplates) {
   return result
 }
 
-function checkForNextRelease (changes, versionJsonPath) {
+function checkForNextRelease (changes, versionFilePath) {
   let currentVersion = '0.0.0'
-  if (fs.existsSync(versionJsonPath)) {
-    const versionJsonContent = fs.readFileSync(versionJsonPath)
-    currentVersion = JSON.parse(versionJsonContent).version
+  if (fs.existsSync(versionFilePath)) {
+    const versionFileContent = fs.readFileSync(versionFilePath)
+    currentVersion = JSON.parse(versionFileContent).version
   }
 
   const releases = changes.map(x => x.releaseAssociated)
@@ -82,15 +83,15 @@ function checkForNextRelease (changes, versionJsonPath) {
   return { requiresNewRelease, nextVersion, nextReleaseType }
 }
 
-function updateVersionJsonFile (nextVersion, versionJsonPath) {
-  let versionJsonContent = {}
-  if (fs.existsSync(versionJsonPath)) {
-    const currentContent = fs.readFileSync(versionJsonPath)
-    versionJsonContent = JSON.parse(currentContent)
+function updateVersionJsonFile (nextVersion, versionFilePath) {
+  let versionFileContent = {}
+  if (fs.existsSync(versionFilePath)) {
+    const currentContent = fs.readFileSync(versionFilePath)
+    versionFileContent = JSON.parse(currentContent)
   }
-  versionJsonContent.version = nextVersion
-  const versionJson = JSON.stringify(versionJsonContent, null, '\t')
-  fs.writeFileSync(versionJsonPath, versionJson)
+  versionFileContent.version = nextVersion
+  const versionJson = JSON.stringify(versionFileContent, null, '\t')
+  fs.writeFileSync(versionFilePath, versionJson)
 }
 
 module.exports = {

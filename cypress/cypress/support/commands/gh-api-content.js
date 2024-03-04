@@ -25,10 +25,11 @@ Cypress.Commands.add('getContent', ({ owner, repo, file, branch }) => {
       Authorization: `token ${Cypress.env('GH_TOKEN')}`
     }
   }).then((response) => {
-    const content = response.body
+    const body = response.body
     return {
-      path: content.path,
-      sha: content.sha
+      path: body.path,
+      content: body.content,
+      sha: body.sha
     }
   })
 })
