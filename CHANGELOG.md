@@ -1,3 +1,8 @@
+# 0.12.0 feat: #109 allow execute bash commands before release commit. Fixes #109 (#110)
+
+## new features:
+* feat: #109 allow execute bash commands before release commit. Fixes #109 (#110)
+
 # 0.11.1 fix: Updated GH action description (#108)
 
 ## patches:
