@@ -55,7 +55,7 @@ inputs:
 outputs:
   new-version-released:
     value: ${{ steps.semver.outputs.release-required }}
-    description: "flag for creating GH release"
+    description: "flag for detecting if a new version was released"
   version:
     value: ${{ steps.semver.outputs.version }}
     description: "repository version"
@@ -173,7 +173,7 @@ runs:
           BuildCommitAndTags({core})
 
     - name: Run custom commands before commit
-      if: ${{ fromJSON(steps.get-config.outputs.config).precommitcommands.enabled }}
+      if: ${{ steps.semver.outputs.release-required == 'true' && fromJSON(steps.get-config.outputs.config).precommitcommands.enabled }}
       uses: actions/github-script@v7
       env:
         CONFIG: ${{ steps.get-config.outputs.config }}
