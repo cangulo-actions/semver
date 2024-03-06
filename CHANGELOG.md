@@ -1,3 +1,8 @@
+# 0.12.2 fix: updated pre-commit-commands to only run if a release is required (#112)
+
+## patches:
+* fix: updated pre-commit-commands to only run if a release is required (#112)
+
 # 0.12.1 fix: fixed error when getting previous non releasable commits with version file different from version.json (#111)
 
 ## patches:
