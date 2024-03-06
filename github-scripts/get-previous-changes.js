@@ -3,19 +3,18 @@ const { parseLastCommit } = require('../functions/parse-last-commit')
 
 // @ts-check
 /** @param {import('github-script').AsyncFunctionArguments} AsyncFunctionArguments */
-module.exports = async ({ core, github, context }) => {
+module.exports = async ({ core, github, context, config }) => {
   core.startGroup('Getting changes from previous commits')
 
-  const conf = JSON.parse(process.env.CONFIG)
-
+  const versionFile = config.versioning.file
   const { data: versionJSONCommits } = await github.rest.repos.listCommits({
     owner: context.repo.owner,
     repo: context.repo.repo,
-    path: 'version.json'
+    path: versionFile
   })
 
   if (versionJSONCommits.length === 0) {
-    core.notice('version.json file not found. Getting Previous changes is not supported in this case', { title: 'cangulo-actions/semver notice' })
+    core.notice(`${versionFile} file not found. Getting Previous changes is not supported in this case`, { title: 'cangulo-actions/semver notice' })
     return
   }
 
@@ -36,7 +35,7 @@ module.exports = async ({ core, github, context }) => {
     .forEach(commitMsg => {
       const { entries } = parseLastCommit(commitMsg)
       const changes = entries
-        .map(x => parseChange(x, conf.commits))
+        .map(x => parseChange(x, config.commits))
       previousChanges.push(...changes)
     })
 
