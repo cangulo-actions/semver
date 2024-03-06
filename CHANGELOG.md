@@ -1,3 +1,8 @@
+# 0.12.1 fix: fixed error when getting previous non releasable commits with version file different from version.json (#111)
+
+## patches:
+* fix: fixed error when getting previous non releasable commits with version file different from version.json (#111)
+
 # 0.12.0 feat: #109 allow execute bash commands before release commit. Fixes #109 (#110)
 
 ## new features:
