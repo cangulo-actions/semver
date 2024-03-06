@@ -125,3 +125,22 @@ properties:
           required:
             - key
             - versioning
+  precommitcommands:
+    type: object
+    description: bash commands to run before the release commit
+    properties:
+      enabled:
+        type: boolean
+        description: flag to enable the pre-commit commands execution
+        default: false
+      commands:
+        type: array
+        description: The list of bash commands to run before the release commit
+        items:
+          type: string
+    required:
+      - enabled
+      - commands
+    default:
+      enabled: false
+      commands: []

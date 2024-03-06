@@ -171,6 +171,17 @@ runs:
           const BuildCommitAndTags = require('${{ github.action_path }}/github-scripts/build-commit-and-tags.js')
           BuildCommitAndTags({core})
 
+    - name: Run custom commands before commit
+      if: ${{ fromJSON(steps.get-config.outputs.config).precommitcommands.enabled }}
+      uses: actions/github-script@v7
+      env:
+        CONFIG: ${{ steps.get-config.outputs.config }}
+      with:
+        script: |
+          const config                = JSON.parse(process.env.CONFIG)
+          const runPreCommitCommands  = require('${{ github.action_path }}/github-scripts/pre-commit-commands.js')
+          runPreCommitCommands({core, exec, config})
+
     - name: Commit changes
       if: ${{ steps.semver.outputs.release-required == 'true' }}
       id: commit
