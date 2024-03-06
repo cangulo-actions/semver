@@ -118,6 +118,10 @@ jobs:
             spec: cypress/e2e/feat-conf-scopes-print-summary.feature
             key: feat-conf-scopes-print-summary
 
+          - scenario: "Feat: conf.pre-commit-commands"
+            spec: cypress/e2e/feat-conf-pre-commit-commands.feature
+            key: feat-conf-pre-commit-commands
+
           - scenario: "Feat: Print Summary"
             spec: cypress/e2e/feat-print-summary.feature
             key: feat-print-summary
