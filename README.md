@@ -1,22 +1,34 @@
-# semver
+# semver <!-- omit from toc -->
 
-> [!CAUTION]
-> 🚧🚧🚧 ⚠️⚠️⚠️ UNDER CONSTRUCTION - DO NOT USE IT 🚧🚧🚧 ⚠️⚠️⚠️
-
-- [semver](#semver)
-  - [Requirements](#requirements)
-  - [Conventional Commits and semver](#conventional-commits-and-semver)
-  - [Examples](#examples)
-    - [Simplest case](#simplest-case)
-    - [Custom Commit Types](#custom-commit-types)
-    - [Monorepos or multilayer solutions](#monorepos-or-multilayer-solutions)
+- [Requirements](#requirements)
+  - [Repo configuration](#repo-configuration)
+  - [Release title and changes](#release-title-and-changes)
+- [Conventional Commits and semver](#conventional-commits-and-semver)
+- [Examples](#examples)
+  - [Simplest case](#simplest-case)
+  - [Custom Commit Types](#custom-commit-types)
+  - [Monorepos or multilayer solutions](#monorepos-or-multilayer-solutions)
 
 ## Requirements
 
-- Changes must be merged into one squash commit
-- The release title will be taken from the last commit message
-- No more than one commit is expected
-- PRs commit must follow conventional commits. Please check the section Conventional Commits
+- PR commits must be merged into one squashed commit
+- Only one commit is expected. If this one has a title and body, the release name will be the title
+- PRs commit must follow conventional commits. Please check the section [Conventional Commits](#conventional-commits-and-semver)
+
+### Repo configuration
+
+When merging PRs, this action expects the merge commit to be a squashed one which includes all the PR commits messages in the body. You can enforce this with the next configuration in your repositories:
+
+![alt text](docs/repo-config-squash.png)
+
+### Release title and changes
+
+When you are about to squash your commits GH UI shows you a panel with the next two fields:
+
+- **Commit title**: This will be consider as the release title.
+- **Commit body**: This will include all the PR commit messages.
+
+If both title and body are given, only the body is used to determine the next release number based on commit types like `feat` or `fix`. If only the title is provided, which is the case for PRs with a single commit, this one is used to calculate the next release number.
 
 ## Conventional Commits and semver
 
