@@ -1,7 +1,7 @@
 # semver <!-- omit from toc -->
 
 - [Requirements](#requirements)
-  - [Repo configuration](#repo-configuration)
+  - [Repository configuration](#repository-configuration)
   - [Release title and changes](#release-title-and-changes)
 - [Conventional Commits and semver](#conventional-commits-and-semver)
 - [Examples](#examples)
@@ -11,13 +11,21 @@
 
 ## Requirements
 
-- PR commits must be merged into one squashed commit
-- Only one commit is expected. If this one has a title and body, the release name will be the title
-- PRs commit must follow conventional commits. Please check the section [Conventional Commits](#conventional-commits-and-semver)
+> 🗜️ This GH action is designed to be executed after a PR is merged. The merging strategy expected is **squash merging**, all the PR commits will be grouped into a single one pushed to your target branch. Please check the [Repository configuration](#repository-configuration) section
+> 1️⃣ The commits merged must follow conventional commits. Otherwise, the version won't increase. Please check the [Conventional Commits](#conventional-commits-and-semver) section
+> 📜  When calling this GH action only one commit is expected. This one is read from the `context.payload.commits` and, following the squash merging approach, it will include all the PR commit messages. If this commit has a title and body, the release name will be the title.
 
-### Repo configuration
+### Repository configuration
 
-When merging PRs, this action expects the merge commit to be a squashed one which includes all the PR commits messages in the body. You can enforce this with the next configuration in your repositories:
+When merging PRs, there are multiple strategies available:
+
+![example merging strategies](docs/example-merging-strategies.png)
+
+This GH action needs the squash strategy which will _squash_ all the commits in the PR into a single one.
+
+![example-squash-commit-menu.png](docs/example-squash-commit-menu.png)
+
+this action expects the merge commit to be a squashed one which includes all the PR commit messages in the body. You can enforce this with the next configuration in your repositories:
 
 ![alt text](docs/repo-config-squash.png)
 
@@ -25,7 +33,7 @@ When merging PRs, this action expects the merge commit to be a squashed one whic
 
 When you are about to squash your commits GH UI shows you a panel with the next two fields:
 
-- **Commit title**: This will be consider as the release title.
+- **Commit title**: This will be considered as the release title.
 - **Commit body**: This will include all the PR commit messages.
 
 If both title and body are given, only the body is used to determine the next release number based on commit types like `feat` or `fix`. If only the title is provided, which is the case for PRs with a single commit, this one is used to calculate the next release number.
@@ -36,8 +44,8 @@ Semantic Version is a proposal for versioning apps based on 3 types of releases:
 
 > `MAJOR.MINOR.PATCH`
 
-- `MAJOR` => A major released includes changes that make the app incompatible. The first number (`MAJOR`) is increased and the previous one reset to 0.
-- `MINOR` => A minor release includes new features that consumer can integrate directly or with new inputs they can provide. It increases the second number `MINOR` and reset the last one.
+- `MAJOR` => A major release includes changes that make the app incompatible. The first number (`MAJOR`) is increased and the previous one reset to 0.
+- `MINOR` => A minor release includes new features that consumers can integrate directly or with new inputs they can provide. It increases the second number `MINOR` and reset the last one.
 - `PATCH` => A patch release (or simply a patch) includes bug fixes.
 
 This GH action aims to make the version increase depend on the commits merged. For that, commits must follow the next convention pattern:
@@ -64,7 +72,7 @@ You can check the default config [in properties.commits.default at config.schema
 - Please note if more than one commit is merged. The one with the higher release type will be taken into account. Example: You merge a `fix: ...` and a `break: ...` the next version will be a major.
 - ⚠️ Commits merged with a different type than the previous one won't trigger a release
 - 📑 You can customize the accepted commit types and the release linked. Please check the section [Custom Commit Types](#custom-commit-types).
-- 🔭 This GH action also support scopes in the commit message. The pattern would be: `<type>(scope1,scope2,...,scopeN): <description>`. Details in the [Monorepos or multilayer solutions](#monorepos-or-multilayer-solutions) section.
+- 🔭 This GH action also supports scopes in the commit message. The pattern would be: `<type>(scope1,scope2,...,scopeN): <description>`. Details in the [Monorepos or multilayer solutions](#monorepos-or-multilayer-solutions) section.
 
 References:
 
@@ -103,7 +111,6 @@ jobs:
       env:
         CHANGES: ${{ steps.semver.outputs.changes }}
         CHANGELOG_RECORD: ${{ steps.semver.outputs.changelog-record }}
-        SCOPES: ${{ steps.semver.outputs.scopes }}
       run: |
         echo "version:        ${{ steps.semver.outputs.version }}"
         echo "release-title:  ${{ steps.semver.outputs.release-title }}"
@@ -116,9 +123,6 @@ jobs:
 
         echo "changes-log:"
         echo "$CHANGELOG_RECORD"
-
-        echo "scopes:"
-        echo "$SCOPES" | jq .
 ```
 
 You can copy it from the [cd.yml](.github/workflows/cd.yml)
