@@ -11,13 +11,12 @@
 
 ## Requirements
 
-> 🗜️ This GH action is designed to be executed after a PR is merged. The merging strategy expected is **squash merging**, all the PR commits will be grouped into a single one pushed to your target branch. Please check the [Repository configuration](#repository-configuration) section
-> 1️⃣ The commits merged must follow conventional commits. Otherwise, the version won't increase. Please check the [Conventional Commits](#conventional-commits-and-semver) section
-> 📜  When calling this GH action only one commit is expected. This one is read from the `context.payload.commits` and, following the squash merging approach, it will include all the PR commit messages. If this commit has a title and body, the release name will be the title.
+> * 🗜️ This GH action is designed to be executed after a PR is merged. The merging strategy required is **squash merging**, this will _squash_ all the commits into a single one pushed to your target branch. Please check the [Repository configuration](#repository-configuration) section   
+> * 1️⃣ The commit merged, and all the commit messages contained, must follow conventional commits. Otherwise, the version won't increase. Please check the [Conventional Commits](#conventional-commits-and-semver) section   
 
 ### Repository configuration
 
-When merging PRs, there are multiple strategies available:
+Next are the different merging strategies for PRs:
 
 ![example merging strategies](docs/example-merging-strategies.png)
 
