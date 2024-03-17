@@ -1,9 +1,17 @@
 # semver <!-- omit from toc -->
 
+This action automate any release process. You can trigger it after merging a PR and if the commits include any releasable commit it will increase the version and add the commits messages to a changelog. Check the next demo:
+
+
 - [Requirements](#requirements)
   - [Repository configuration](#repository-configuration)
-  - [Release title and changes](#release-title-and-changes)
+  - [Release details](#release-details)
 - [Conventional Commits and semver](#conventional-commits-and-semver)
+- [Features](#features)
+  - [out-of-the-box version tracking and changelog](#out-of-the-box-version-tracking-and-changelog)
+  - [GH release integration](#gh-release-integration)
+  - [Commit using a specifiy GH Token for protected branches](#commit-using-a-specifiy-gh-token-for-protected-branches)
+  - [print summary](#print-summary)
 - [Examples](#examples)
   - [Simplest case](#simplest-case)
   - [Custom Commit Types](#custom-commit-types)
@@ -11,35 +19,48 @@
 
 ## Requirements
 
-> * 🗜️ This GH action is designed to be executed after a PR is merged. The merging strategy required is **squash merging**, this will _squash_ all the commits into a single one pushed to your target branch. Please check the [Repository configuration](#repository-configuration) section   
-> * 1️⃣ The commit merged, and all the commit messages contained, must follow conventional commits. Otherwise, the version won't increase. Please check the [Conventional Commits](#conventional-commits-and-semver) section   
+> * 🗜️ This GH action is designed to be executed after a PR is merged. The merging strategy required is **squash merging**, this will _squash_ all the commits into a single one pushed to your target branch. Please check the [Repository configuration](#repository-configuration) section
+
+> * 📝 The commit merged, and all the commit messages contained, must follow conventional commits. Otherwise, the version won't increase. Please check the [Conventional Commits](#conventional-commits-and-semver) section
 
 ### Repository configuration
 
-Next are the different merging strategies for PRs:
+GH supports the next merging strategies for PRs:
 
 ![example merging strategies](docs/example-merging-strategies.png)
 
-This GH action needs the squash strategy which will _squash_ all the commits in the PR into a single one.
+This GH action needs the squash strategy, this will _squash_ all the commits in the PR into a single one pushed to your target branch. You can enforce this strategy in the repository configuration as next:
+
+![repo config squash](docs/repo-config-squash.png)
+
+> 💡 I recommend you to setup the default commit message to `Pull request title and commit details`. This will facilitate you the proposed release details (see next section).
+
+### Release details
+
+When you are about to squash your commits the GH UI shows you a panel with the next two fields:
+
+- **Commit title**: This will be considered as the release title. If you configured the default commit message to be `Pull request title and commit details` this will be filled with the PR title.
+- **Commit body**: This will include all the PR commit messages.
 
 ![example-squash-commit-menu.png](docs/example-squash-commit-menu.png)
 
-this action expects the merge commit to be a squashed one which includes all the PR commit messages in the body. You can enforce this with the next configuration in your repositories:
+The release version is calculated based on the highest change type change. For example:
 
-![alt text](docs/repo-config-squash.png)
+```
+fix: solved issue with the DB connection
+feat: implemented reporting endpoint
+docs: updated readme with new endpoints
+```
 
-### Release title and changes
+The highest change here is `feat` (new feature). If the initial version is `0.0.3` the version will be increased to `0.1.0`.
 
-When you are about to squash your commits GH UI shows you a panel with the next two fields:
-
-- **Commit title**: This will be considered as the release title.
-- **Commit body**: This will include all the PR commit messages.
-
-If both title and body are given, only the body is used to determine the next release number based on commit types like `feat` or `fix`. If only the title is provided, which is the case for PRs with a single commit, this one is used to calculate the next release number.
+> 💡 Edit the commit title in case you want to have a release title different from the PR title.
+> ✅ To ensure the PR commits follow conventional commits run the [conventional-commits-validator](https://github.com/cangulo-actions/conventional-commits-validator) GH action when a PR is open or modified.
+> ⚠️ Do not modify the commit body manually in the GH UI, you risk introduce errors
 
 ## Conventional Commits and semver
 
-Semantic Version is a proposal for versioning apps based on 3 types of releases: major, minor and patch. Each one is a number integrated in the whole app version:
+[Semantic Versioning](https://semver.org) is a proposal for versioning apps based on 3 types of releases: major, minor and patch. Each one is a number integrated in the whole app version:
 
 > `MAJOR.MINOR.PATCH`
 
@@ -78,6 +99,14 @@ References:
 - [Semantic Versioning](https://semver.org)
 - [conventional commits specification](https://www.conventionalcommits.org/en/v1.0.0/#summary)
 
+
+## Features
+
+### out-of-the-box version tracking and changelog
+### GH release integration
+### Commit using a specifiy GH Token for protected branches
+### print summary
+
 ## Examples
 
 ### Simplest case
@@ -98,7 +127,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout
-      uses: actions/checkout@v4.1.1
+      uses: actions/checkout@v4
     - name: release new version
       uses: cangulo-actions/semver@main
       id: semver
@@ -171,7 +200,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout
-      uses: actions/checkout@v4.1.1
+      uses: actions/checkout@v4
     - name: release new version
       uses: cangulo-actions/semver@main
       id: semver
