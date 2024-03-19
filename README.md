@@ -2,11 +2,10 @@
 
 This action automate any release process. You can trigger it after merging a PR and if the commits include any releasable commit it will increase the version and add the commits messages to a changelog. Check the next demo:
 
-
 - [Requirements](#requirements)
   - [Repository configuration](#repository-configuration)
   - [Release details](#release-details)
-- [Conventional Commits and semver](#conventional-commits-and-semver)
+- [Semantic Versioning and Conventional Commits](#semantic-versioning-and-conventional-commits)
 - [Features](#features)
   - [out-of-the-box version tracking and changelog](#out-of-the-box-version-tracking-and-changelog)
   - [GH release integration](#gh-release-integration)
@@ -19,9 +18,11 @@ This action automate any release process. You can trigger it after merging a PR 
 
 ## Requirements
 
-> * 🗜️ This GH action is designed to be executed after a PR is merged. The merging strategy required is **squash merging**, this will _squash_ all the commits into a single one pushed to your target branch. Please check the [Repository configuration](#repository-configuration) section
-
-> * 📝 The commit merged, and all the commit messages contained, must follow conventional commits. Otherwise, the version won't increase. Please check the [Conventional Commits](#conventional-commits-and-semver) section
+> [!IMPORTANT]
+> - 🗜️ This GH action is designed to be executed after a PR is merged following the **squash and merge** option. This will _squash_ all the commits into a single one, and push it to the PR target branch.  
+> Please check the [Repository configuration](#repository-configuration) section  
+> - 📝 All the **commits merged must follow the `<type>: <description>`**. Otherwise, the version won't increase.  
+> Please check the [Conventional Commits](#semantic-versioning-and-conventional-commits) section
 
 ### Repository configuration
 
@@ -29,11 +30,12 @@ GH supports the next merging strategies for PRs:
 
 ![example merging strategies](docs/example-merging-strategies.png)
 
-This GH action needs the squash strategy, this will _squash_ all the commits in the PR into a single one pushed to your target branch. You can enforce this strategy in the repository configuration as next:
+This GH action needs the squash strategy, this will _squash_ all the commits in the PR into a single one pushed to the target branch. You can enforce this strategy in the repository configuration as next:
 
 ![repo config squash](docs/repo-config-squash.png)
 
-> 💡 I recommend you to setup the default commit message to `Pull request title and commit details`. This will facilitate you the proposed release details (see next section).
+> [!TIP] 
+> You can configure the default commit message to `Pull request title and commit details` to facilitate the proposed release details (see next section).
 
 ### Release details
 
@@ -44,7 +46,7 @@ When you are about to squash your commits the GH UI shows you a panel with the n
 
 ![example-squash-commit-menu.png](docs/example-squash-commit-menu.png)
 
-The release version is calculated based on the highest change type change. For example:
+The release version is calculated based on the highest change type change. For the previous example, here are the changes:
 
 ```
 fix: solved issue with the DB connection
@@ -54,44 +56,52 @@ docs: updated readme with new endpoints
 
 The highest change here is `feat` (new feature). If the initial version is `0.0.3` the version will be increased to `0.1.0`.
 
-> 💡 Edit the commit title in case you want to have a release title different from the PR title.
-> ✅ To ensure the PR commits follow conventional commits run the [conventional-commits-validator](https://github.com/cangulo-actions/conventional-commits-validator) GH action when a PR is open or modified.
-> ⚠️ Do not modify the commit body manually in the GH UI, you risk introduce errors
+> [!TIP] 
+> 📝 Edit the commit title in case you want to have a release title different from the PR title.  
+> ✅ To ensure the PR commits follow conventional commits run the [conventional-commits-validator](https://github.com/cangulo-actions/conventional-commits-validator) GH action when a PR is open or modified.  
 
-## Conventional Commits and semver
+> [!WARNING]
+> Do not modify the commit body manually in the GH UI, you risk introduce errors  
 
-[Semantic Versioning](https://semver.org) is a proposal for versioning apps based on 3 types of releases: major, minor and patch. Each one is a number integrated in the whole app version:
+## Semantic Versioning and Conventional Commits
 
-> `MAJOR.MINOR.PATCH`
+This GH actions aims to facilitate apps versioning following the [Semantic Versioning specification](https://semver.org). Next are the key points to consider:
 
-- `MAJOR` => A major release includes changes that make the app incompatible. The first number (`MAJOR`) is increased and the previous one reset to 0.
-- `MINOR` => A minor release includes new features that consumers can integrate directly or with new inputs they can provide. It increases the second number `MINOR` and reset the last one.
-- `PATCH` => A patch release (or simply a patch) includes bug fixes.
+- Versions follow the `x.y.z` format. Example: `2.1.2`
+- Releases are divided in 3 types depending on what changes are included
 
-This GH action aims to make the version increase depend on the commits merged. For that, commits must follow the next convention pattern:
+| Release Type | Changes included                                 | Example                                           | Version Increase | Version            |
+| ------------ | ------------------------------------------------ | ------------------------------------------------- | ---------------- | ------------------ |
+| `patch`      | `bug fixes`                                      | solved error calculating prices                   | `x.y.(z+1)`      | `2.1.2` -> `2.1.3` |
+| `minor`      | `new features` implemented keeping compatibility | Expose a new endpoint for reporting               | `x.(y+1).0`      | `2.1.2` -> `2.2.0` |
+| `major`      | `breaking change` that make the app incompatible | Change API models renaming or deleting properties | `(x+1).0.0`      | `2.1.2` -> `3.0.0` |
 
-> `<type>: <description>`
+- Each PR commits represents a change and its type must be provided in the commit message following the convention pattern:
 
-- `<type>` classifies the changes the commit includes. Each possible value is linked to a release type. For example: `fix` means this commit includes a bug fix setting the next release to be a patch. Please check the next table for the accepted types and the release linked.
-- `<description>` explains how this commit affects the solution.
+> [!IMPORTANT]
+> The pattern expected on each commit is: `<type>: <description>`
+
+- The commit `<type>` classifies the change the commit includes. For example: `fix` means this commit includes a bug fix setting the next release to be a patch.
+- The commit `<description>` explains how this commit affects the solution.
 - Please note `: ` semicolon followed by one space between the type and the description.
 
-| `type`     | `release` |
-| ---------- | --------- |
-| `break`    | major     |
-| `feat`     | minor     |
-| `fix`      | patch     |
-| `refactor` | none      |
-| `chore`    | none      |
-| `test`     | none      |
-| `docs`     | none      |
-| `ci`       | none      |
+Supported commit types by default:
 
-You can check the default config [in properties.commits.default at config.schema.yml](config.schema.yml)
+ | `type`     | `release` |
+ | ---------- | --------- |
+ | `break`    | major     |
+ | `feat`     | minor     |
+ | `fix`      | patch     |
+ | `refactor` | none      |
+ | `chore`    | none      |
+ | `test`     | none      |
+ | `docs`     | none      |
+ | `ci`       | none      |
 
-- Please note if more than one commit is merged. The one with the higher release type will be taken into account. Example: You merge a `fix: ...` and a `break: ...` the next version will be a major.
-- ⚠️ Commits merged with a different type than the previous one won't trigger a release
-- 📑 You can customize the accepted commit types and the release linked. Please check the section [Custom Commit Types](#custom-commit-types).
+- You can check the default config [in properties.commits.default at config.schema.yml](config.schema.yml)  
+- Please note if more than one commit is merged. The one with the higher release type will determine the final release.  
+- ⚠️ Commits merged with a different type than the previous one won't trigger a release.  
+- 📑 You can customize the accepted commit types and the release linked. Please check the section [Custom Commit Types](#custom-commit-types).  
 - 🔭 This GH action also supports scopes in the commit message. The pattern would be: `<type>(scope1,scope2,...,scopeN): <description>`. Details in the [Monorepos or multilayer solutions](#monorepos-or-multilayer-solutions) section.
 
 References:
