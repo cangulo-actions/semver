@@ -1,6 +1,6 @@
 [
     {
-        "enabled": false,
+        "enabled": true,
         "scenario": "PR with one commit",
         "files": {
             "CHANGELOG.md": "<previous changelog content>",
@@ -35,7 +35,7 @@
         }
     },
     {
-        "enabled": false,
+        "enabled": true,
         "scenario": "PR with multiple commits",
         "files": {
             "CHANGELOG.md": "<previous changelog content>",
@@ -79,7 +79,7 @@
         }
     },
     {
-        "enabled": false,
+        "enabled": true,
         "scenario": "PR with one commit without scopes",
         "configuration": "tests/functions/test.data.custom-config.yml",
         "files": {
@@ -115,7 +115,7 @@
         }
     },
     {
-        "enabled": false,
+        "enabled": true,
         "scenario": "PR with multiple commits with 2 scopes",
         "configuration": "tests/functions/test.data.custom-config.yml",
         "files": {
