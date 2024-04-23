@@ -9,7 +9,7 @@ module.exports = async ({ core }) => {
   const releaseTitle = process.env.RELEASE_TITLE
   const changelogRecordBody = process.env.CHANGELOG_RECORD_BODY
   const repoTagVersion = process.env.REPO_TAG_VERSION
-  const repoTagPrefix = process.env.TAG_PREFIX
+  const tagPrefix = process.env.TAG_PREFIX
   const scopes = JSON.parse(process.env.SCOPES)
   const tags = []
 
@@ -20,7 +20,7 @@ module.exports = async ({ core }) => {
 
   if (tagRepoVersion) {
     const repoVersionTag = {
-      name: `${repoTagPrefix}${repoTagVersion}`,
+      name: `${tagPrefix}${repoTagVersion}`,
       title: releaseTitle,
       body: changelogRecordBody
     }
@@ -31,7 +31,6 @@ module.exports = async ({ core }) => {
   for (const [scope, properties] of Object.entries(scopes)) {
     const scopeConfig = supportedScopesConfig.find(x => x.key === scope)
     const tagVersion = scopeConfig.versioning['tag-version'] ?? conf.scopes['tag-version']
-    const tagPrefix = scopeConfig.versioning['tag-prefix'] ?? conf.scopes['tag-prefix']
     if (tagVersion) {
       const tagName = `${scope}-${tagPrefix}${properties.version}`
       tagsPerScope[scope] = tagName

@@ -39,6 +39,7 @@ inputs:
   tag-prefix:
     description: |
       string to be added as prefix to the tag. 
+      Used for the repository tag and scopes tags. 
       Only available if tag-version is true.
       Example: v -> tag: v1.0.0
     required: false
@@ -310,7 +311,7 @@ runs:
               const response = await github.rest.repos.createRelease({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
-                tag_name: scopeTags[scope],
+                tag_name: `${{ inputs.tag-prefix }}${scopeTags[scope]}`,
                 target_commitish: '${{ steps.commit.outputs.last_commit_id }}',
                 name: `${scopeTags[scope]} ${{ steps.parse-changes.outputs.release-title }}`,
                 body: properties.changelogRecord.body,
