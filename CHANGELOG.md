@@ -1,3 +1,8 @@
+# 0.13.2 fix: simplified schema, removed tag-prefix from scope configuration. system will rely on main tag-prefix provided (#116)
+
+## patches:
+* fix: simplified schema, removed tag-prefix from scope configuration. system will rely on main tag-prefix provided (#116)
+
 # 0.13.1 fix: issue with input.tag-prefix. Now if a GH release is created it will target the tag with the prefix (#115)
 
 ## patches:
