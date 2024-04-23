@@ -1,3 +1,11 @@
+# 0.13.1 fix: issue with input.tag-prefix. Now if a GH release is created it will target the tag with the prefix (#115)
+
+## patches:
+* fix: fix: issue with input.tag-prefix. Now if a GH release is created it will target the tag with the prefix
+* fix: plugin [update-version-readme-gh-action] updated to include tag prefix
+## others
+* test: updated e2e test
+
 # 0.13.0 feat: #30 INIT JS plugins (#114)
 
 ## new features:
