@@ -1,8 +1,5 @@
 type: object
 
-required:
-  - commits
-
 properties:
   versioning:
     type: object
@@ -62,7 +59,6 @@ properties:
       - list
     default:
       tag-version: true
-      tag-prefix: ""
       create-gh-release: false
       print-summary: false
       list: []
@@ -72,13 +68,6 @@ properties:
         type: boolean
         description: flag to tag the release commit with all the scopes affected
         default: true
-      tag-prefix:
-        type: string
-        description: |
-          string to be added as prefix to all scopes tags.
-          Only available if tag-version is true.
-          Example: v -> tag: scope-v1.0.0
-        default: ""
       create-gh-release:
         type: boolean
         description: flag to create a github release for all the scopes
@@ -110,12 +99,6 @@ properties:
                 tag-version:
                   type: boolean
                   description: flag to tag the release commit for this scope
-                tag-prefix:
-                  type: string
-                  description: |
-                    string to be added as prefix to the tag for this scope.
-                    Only available if tag-version is true.
-                    Example: v -> tag: scope-v1.0.0
                 create-gh-release:
                   type: boolean
                   description: flag to create a github release for this scope
