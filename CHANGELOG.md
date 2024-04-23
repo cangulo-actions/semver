@@ -1,3 +1,11 @@
+# 0.13.0 feat: #30 INIT JS plugins (#114)
+
+## new features:
+* feat: #30 Added plugin for GH actions repository. Now you can update the version in the ` README.md` by enabling the `update-version-readme-gh-action.js` plugin. Updated schema property (yes I know it is a breaking change but only me is using the GH action)
+## others
+* refactor: reenabled UT
+* docs: added required repository config for squash commits as merging strategy. Listed GH actions features and use cases
+
 # 0.12.2 fix: updated pre-commit-commands to only run if a release is required (#112)
 
 ## patches:
