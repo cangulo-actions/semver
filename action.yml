@@ -178,6 +178,7 @@ runs:
       env:
         CONFIG: ${{ steps.get-config.outputs.config }}
         RELEASE_VERSION: ${{ steps.semver.outputs.version }}
+        TAG_PREFIX: ${{ inputs.tag-prefix }}
       with:
         script: |
           // run pre-commit commands and plugins
