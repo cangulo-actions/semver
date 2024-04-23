@@ -27,6 +27,7 @@ Feature: Create GH release with no scopes configured
                 print-summary: true
                 create-gh-release: true
                 github-token: ${{ secrets.CANGULO_BOT_PUSH_COMMITS }}   # required for creating the GH release
+                tag-prefix: "v"
       """
 
   Scenario: Merge a PR with a commit adding a new feature
@@ -36,7 +37,7 @@ Feature: Create GH release with no scopes configured
     When I merge it
     Then the workflow "cangulo-actions/semver test" must conclude in "success"
     And the repository must have "1" gh release
-    And the only gh release must have the tag "0.1.0"
+    And the only gh release must have the tag "v0.1.0"
     And the only gh release must have the title "0.1.0 feat: new feature for creating reports (#1)"
     And the only gh release must have the body:
       """

@@ -48,6 +48,7 @@ Feature: Update version in package.json
               with:
                 configuration: semver-config.yml
                 github-token: ${{ secrets.CANGULO_BOT_PUSH_COMMITS }}   # required for creating the GH release
+                tag-prefix: "v"
       """
 
   Scenario: Merge a PR with a commit fixing something
@@ -63,5 +64,5 @@ Feature: Update version in package.json
       ## patches:
       * fix: commit that fixes something in the lambda1 (#1)
       """
-    And the last commit must be tagged with "0.0.1"
-    And the file "README.md" must contain "{OWNER}/{REPO}@0.0.1"
+    And the last commit must be tagged with "v0.0.1"
+    And the file "README.md" must contain "{OWNER}/{REPO}@v0.0.1"
