@@ -11,7 +11,9 @@ This action automate any release process. You can trigger it after merging a PR 
   - [GH release and Job summary integration](#gh-release-and-job-summary-integration)
   - [Commit to protected branches using GH token](#commit-to-protected-branches-using-gh-token)
   - [Custom Commit Types](#custom-commit-types)
-  - [Bash commands before release commit](#bash-commands-before-release-commit)
+  - [Actions before committing the release](#actions-before-committing-the-release)
+    - [Commands](#commands)
+    - [Plugins](#plugins)
 
 ## Requirements
 
@@ -99,7 +101,9 @@ Supported commit types by default:
 - Please note if more than one commit is merged. The one with the higher release type will determine the final release.  
 - ⚠️ Commits merged with a different type than the previous one won't trigger a release.  
 - 📑 You can customize the accepted commit types and the release linked. Please check the section [Custom Commit Types](#custom-commit-types).  
-- 🔭 This GH action also supports scopes in the commit message. The pattern would be: `<type>(scope1,scope2,...,scopeN): <description>`. Details in the [Monorepos or multilayer solutions](#monorepos-or-multilayer-solutions) section.
+- 🔭 This GH action also supports scopes in the commit message. The pattern would be: `<type>(scope1,scope2,...,scopeN): <description>`.
+
+<!-- Details in the [Monorepos or multilayer solutions](#monorepos-or-multilayer-solutions) section. -->
 
 References:
 
@@ -181,6 +185,7 @@ jobs:
 You can define the commits types and its release in a yml file as next:
 
 ```yml
+# .github/semver.yml
 commits:
 - type: break
   release: major
@@ -194,6 +199,8 @@ commits:
   release: none
 - type: chore
   release: none
+- type: deploy    # useful when you trigger deployments after a PR is merged but you don't want to trigger a new release
+  release: none
 - type: test
   release: none
 - type: docs
@@ -202,7 +209,7 @@ commits:
   release: none
 ```
 
-> As a proposal, name the file `semver.yml` and place it in the root of your repo.
+> As a proposal, name the file `.github/semver.yml` and place it in the root of your repo.
 
 Then provide it in the `configuration` input when calling the GH action:
 
@@ -225,21 +232,74 @@ jobs:
       uses: cangulo-actions/semver@main
       id: semver
       with:
-        configuration: semver.yml
+        configuration: .github/semver.yml
         create-gh-release: true
         print-summary: true
 ```
 
-### Bash commands before release commit
+### Actions before committing the release
 
-You can execute bash commands before this GH action commit the updates in the changelog and the `version.json`. Some are some use cases:
+You can execute the next actions before this GH action commit the updates to the changelog and `version.json`.
 
+#### Commands
+
+In order to prepare your repository for a release, you can define commands for actions as formatting files or updated docs. Next are some examples:
 
 | Case                                        | Command                     |
 | ------------------------------------------- | --------------------------- |
-| format files (e.g. terraform or json files) | `tf fmt -recursive`         |
+| format files (e.g. terraform or json files) | `terraform fmt -recursive`  |
 | NPM commands                                | `npm install;npm run build` |
 | Update version using grep                   | `npm install;npm run build` |
+| run bash script                             | `bash ./your-script.sh`     |
+
+Please provide them in `pre-commit.commands[]` at the configuration file:
+
+```yml
+# .github/semver.yml
+pre-commit:
+  commands:       # useful for npm scripts or scripts
+    - npm install
+    - npm run build
+```
+
+```yml
+name: 🚀 continuous-delivery
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  semver:
+    name: 🚀 release new version
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+    - name: release new version
+      uses: cangulo-actions/semver@main
+      id: semver
+      with:
+        configuration: .github/semver.yml
+        create-gh-release: true
+        print-summary: true
+```
+
+#### Plugins
+
+Next are the plugins you can execute:
+
+- [update-version-readme-gh-action.js](./plugins/update-version-readme-gh-action.js): This will update any reference to your repository in a GH action format (`owner/repo@version`) in the `README.md` file. This is useful for keeping the examples updated.
+
+Please provide them in `pre-commit.plugins[].file` at the configuration file:
+
+```yml
+# .github/semver.yml
+pre-commit:
+  plugins:
+    - file: update-version-readme-gh-action.js
+```
 
 
 <!-- ### Monorepos or multilayer solutions

@@ -49,3 +49,22 @@ Given('I commit {string} modifying the file {string}', (commitMsg, file) => {
       cy.createContent({ owner: OWNER, repo: REPO, file, content, commitMsg, branch: BRANCH })
     })
 })
+
+Given('I update the file {string} in the branch {string} with the content:', (file, branch, content) => {
+  const commitMsg = `[skip ci][e2e-background] Update ${file}`
+
+  cy
+    .task('getSharedData')
+    .then((sharedData) => {
+      const { OWNER, REPO } = sharedData
+      const fileContentUpdated = content
+        .replace('{OWNER}', OWNER)
+        .replace('{REPO}', REPO)
+      cy
+        .getContent({ owner: OWNER, repo: REPO, file, branch })
+        .then((response) => {
+          cy.log(`Updating file ${response.path}`)
+          cy.updateContent({ owner: OWNER, repo: REPO, file: response.path, content: fileContentUpdated, commitMsg, sha: response.sha })
+        })
+    })
+})

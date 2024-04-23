@@ -172,16 +172,18 @@ runs:
           const BuildCommitAndTags = require('${{ github.action_path }}/github-scripts/build-commit-and-tags.js')
           BuildCommitAndTags({core})
 
-    - name: Run custom commands before commit
-      if: ${{ steps.semver.outputs.release-required == 'true' && fromJSON(steps.get-config.outputs.config).precommitcommands.enabled }}
+    - name: Run pre-commit commands and plugins
+      if: ${{ steps.semver.outputs.release-required == 'true' }}
       uses: actions/github-script@v7
       env:
         CONFIG: ${{ steps.get-config.outputs.config }}
+        RELEASE_VERSION: ${{ steps.semver.outputs.version }}
       with:
         script: |
-          const config                = JSON.parse(process.env.CONFIG)
-          const runPreCommitCommands  = require('${{ github.action_path }}/github-scripts/pre-commit-commands.js')
-          runPreCommitCommands({core, exec, config})
+          // run pre-commit commands and plugins
+          const config       = JSON.parse(process.env.CONFIG)
+          const runPreCommit = require('${{ github.action_path }}/github-scripts/pre-commit.js')
+          runPreCommit({core, exec, config })
 
     - name: Commit changes
       if: ${{ steps.semver.outputs.release-required == 'true' }}
@@ -247,7 +249,6 @@ runs:
         RELEASE_COMMIT_ID: ${{ steps.commit.outputs.last_commit_id }}
         GH_RELEASE_CREATED: ${{ inputs.create-gh-release }}
         GH_RELEASE_URL: ${{ steps.create-repo-release.outputs.gh-release-url }}
-
       with:
         script: |
           const newVersionRelease = process.env.NEW_VERSION_RELEASED === 'true'
