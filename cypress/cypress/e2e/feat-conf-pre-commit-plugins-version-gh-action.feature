@@ -1,6 +1,6 @@
 Feature: Update version in package.json
 
-  Background: 
+  Background:
     Given I create a "public" repository named "semver-PR-{PR_NUMBER}-{TEST_KEY}"
     And I update the file "README.md" in the branch "main" with the content:
       """
@@ -14,23 +14,16 @@ Feature: Update version in package.json
           steps:
             - name: Checkout
               uses: actions/checkout@v4
-
+      
             - name: 🗒️ example gh action
-              uses: cangulo-actions/example-gh-action@0.12.2
+              uses: {OWNER}/{REPO}@0.12.2
       ```
-      """
-    And I push the file "update-version-in-readme.sh" to the branch "main" with the content:
-      """
-      echo "updating README.md to reference to $RELEASE_VERSION"
-      sed -i "s/example-gh-action@.*$/example-gh-action@$RELEASE_VERSION/g" README.md
       """
     And I push the file "semver-config.yml" to the branch "main" with the content:
       """
       pre-commit:
-        commands:       # useful for npm scripts or scripts
-          - ls
-          - printenv
-          - bash ./update-version-in-readme.sh
+        plugins:
+          - file: update-version-readme-gh-action.js
       """
     And I push the file ".github/workflows/semver-test.yml" to the branch "main" with the content:
       """
@@ -58,9 +51,9 @@ Feature: Update version in package.json
       """
 
   Scenario: Merge a PR with a commit fixing something
-    Given I create a branch named "feat-pre-commit-commands"
+    Given I create a branch named "feat-pre-commit-plugins-version-gh-action"
     And I commit "fix: commit that fixes something in the lambda1" modifying the file "src/lambda1/lambda1.py"
-    And I create a PR with title "test pre commit commands"
+    And I create a PR with title "test pre commit plugins-version-gh-action"
     When I merge it
     Then the workflow "cangulo-actions/semver test" must conclude in "success"
     And the last commit message must be:
@@ -71,5 +64,4 @@ Feature: Update version in package.json
       * fix: commit that fixes something in the lambda1 (#1)
       """
     And the last commit must be tagged with "0.0.1"
-    And the file "README.md" must contain "example-gh-action@0.0.1"
-
+    And the file "README.md" must contain "{OWNER}/{REPO}@0.0.1"
