@@ -1,3 +1,8 @@
+# 0.13.3 fix: Updated npm dependencies (#119)
+
+## patches:
+* fix: Updated npm dependencies (#119)
+
 # 0.13.2 fix: simplified schema, removed tag-prefix from scope configuration. system will rely on main tag-prefix provided (#116)
 
 ## patches:
