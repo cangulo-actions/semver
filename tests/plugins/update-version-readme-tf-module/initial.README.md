@@ -2,7 +2,7 @@
 
 ```hcl
 module "example" {
-source = "github.com/cangulo-actions/test.git?ref=v0.0.0"
+    source = "github.com/cangulo-actions/test.git?ref=v0.0.0"
 }
 
 ```
