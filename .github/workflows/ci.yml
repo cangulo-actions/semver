@@ -126,6 +126,10 @@ jobs:
             spec: cypress/e2e/feat-conf-pre-commit-plugins-version-gh-action.feature
             key: feat-conf-pre-commit-plugins-version-gh-action
 
+          - scenario: "Feat: conf.pre-commit-plugins-version-tf-module"
+            spec: cypress/e2e/feat-conf-pre-commit-plugins-version-tf-module.feature
+            key: feat-conf-pre-commit-plugins-version-tf-module
+
           - scenario: "Feat: Print Summary"
             spec: cypress/e2e/feat-print-summary.feature
             key: feat-print-summary
