@@ -1,3 +1,8 @@
+# 0.14.0 feat: #120 implemented pre-commit-plugin: update readme for tf-modules (#121)
+
+## new features:
+* feat: #120 implemented pre-commit-plugin: update readme for tf-modules (#121)
+
 # 0.13.3 fix: Updated npm dependencies (#119)
 
 ## patches:
