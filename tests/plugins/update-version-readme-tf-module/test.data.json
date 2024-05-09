@@ -1,0 +1,17 @@
+[
+    {
+        "enabled": true,
+        "scenario": "happy path",
+        "filesMap": {
+            "README.md": "initial.README.md"
+        },
+        "env": {
+            "TAG_PREFIX": "v", 
+            "RELEASE_VERSION": "0.0.1", 
+            "GITHUB_REPOSITORY" : "cangulo-actions/test"
+        },
+        "filesModifiedMap": {
+            "README.md": "expected.README.md"
+        }
+    }
+]

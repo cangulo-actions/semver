@@ -290,7 +290,8 @@ jobs:
 
 Next are the plugins you can execute:
 
-- [update-version-readme-gh-action.js](./plugins/update-version-readme-gh-action.js): This will update any reference to your repository in a GH action format (`owner/repo@version`) in the `README.md` file. This is useful for keeping the examples updated.
+- [update-version-readme-gh-action.js](./plugins/update-version-readme-gh-action.js): This will update examples that refer to your GH action in the `README.md` file. The  match expected is `owner/repo@version`
+- [update-version-readme-tf-module.js](./plugins/update-version-readme-tf-module.js): This will update examples that refer to your GH action in the `README.md` file. The  match expected is `source = "github.com/{OWNER}/{REPO}.git?ref={PREVIOUS_VERSION}"`. 
 
 Please provide them in `pre-commit.plugins[].file` at the configuration file:
 

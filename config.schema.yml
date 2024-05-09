@@ -130,6 +130,7 @@ properties:
               description: Update GH action reference to the new version
               enum:
                 - update-version-readme-gh-action.js
+                - update-version-readme-tf-module.js
 
     default:
       commands: []
