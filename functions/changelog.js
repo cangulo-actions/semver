@@ -1,6 +1,9 @@
 const fs = require('fs')
 const nunjucks = require('nunjucks')
 
+// eslint-disable-next-line no-unused-vars
+const { groupBy } = require('core-js/actual/array/group-by')
+
 function buildChangelogRecord (changes, nextVersion, title, templatesPath) {
   const changesPerReleaseType = changes.groupBy(change => change.releaseAssociated)
 
