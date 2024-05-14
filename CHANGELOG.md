@@ -1,3 +1,8 @@
+# 0.14.2 fix: added GH workflow for sec-scorecard.yml (#125)
+
+## patches:
+* fix: added GH workflow for sec-scorecard.yml (#125)
+
 # 0.14.1 fix: #123 add code scanning tool: CodeQL Analysis (#124)
 
 ## patches:
