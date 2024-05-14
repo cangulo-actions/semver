@@ -17,9 +17,9 @@ jest.mock('fs', () => {
 
 describe('build-next-release Happy Paths', () => {
   // arrange
-  const originalModule = jest.requireActual('fs')
+  const fsOriginalModule = jest.requireActual('fs')
   const testFolder = 'tests/plugins/update-version-readme-tf-module'
-  const testDataContent = originalModule.readFileSync(`${testFolder}/test.data.json`)
+  const testDataContent = fsOriginalModule.readFileSync(`${testFolder}/test.data.json`)
   const testData = JSON.parse(testDataContent)
 
   testData
@@ -30,7 +30,7 @@ describe('build-next-release Happy Paths', () => {
         fs.readFileSync = (filePath) => {
           const fileMapped = data.filesMap[filePath]
           const path = `${testFolder}/${fileMapped}`
-          return originalModule.readFileSync(path, 'utf8')
+          return fsOriginalModule.readFileSync(path, 'utf8')
         }
         process.env = data.env
 
@@ -41,7 +41,9 @@ describe('build-next-release Happy Paths', () => {
         const numFilesModified = Object.keys(data.filesModifiedMap).length
         expect(fs.writeFileSync).toHaveBeenCalledTimes(numFilesModified)
         fs.writeFileSync.mock.calls.forEach(([file, content]) => {
-          const expectedContent = data.filesModified[file].join('')
+          const fileMapped = data.filesModifiedMap[file]
+          const path = `${testFolder}/${fileMapped}`
+          const expectedContent = fsOriginalModule.readFileSync(path, 'utf8')
           expect(content).toEqual(expectedContent)
         })
       })
