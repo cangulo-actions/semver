@@ -24,16 +24,16 @@ jobs:
         with:
           filters: |
             js:
-              - index.js
               - functions/**
+              - plugins/**
               - package.json
               - package-lock.json
               - tests/index/**
               - tests/functions/**
             action:
               - action.yml
-              - index.js
               - functions/**
+              - plugins/**
               - cypress/**
               - package.json
               - package-lock.json
