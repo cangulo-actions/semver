@@ -1,3 +1,12 @@
+# 0.14.1 fix: #123 add code scanning tool: CodeQL Analysis (#124)
+
+## patches:
+* fix: #123 add code scanning tool: CodeQL Analysis
+* fix: fixed UT for plugins. Simplified GH workflow shared-get-changes
+## others
+* refactor: delete unused import
+* test: fixed format in test data (#122)
+
 # 0.14.0 feat: #120 implemented pre-commit-plugin: update readme for tf-modules (#121)
 
 ## new features:
