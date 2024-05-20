@@ -8,6 +8,8 @@ env:
   GH_E2E_user: cangulo-semver-e2e-test[bot]
   GH_E2E_email: cangulo-semver-e2e-test[bot]@users.noreply.github.com
 
+permissions: read-all
+
 jobs:
   get-changes:
     name: 🔎 Get Changes
@@ -16,6 +18,9 @@ jobs:
   validate-commits:
     name: validate commits
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write # required for labeling PRs
     steps:
       - name: Checkout
         uses: actions/checkout@a5ac7e51b41094c92402da3b24376905380afc29 # v4.1.6
