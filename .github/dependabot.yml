@@ -8,7 +8,7 @@ updates:
       - "dependabot"
       - "gh-workflows"
     commit-message:
-      prefix: "ci: [dependabot]"
+      prefix: "ci: [dependabot] " # extra whitespace to avoid second ":" in the commit message
 
   - package-ecosystem: "npm"
     directory: "/"
@@ -18,14 +18,15 @@ updates:
       - "dependabot"
       - "npm"
     commit-message:
-      prefix: "ci: [dependabot]"
+      prefix: "ci: [dependabot] " # extra whitespace to avoid second ":" in the commit message
 
-  - package-ecosystem: "npm"
-    directory: "/cypress/"
-    schedule:
-      interval: "monthly"
-    labels:
-      - "dependabot"
-      - "npm-cypress"
-    commit-message:
-      prefix: "ci: [dependabot]"
+
+  # - package-ecosystem: "npm"
+  #   directory: "/cypress/"
+  #   schedule:
+  #     interval: "monthly"
+  #   labels:
+  #     - "dependabot"
+  #     - "npm-cypress"
+  #   commit-message:
+  #     prefix: "ci: [dependabot] " # extra whitespace to avoid second ":" in the commit message
