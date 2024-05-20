@@ -10,32 +10,22 @@ updates:
     commit-message:
       prefix: "ci: [dependabot]"
 
-  # - package-ecosystem: "github-actions"
-  #   directory: "/action.yml"
-  #   schedule:
-  #     interval: "weekly"
-  #   labels:
-  #     - "dependabot"
-  #     - "github-action"
-  #   commit-message:
-  #     prefix: "ci: [dependabot]"
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    labels:
+      - "dependabot"
+      - "npm"
+    commit-message:
+      prefix: "ci: [dependabot]"
 
-  # - package-ecosystem: "npm"
-  #   directory: "/"
-  #   schedule:
-  #     interval: "weekly"
-  #   labels:
-  #     - "dependabot"
-  #     - "npm"
-  #   commit-message:
-  #     prefix: "ci: [dependabot]"
-
-  # - package-ecosystem: "npm"
-  #   directory: "/cypress/"
-  #   schedule:
-  #     interval: "monthly"
-  #   labels:
-  #     - "dependabot"
-  #     - "npm-cypress"
-  #   commit-message:
-  #     prefix: "ci: [dependabot]"
+  - package-ecosystem: "npm"
+    directory: "/cypress/"
+    schedule:
+      interval: "monthly"
+    labels:
+      - "dependabot"
+      - "npm-cypress"
+    commit-message:
+      prefix: "ci: [dependabot]"
