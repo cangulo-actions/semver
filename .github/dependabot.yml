@@ -1,29 +1,41 @@
 version: 2
 updates:
   - package-ecosystem: "github-actions"
-    directory: "/"
+    directory: "/.github"
     schedule:
       interval: "weekly"
     labels:
-      - "dependabot/github-actions"
+      - "dependabot"
+      - "gh-workflows"
+    commit-message:
+      prefix: "ci: [dependabot]"
 
   - package-ecosystem: "github-actions"
     directory: "/action.yml"
     schedule:
       interval: "weekly"
     labels:
-      - "dependabot/github-actions"
+      - "dependabot"
+      - "github-action"
+    commit-message:
+      prefix: "ci: [dependabot]"
 
   - package-ecosystem: "npm"
     directory: "/"
     schedule:
       interval: "weekly"
     labels:
-      - "dependabot/npm"
+      - "dependabot"
+      - "npm"
+    commit-message:
+      prefix: "ci: [dependabot]"
 
   - package-ecosystem: "npm"
     directory: "/cypress/"
     schedule:
       interval: "monthly"
     labels:
-      - "dependabot/npm-cypress"
+      - "dependabot"
+      - "npm-cypress"
+    commit-message:
+      prefix: "ci: [dependabot]"
