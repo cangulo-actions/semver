@@ -1,7 +1,7 @@
 {
   "name": "cangulo-actions-semver-cypress-e2e",
   "dependencies": {
-    "@badeball/cypress-cucumber-preprocessor": "19.2.0",
+    "@badeball/cypress-cucumber-preprocessor": "20.0.5",
     "@cypress/browserify-preprocessor": "3.0.2",
     "cypress": "13.6.1"
   },
