@@ -6,7 +6,7 @@
     "cypress": "13.6.1"
   },
   "devDependencies": {
-    "cypress-terminal-report": "^5.3.9",
+    "cypress-terminal-report": "^6.0.2",
     "cypress-wait-until": "^3.0.1",
     "eslint": "^8.55.0",
     "eslint-config-standard": "^17.1.0",
