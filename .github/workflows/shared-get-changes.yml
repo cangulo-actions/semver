@@ -8,6 +8,8 @@ on:
       action-modified:
         value: ${{ jobs.get-changes.outputs.action-modified }}
 
+permissions: read-all
+
 jobs:
   get-changes:
     name: 🔎 Get Changes
