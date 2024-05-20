@@ -6,6 +6,8 @@ updates:
       interval: "weekly"
     labels:
       - "dependabot/github-actions"
+    commit-message:
+      prefix: "ci: [dependabot]"
 
   - package-ecosystem: "github-actions"
     directory: "/action.yml"
@@ -13,6 +15,8 @@ updates:
       interval: "weekly"
     labels:
       - "dependabot/github-actions"
+    commit-message:
+      prefix: "ci: [dependabot]"
 
   - package-ecosystem: "npm"
     directory: "/"
@@ -20,6 +24,8 @@ updates:
       interval: "weekly"
     labels:
       - "dependabot/npm"
+    commit-message:
+      prefix: "ci: [dependabot]"
 
   - package-ecosystem: "npm"
     directory: "/cypress/"
@@ -27,3 +33,5 @@ updates:
       interval: "monthly"
     labels:
       - "dependabot/npm-cypress"
+    commit-message:
+      prefix: "ci: [dependabot]"
