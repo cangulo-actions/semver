@@ -20,7 +20,10 @@ updates:
       - "npm"
     commit-message:
       prefix: "ci: [dependabot] " # extra whitespace to avoid second ":" in the commit message
-
+    groups:
+      npm-dependencies:
+        patterns:
+          - "*"
 
   # - package-ecosystem: "npm"
   #   directory: "/cypress/"
@@ -31,3 +34,7 @@ updates:
   #     - "npm-cypress"
   #   commit-message:
   #     prefix: "ci: [dependabot] " # extra whitespace to avoid second ":" in the commit message
+  #   groups:
+  #     npm-dependencies:
+  #       patterns:
+  #         - "*"
