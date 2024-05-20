@@ -1,4 +1,5 @@
 version: 2
+# refresh: 20240521-2
 updates:
   - package-ecosystem: "github-actions"
     directory: "/"
