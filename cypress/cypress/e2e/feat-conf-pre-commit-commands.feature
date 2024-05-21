@@ -1,4 +1,4 @@
-Feature: Update version in package.json
+Feature: Precommit Commands - Update version in package.json
 
   Background: 
     Given I create a "public" repository named "semver-PR-{PR_NUMBER}-{TEST_KEY}"

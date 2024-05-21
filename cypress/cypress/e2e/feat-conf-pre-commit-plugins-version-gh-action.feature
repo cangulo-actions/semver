@@ -1,4 +1,4 @@
-Feature: Update version in package.json
+Feature: Precommit Pluggins - Update GH action version in readme
 
   Background:
     Given I create a "public" repository named "semver-PR-{PR_NUMBER}-{TEST_KEY}"

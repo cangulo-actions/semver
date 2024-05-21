@@ -1,4 +1,4 @@
-Feature: tag-version disabled
+Feature: Disable tag versioning for the whole repository
 
   Background: The GH action runs is set with the default configuration
     Given I create a "public" repository named "semver-PR-{PR_NUMBER}-{TEST_KEY}"

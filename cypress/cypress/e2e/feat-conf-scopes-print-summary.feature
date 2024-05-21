@@ -1,4 +1,4 @@
-Feature: Create GH release with scopes configured
+Feature: Print Summary for scopes
 
   Background: 
     Given I create a "public" repository named "semver-PR-{PR_NUMBER}-{TEST_KEY}"
