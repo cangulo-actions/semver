@@ -6,6 +6,7 @@ updates:
     schedule:
       interval: "weekly"
     labels:
+      - "dependencies"
       - "dependabot"
       - "gh-workflows"
     commit-message:
@@ -16,6 +17,7 @@ updates:
     schedule:
       interval: "weekly"
     labels:
+      - "dependencies"
       - "dependabot"
       - "npm"
     commit-message:
@@ -36,8 +38,8 @@ updates:
   #   schedule:
   #     interval: "monthly"
   #   labels:
+  #     - "dependencies"
   #     - "dependabot"
-  #     - "npm-cypress"
   #   commit-message:
   #     prefix: "ci: [dependabot] " # extra whitespace to avoid second ":" in the commit message
   #   groups:
