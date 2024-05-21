@@ -40,7 +40,6 @@ updates:
   #   labels:
   #     - "dependencies"
   #     - "dependabot"
-  #     - "npm-cypress"
   #   commit-message:
   #     prefix: "ci: [dependabot] " # extra whitespace to avoid second ":" in the commit message
   #   groups:
