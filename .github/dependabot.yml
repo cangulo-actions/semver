@@ -24,6 +24,12 @@ updates:
       npm-dependencies:
         patterns:
           - "*"
+    ignore:
+      # keep dependencies used by the GH action (check action.yml) out of the updates
+      - dependency-name: "ajv"
+      - dependency-name: "core-js"
+      - dependency-name: "js-yaml"
+      - dependency-name: "nunjucks"
 
   # - package-ecosystem: "npm"
   #   directory: "/cypress/"
