@@ -1,4 +1,4 @@
-Feature: tag-prefix set to "v"
+Feature: Use tag-prefix 
 
   Background: The GH action runs is set with the default configuration
     Given I create a "public" repository named "semver-PR-{PR_NUMBER}-{TEST_KEY}"
