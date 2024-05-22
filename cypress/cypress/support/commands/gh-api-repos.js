@@ -46,3 +46,21 @@ Cypress.Commands.add('createRepo', ({ org, repo, configuration }) => {
     return response.body
   })
 })
+
+Cypress.Commands.add('setTopics', ({ org, repo, topics }) => {
+  const ghAPIUrl = Cypress.env('GH_API_URL')
+  const setTopicsUrl = `${ghAPIUrl}/repos/${org}/${repo}/topics`
+
+  return cy.request({
+    method: 'PUT',
+    url: setTopicsUrl,
+    headers: {
+      Authorization: `token ${Cypress.env('GH_TOKEN')}`
+    },
+    body: {
+      names: topics
+    }
+  }).then((response) => {
+    return response.body
+  })
+})
