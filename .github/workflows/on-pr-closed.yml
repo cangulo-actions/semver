@@ -9,6 +9,7 @@ permissions: read-all
 
 jobs:
   get-changes:
+    if: github.event.pull_request.merged == false # only execute this if the PR was closed but not merged
     name: 🔎 Get Changes
     uses: ./.github/workflows/shared-get-changes.yml
 
@@ -17,15 +18,16 @@ jobs:
     needs: get-changes
     if: needs.get-changes.outputs.action-modified == 'true'
     runs-on: ubuntu-latest
-    env:
-      GH_ORG: $GH_ORG
-      GH_REPO_PREFIX: semver-PR-${{ github.event.number }}
     steps:
       - name: 🧹 delete any temporary repository
         env:
+          GH_ORG: cangulo-actions-test
+          GH_REPO_PREFIX: semver-PR-${{ github.event.number }}
           GH_TOKEN: ${{ secrets.CANGULO_BOT_DELETE_REPO }}
+          TOPIC_1: test-semver
+          TOPIC_2: semver-pr-${{ github.event.number }}
         run: |
-          repositories=$(gh repo list $GH_ORG --json name -q '.[].name')
+          repositories=$(gh repo list $GH_ORG --json name -q '.[].name' --topic $TOPIC_1 --topic $TOPIC_2 )
           for repository in $repositories
           do
             # Check if the repository name starts with the specified prefix

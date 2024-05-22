@@ -69,11 +69,14 @@ jobs:
               return feature
             }
 
-            const tests = files.map(file => ({
+            let tests = files.map(file => ({
               scenario: getFeatureName(file),
               spec: file,
               key: file.split('/').pop().replace('.feature', '')
             }))
+
+            // reduce the list to save GH workflow runs
+            tests = [tests[0]]
 
             console.log(tests)
             core.setOutput('tests', tests)

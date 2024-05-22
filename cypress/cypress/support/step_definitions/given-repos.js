@@ -9,6 +9,7 @@ Given('I create a {string} repository named {string}', (repoVisibility, repoName
     visibility: repoVisibility,
     description: `PR created for testing cangulo-actions/semver GH action. Created by the PR#${semverPRNumber} and the test key ${testKey}`
   }
+  const repoTopics = ['test-semver', `semver-pr-${semverPRNumber}`]
 
   const repo = repoName
     .replace('{PR_NUMBER}', semverPRNumber)
@@ -26,6 +27,8 @@ Given('I create a {string} repository named {string}', (repoVisibility, repoName
             cy
               .task('appendSharedData', `REPO=${repoCreated.name}`)
               .task('appendSharedData', `OWNER=${repoCreated.owner.login}`)
+            cy.log('adding topics')
+            cy.setTopics({ org, repo, topics: repoTopics })
           })
       } else {
         cy.log(`Repo ${repo} already exists`)
