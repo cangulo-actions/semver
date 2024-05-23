@@ -1,5 +1,11 @@
 # semver <!-- omit from toc -->
 
+[![🔎 Code Scanning - CodeQL](https://github.com/cangulo-actions/semver/actions/workflows/codeql.yml/badge.svg)](https://github.com/cangulo-actions/semver/actions/workflows/codeql.yml)
+
+[![🔎 Code Scanning - Scorecard supply-chain security](https://github.com/cangulo-actions/semver/actions/workflows/scorecard.yml/badge.svg)](https://github.com/cangulo-actions/semver/actions/workflows/scorecard.yml)
+
+[![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/cangulo-actions/semver/badge)](https://scorecard.dev/viewer/?uri=github.com/cangulo-actions/semver)
+
 This action automate any release process. You can trigger it after merging a PR and if the commits include any releasable commit it will increase the version and add the commits messages to a changelog. Check the next demo:
 
 - [Requirements](#requirements)
