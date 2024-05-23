@@ -1,3 +1,8 @@
+# 0.14.4 fix: fixed error when commits include &quot;`&quot; characters for code - FORCE RELEASE CREATION. [cd] disable include previous commits (#165)
+
+## patches:
+* fix: fixed error when commits include &quot;`&quot; characters for code - FORCE RELEASE CREATION. [cd] disable include previous commits (#165)
+
 # 0.14.3 fix: fixed error when commits include &quot;`&quot; characters for code (#163)
 
 ## patches:
