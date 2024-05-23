@@ -175,6 +175,7 @@ jobs:
       id: semver
       with:
         create-gh-release: true
+        github-token: ${{ secrets.CANGULO_BOT_PUSH_COMMITS }} # required for creating the GH release
         print-summary: true
 ```
 

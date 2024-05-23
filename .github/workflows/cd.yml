@@ -23,6 +23,7 @@ jobs:
         with:
           configuration: .github/semver.yml
           create-gh-release: true
+          github-token: ${{ secrets.CANGULO_BOT_PUSH_COMMITS }}
           print-summary: true
           print-annotations: true
           include-previous-non-releasable-commits: false
