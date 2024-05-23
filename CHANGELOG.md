@@ -1,3 +1,73 @@
+# 0.14.3 fix: fixed error when commits include &quot;`&quot; characters for code (#163)
+
+## patches:
+* fix: fixed error when commits include &quot;`&quot; characters for code (#163)
+## others
+* ci: [gh-workflows] set GH actions dependencies to commit instead of tags (#126)
+* ci: [gh-workflows] rename gh workflows for code scanning
+* ci: [gh-workflows] set read-all permissions for GH workflows
+* ci: [gh-workflows] added dependabot config (#128)
+* ci: [dependabot] added commit prefix
+* ci: [dependabot] updated PR label
+* ci: [dependabot] testing configuration (#142)
+* ci: [dependabot] added commit prefix
+* ci: [dependabot] updated GH actions
+* ---
+* updated-dependencies:
+* - dependency-name: ossf/scorecard-action
+* dependency-type: direct:production
+* update-type: version-update:semver-patch
+* ...
+* Signed-off-by: dependabot[bot] &lt;support@github.com&gt;
+* ci: [dependabot] testing configuration (#144)
+* ci: [dependabot] testing configuration (#149)
+* ---
+* updated-dependencies:
+* - dependency-name: eslint
+* dependency-type: direct:development
+* update-type: version-update:semver-minor
+* ...
+* Signed-off-by: dependabot[bot] &lt;support@github.com&gt;
+* ci: [dependabot] testing configuration
+* ci: [gh-workflows][scoreboard] add concurrency limit
+* ci: [dependabot] testing configuration (#151)
+* ci: [dependabot] testing configuration (#153)
+* ci: [dependabot] testing configuration
+* ci: [gh-workflows] add labeler workflow
+* ci: [gh-workflows] fixed test report step
+* ci: [dependabot] bump the npm-dependencies group across 1 directory with 6 updates
+* ---
+* updated-dependencies:
+* - dependency-name: &quot;@types/github-script&quot;
+* dependency-type: direct:development
+* dependency-group: npm-dependencies
+* - dependency-name: eslint
+* dependency-type: direct:development
+* update-type: version-update:semver-major
+* dependency-group: npm-dependencies
+* - dependency-name: eslint-plugin-cypress
+* dependency-type: direct:development
+* update-type: version-update:semver-major
+* dependency-group: npm-dependencies
+* - dependency-name: eslint-plugin-import
+* dependency-type: direct:development
+* update-type: version-update:semver-patch
+* dependency-group: npm-dependencies
+* - dependency-name: eslint-plugin-jest
+* dependency-type: direct:development
+* update-type: version-update:semver-major
+* dependency-group: npm-dependencies
+* - dependency-name: eslint-plugin-n
+* dependency-type: direct:development
+* update-type: version-update:semver-major
+* dependency-group: npm-dependencies
+* ...
+* Signed-off-by: dependabot[bot] &lt;support@github.com&gt;
+* Signed-off-by: dependabot[bot] &lt;support@github.com&gt;
+* ci: created workflow to list all the E2E tests (#157)
+* ci: [gh-workflows] created workflow to delete repos when PR is closed (#161)
+* refactor: change path for cypress tests (#162)
+
 # 0.14.2 fix: added GH workflow for sec-scorecard.yml (#125)
 
 ## patches:
