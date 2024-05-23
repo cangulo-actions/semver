@@ -115,7 +115,6 @@ jobs:
         uses: cypress-io/github-action@1b70233146622b69e789ccdd4f9452adc638d25a # v6.6.1
         with:
           spec: ${{ matrix.spec }}
-          working-directory: cypress
           publish-summary: false
         env:
           CYPRESS_TEST_KEY: ${{ matrix.key }}
