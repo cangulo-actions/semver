@@ -58,6 +58,10 @@ jobs:
         with:
           script: |
             const fs        = require('fs')
+
+            // limit number of tests to run
+            // const patterns  = ['cypress/e2e/feat-create-gh-release.feature']
+
             const patterns  = ['cypress/e2e/*.feature']
             const globber   = await glob.create(patterns.join('\n'))
             const files     = await globber.glob()
@@ -74,9 +78,6 @@ jobs:
               spec: file,
               key: file.split('/').pop().replace('.feature', '')
             }))
-
-            // reduce the list to save GH workflow runs
-            // tests = [tests[0]]
 
             console.log(tests)
             core.setOutput('tests', tests)

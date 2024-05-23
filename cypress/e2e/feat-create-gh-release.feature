@@ -32,17 +32,17 @@ Feature: Create GH release with no scopes configured
 
   Scenario: Merge a PR with a commit adding a new feature
     Given I create a branch named "feat-gh-release"
-    And I commit "feat: new feature for creating reports" modifying the file "src/reports.py"
+    And I commit "feat: new feature for creating reports. Exposed `var.reports.enable` property" modifying the file "src/reports.py"
     And I create a PR with title "reporting feature"
     When I merge it
     Then the workflow "cangulo-actions/semver test" must conclude in "success"
     And the repository must have "1" gh release
     And the only gh release must have the tag "v0.1.0"
-    And the only gh release must have the title "0.1.0 feat: new feature for creating reports (#1)"
+    And the only gh release must have the title "0.1.0 feat: new feature for creating reports. Exposed `var.reports.enable` property (#1)"
     And the only gh release must have the body:
       """
       ## new features:
-      * feat: new feature for creating reports (#1)
+      * feat: new feature for creating reports. Exposed `var.reports.enable` property (#1)
       
       """
 
