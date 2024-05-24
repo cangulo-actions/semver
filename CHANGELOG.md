@@ -1,3 +1,8 @@
+# 0.14.6 docs: updated readme with code scanning badges (#168)
+
+## patches:
+* fix: added CODEOWNERS file. no changes in the GH action
+
 # 0.14.5 fix: fixed error when commits include &quot;`&quot; characters for code - 2n attempt FORCE RELEASE CREATION. [cd] disable include previous commits (#166)
 
 ## patches:
