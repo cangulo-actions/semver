@@ -20,6 +20,7 @@ This action automate any release process. You can trigger it after merging a PR 
   - [Actions before committing the release](#actions-before-committing-the-release)
     - [Commands](#commands)
     - [Plugins](#plugins)
+- [Security](#security)
 
 ## Requirements
 
@@ -321,3 +322,13 @@ Let's say you have a solution with 2 layers: terraform infrastructure and source
 | `feat(src): Added new payments dialog to simplify`                 | `*.js,*.html` modified |
 | `fix(src): fixed animation when a new user is created`             | `*.css` modified       |
  -->
+
+## Security
+
+This GH actions is scanned by the next products:
+
+- [ossf/scorecard-action GH action](https://github.com/marketplace/actions/ossf-scorecard-action).
+  - Check the workflow execution [workflows/scorecard.yml](https://github.com/cangulo-actions/semver/actions/workflows/scorecard.yml)
+  - Check the score here: https://scorecard.dev/viewer/?uri=github.com/cangulo-actions/semver
+- [GitHub CodeQL](https://codeql.github.com).
+  - Check the workflow [.github/workflows/codeql.yml](https://github.com/cangulo-actions/semver/actions/workflows/codeql.yml)
