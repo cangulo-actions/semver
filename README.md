@@ -6,7 +6,7 @@
 
 [![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/cangulo-actions/semver/badge)](https://scorecard.dev/viewer/?uri=github.com/cangulo-actions/semver)
 
-This action automate any release process. You can trigger it after merging a PR and if the commits include any releasable commit it will increase the version and add the commits messages to a changelog. Check the next demo:
+This action automate can automate your release process. You have to trigger it after merging a PR and based on the commits message (`fix:, feat:, break:`) the next version will be calculated and the changelog updated. Check the next demo:
 
 - [Requirements](#requirements)
   - [Repository configuration](#repository-configuration)
@@ -36,7 +36,7 @@ GH supports the next merging strategies for PRs:
 
 ![example merging strategies](docs/example-merging-strategies.png)
 
-This GH action needs the squash strategy, this will _squash_ all the commits in the PR into a single one pushed to the target branch. You can enforce this strategy in the repository configuration as next:
+This GH action needs the squash strategy, this will _squash_ all the commits in the PR into a single one pushed to the target branch. You have to enforce this strategy in your repository configuration as next:
 
 ![repo config squash](docs/repo-config-squash.png)
 
@@ -52,7 +52,7 @@ When you are about to squash your commits the GH UI shows you a panel with the n
 
 ![example-squash-commit-menu.png](docs/example-squash-commit-menu.png)
 
-The release version is calculated based on the highest change type change. For the previous example, here are the changes:
+The release version is calculated based on the highest change type provided in the commit messages. For the previous example, here are the changes:
 
 ```txt
 fix: solved issue with the DB connection
