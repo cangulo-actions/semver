@@ -332,3 +332,5 @@ This GH actions is scanned by the next products:
   - Check the score here: https://scorecard.dev/viewer/?uri=github.com/cangulo-actions/semver
 - [GitHub CodeQL](https://codeql.github.com).
   - Check the workflow [.github/workflows/codeql.yml](https://github.com/cangulo-actions/semver/actions/workflows/codeql.yml)
+
+<!-- REFRESH 20240524 -->
