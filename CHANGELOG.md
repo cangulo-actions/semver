@@ -1,3 +1,8 @@
+# 0.14.7 fix: updated readme to incldue a security section with the scans performed. no changes in the GH action, force a new release. (#169)
+
+## patches:
+* fix: updated readme to incldue a security section with the scans performed. no changes in the GH action, force a new release. (#169)
+
 # 0.14.6 docs: updated readme with code scanning badges (#168)
 
 ## patches:
