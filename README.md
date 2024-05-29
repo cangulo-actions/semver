@@ -135,6 +135,10 @@ on:
     branches:
       - main # if main is protected please provide a GH token, please check the next section
 
+concurrency:
+  group: cd-main
+  cancel-in-progress: false
+
 jobs:
   semver:
     name: 🚀 release new version
@@ -229,6 +233,10 @@ on:
     branches:
       - main
 
+concurrency:
+  group: cd-main
+  cancel-in-progress: false
+
 jobs:
   semver:
     name: 🚀 release new version
@@ -277,6 +285,10 @@ on:
   push:
     branches:
       - main
+
+concurrency:
+  group: cd-main
+  cancel-in-progress: false
 
 jobs:
   semver:
