@@ -35,6 +35,7 @@ jobs:
               - package-lock.json
               - tests/index/**
               - tests/functions/**
+              - node_modules/**
             action:
               - action.yml
               - functions/**
@@ -42,6 +43,7 @@ jobs:
               - cypress/**
               - package.json
               - package-lock.json
+              - node_modules/**
 
   list-e2e-tests:
     name: 📜 List E2E tests
