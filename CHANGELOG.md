@@ -1,3 +1,8 @@
+# 0.14.8 fix: [git-config] updated GH action to consume git config from env variables (#177)
+
+## patches:
+* fix: [git-config] updated GH action to consume git config from env variables (#177)
+
 # 0.14.7 fix: updated readme to include a security section with the scans performed. no changes in the GH action, force a new release. (#170)
 
 ## patches:
