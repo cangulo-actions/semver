@@ -143,7 +143,7 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v4
     - name: release new version
-      uses: cangulo-actions/semver@0.14.8
+      uses: cangulo-actions/semver@0.14.9
       id: semver
       with:
         create-gh-release: true
@@ -178,7 +178,7 @@ jobs:
       with:
         token: ${{ secrets.CANGULO_BOT_PUSH_COMMITS }} # required for pushing to main, it is a protected branch
     - name: release new version
-      uses: cangulo-actions/semver@0.14.8
+      uses: cangulo-actions/semver@0.14.9
       id: semver
       with:
         create-gh-release: true
@@ -237,7 +237,7 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v4
     - name: release new version
-      uses: cangulo-actions/semver@0.14.8
+      uses: cangulo-actions/semver@0.14.9
       id: semver
       with:
         configuration: .github/semver.yml
@@ -286,7 +286,7 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v4
     - name: release new version
-      uses: cangulo-actions/semver@0.14.8
+      uses: cangulo-actions/semver@0.14.9
       id: semver
       with:
         configuration: .github/semver.yml

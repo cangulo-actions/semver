@@ -1,3 +1,8 @@
+# 0.14.9 fix: [npm-packages] include NPM packages in the repository. deleted `npm install` command from action.yml (#178)
+
+## patches:
+* fix: [npm-packages] include NPM packages in the repository. deleted `npm install` command from action.yml (#178)
+
 # 0.14.8 fix: [git-config] updated GH action to consume git config from env variables (#177)
 
 ## patches:
