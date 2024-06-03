@@ -26,7 +26,7 @@ jobs:
         uses: actions/checkout@a5ac7e51b41094c92402da3b24376905380afc29 # v4.1.6
 
       - name: Validate Conventional Commits
-        uses: cangulo-actions/conventional-commits-validator@a982d516b6ef377fc1d9be38a7cb6b59e70f70e9 # v0.5.1
+        uses: cangulo-actions/conventional-commits-validator@48853d4b9f88f3118a42cc9b161e855389001678 # v0.5.2
         with:
           calculate-next-release: true
           label-pr-with-release-type: true
