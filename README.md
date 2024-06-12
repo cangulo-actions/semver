@@ -6,12 +6,21 @@
 
 [![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/cangulo-actions/semver/badge)](https://scorecard.dev/viewer/?uri=github.com/cangulo-actions/semver)
 
-This action automate can automate your release process. You have to trigger it after merging a PR and based on the commits message (`fix:, feat:, break:`) the next version will be calculated and the changelog updated. Check the next demo:
+You can use this action to automate the release creation once pull requests are merged. Next is an overview of the features:
+
+* Next version automatically calculated based on the commit prefixes `fix:, feat:, break:`.
+* The version is stored in a `version.json` file. You can use other files, for example, you [`package.json`](https://docs.npmjs.com/cli/v10/configuring-npm/package-json#version) for NPM projects.
+* Release notes are built from the commit messages and stored in the `CHANGELOG.MD` file.
+* You can also integrate [GH release](https://docs.github.com/en/repositories/releasing-projects-on-github/about-releases) to easier version history. Check [cangulo-actions/semver example.](https://github.com/cangulo-actions/semver/releases)
+* Execute bash [commands](#commands) before creating a release. For example, `npm install` to update your NPM libraries.
+* [plugins](#plugins) are available for specific repositories such as GH actions or TF modules.
+
+## Table of content <!-- omit from toc -->
 
 - [Requirements](#requirements)
+  - [Semantic Versioning and Conventional Commits](#semantic-versioning-and-conventional-commits)
   - [Repository configuration](#repository-configuration)
   - [Release details](#release-details)
-- [Semantic Versioning and Conventional Commits](#semantic-versioning-and-conventional-commits)
 - [Features](#features)
   - [out-of-the-box version tracking and changelog](#out-of-the-box-version-tracking-and-changelog)
   - [GH release and Job summary integration](#gh-release-and-job-summary-integration)
@@ -25,56 +34,16 @@ This action automate can automate your release process. You have to trigger it a
 ## Requirements
 
 > [!IMPORTANT]
-> - 🗜️ This GH action requires PR to be merge using **squash and merge** option.
-> Please check the [Repository configuration](#repository-configuration) section  
-> - 📝 All the **commits merged must follow the `<type>: <description>`**. Otherwise, the version won't increase.  
-> Please check the [Conventional Commits](#semantic-versioning-and-conventional-commits) section
+> 🗜️ This GH action requires PR to be merged using **squash and merge** option. Please configure your repository to support only that merging strategy. Follow the [repository configuration](#repository-configuration) section.  
+> 📝 All the **commits merged must follow the `<type>: <description>`**. Otherwise, they will be ignored when calculating the next version.  
+> Please check the [Conventional Commits](#semantic-versioning-and-conventional-commits) section to understand the supported commit types.
 
-### Repository configuration
+### Semantic Versioning and Conventional Commits
 
-GH supports the next merging strategies for PRs:
+This GH action aims to facilitate app versioning following the [semantic versioning](https://semver.org) and [conventional commits](https://www.conventionalcommits.org/en/v1.0.0/#summary) specifications. Next are the key points to consider:
 
-![example merging strategies](docs/example-merging-strategies.png)
-
-This GH action needs the squash strategy, this will _squash_ all the commits in the PR into a single one pushed to the target branch. You have to enforce this strategy in your repository configuration as next:
-
-![repo config squash](docs/repo-config-squash.png)
-
-> [!TIP]
-> You can configure the default commit message to `Pull request title and commit details` to facilitate the proposed release details (see next section).
-
-### Release details
-
-When you are about to squash your commits the GH UI shows you a panel with the next two fields:
-
-- **Commit title**: This will be considered as the release title. If you configured the default commit message to be `Pull request title and commit details` this will be filled with the PR title.
-- **Commit body**: This will include all the PR commit messages.
-
-![example-squash-commit-menu.png](docs/example-squash-commit-menu.png)
-
-The release version is calculated based on the highest change type provided in the commit messages. For the previous example, here are the changes:
-
-```txt
-fix: solved issue with the DB connection
-feat: implemented reporting endpoint
-docs: updated readme with new endpoints
-```
-
-The highest change here is `feat` (new feature). If the initial version is `0.0.3` the version will be increased to `0.1.0`.
-
-> [!TIP]
-> 📝 Edit the commit title in case you want to have a release title different from the PR title.  
-> ✅ To ensure the PR commits follow conventional commits run the [conventional-commits-validator](https://github.com/cangulo-actions/conventional-commits-validator) GH action when a PR is open or modified.  
-
-> [!WARNING]
-> Do not modify the commit body manually in the GH UI, you risk introduce errors  
-
-## Semantic Versioning and Conventional Commits
-
-This GH actions aims to facilitate apps versioning following the [Semantic Versioning specification](https://semver.org). Next are the key points to consider:
-
-- Versions follow the `x.y.z` format. Example: `2.1.2`
-- Releases are divided in 3 types depending on what changes are included
+* Versions follow the `x.y.z` format. Example: `2.1.2`.
+* Releases are divided into 3 types depending on what changes are included.
 
 | Release Type | Changes included                                 | Example                                           | Version Increase | Version            |
 | ------------ | ------------------------------------------------ | ------------------------------------------------- | ---------------- | ------------------ |
@@ -82,14 +51,14 @@ This GH actions aims to facilitate apps versioning following the [Semantic Versi
 | `minor`      | `new features` implemented keeping compatibility | Expose a new endpoint for reporting               | `x.(y+1).0`      | `2.1.2` -> `2.2.0` |
 | `major`      | `breaking change` that make the app incompatible | Change API models renaming or deleting properties | `(x+1).0.0`      | `2.1.2` -> `3.0.0` |
 
-- Each commit represents a change and its type must be provided in the commit message following the convention pattern:
+* Each commit represents a change and its type must be provided in the commit message following the convention pattern:
 
 > [!IMPORTANT]
 > The pattern expected on each commit is: `<type>: <description>`
 
-- The commit `<type>` classifies the change the commit includes. For example: `fix` means this commit includes a bug fix setting the next release to be a patch.
-- The commit `<description>` explains how this commit affects the solution.
-- Please note `: ` semicolon followed by one space between the type and the description.
+* The commit `<type>` classifies the change the commit includes. For example: `fix` means this commit includes a bug fix setting the next release to be a patch.
+* The commit `<description>` explains how this commit affects the solution.
+* Please note `: ` semicolon followed by one space between the type and the description.
 
 Supported commit types by default:
 
@@ -104,24 +73,58 @@ Supported commit types by default:
  | `docs`     | none      |
  | `ci`       | none      |
 
-- You can check the default config [in properties.commits.default at config.schema.yml](config.schema.yml)  
-- Please note if more than one commit is merged. The one with the higher release type will determine the final release.  
-- ⚠️ Commits merged with a different type than the previous one won't trigger a release.  
-- 📑 You can customize the accepted commit types and the release linked. Please check the section [Custom Commit Types](#custom-commit-types).  
-- 🔭 This GH action also supports scopes in the commit message. The pattern would be: `<type>(scope1,scope2,...,scopeN): <description>`.
+* You can check the default config [in properties.commits.default at config.schema.yml](config.schema.yml).
+* If more than one commit is merged, the one with the higher release type will determine the final release.
+* ⚠️ Commits merged with a non-supported type won't trigger a release.
+* 📑 You can customize the accepted commit types and the release linked. Please check the section [Custom Commit Types](#custom-commit-types).
+* 🔭 This GH action also supports scopes in the commit message. The pattern would be: `<type>(scope1,scope2,...,scopeN): <description>`.
 
-<!-- Details in the [Monorepos or multilayer solutions](#monorepos-or-multilayer-solutions) section. -->
+### Repository configuration
 
-References:
+GH supports the next merging strategies for PRs:
 
-- [Semantic Versioning](https://semver.org)
-- [conventional commits specification](https://www.conventionalcommits.org/en/v1.0.0/#summary)
+![example merging strategies](docs/example-merging-strategies.png)
+> [example PR before merge](docs/example-merging-strategies-2.png)
+
+This GH action needs the squash strategy, this will _squash_ all the commits in the PR into a single one pushed to the target branch. You have to enforce this strategy in your repository configuration as next:
+
+![repo config squash](docs/repo-config-squash.png)
+
+> [!TIP]
+> You can configure the default commit message to `Pull request title and commit details` to facilitate the proposed release details (see next section).
+
+### Release details
+
+When you are about to squash your commits the GH UI shows you a panel with the next two fields:
+
+* **Commit title**: This will be considered as the release title. If you configured the default commit message to be `Pull request title and commit details` this will be filled with the PR title.
+* **Commit body**: This will include all the PR commit messages.
+
+![example-squash-commit-menu.png](docs/example-squash-commit-menu.png)
+
+The release version is calculated based on the highest change type provided in the commit messages. For the previous example, here are the changes:
+
+```txt
+fix: solved issue with the DB connection
+feat: implemented reporting endpoint
+docs: updated readme with new endpoints
+```
+
+The highest change here is `feat` (new feature). If the initial version is `0.0.3` the version will be increased to `0.1.0`.
+
+> [!TIP]
+> 📝 Edit the commit title in case you want to have a release title different from the PR title
+> ✅ To ensure the PR commits follow conventional commits run the [conventional-commits-validator](https://github.com/cangulo-actions/conventional-commits-validator) GH action when a PR is open or modified
+> Do not modify the commit body manually in the GH UI, you risk introducing errors  
 
 ## Features
 
 ### out-of-the-box version tracking and changelog
 
-When a PR is merged, changes will be appended to the `CHANGELOG.md` file and the version released will be updated in the `version.json` file.
+When a PR is merged, changes will be appended to the `CHANGELOG.md` file and the version released will be updated in the `version.json` file. Check the examples in this repo:
+
+* [version.json](version.json)
+* [CHANGELOG.Md](CHANGELOG.md)
 
 ### GH release and Job summary integration
 
@@ -221,7 +224,7 @@ commits:
   release: none
 ```
 
-> As a proposal, name the file `.github/semver.yml` and place it in the root of your repo.
+> As a proposal, name the file as `.github/semver.yml`
 
 Then provide it in the `configuration` input when calling the GH action:
 
@@ -259,7 +262,7 @@ You can execute the next actions before this GH action commit the updates to the
 
 #### Commands
 
-In order to prepare your repository for a release, you can define commands for actions as formatting files or updated docs. Next are some examples:
+In order to prepare your repository for a release, you can define commands for actions as formatting files or update docs. Next are some examples:
 
 | Case                                        | Command                     |
 | ------------------------------------------- | --------------------------- |
@@ -310,8 +313,8 @@ jobs:
 
 Next are the plugins you can execute:
 
-- [update-version-readme-gh-action.js](./plugins/update-version-readme-gh-action.js): This will update examples that refer to your GH action in the `README.md` file. The  match expected is `owner/repo@version`
-- [update-version-readme-tf-module.js](./plugins/update-version-readme-tf-module.js): This will update examples that refer to your GH action in the `README.md` file. The  match expected is `source = "github.com/{OWNER}/{REPO}.git?ref={PREVIOUS_VERSION}"`. 
+* [update-version-readme-gh-action.js](./plugins/update-version-readme-gh-action.js): This will update examples that refer to your GH action in the `README.md` file. The  match expected is `owner/repo@version`
+* [update-version-readme-tf-module.js](./plugins/update-version-readme-tf-module.js): This will update examples that refer to your GH action in the `README.md` file. The  match expected is `source = "github.com/{OWNER}/{REPO}.git?ref={PREVIOUS_VERSION}"`. 
 
 Please provide them in `pre-commit.plugins[].file` at the configuration file:
 
@@ -339,10 +342,10 @@ Let's say you have a solution with 2 layers: terraform infrastructure and source
 
 This GH actions is scanned by the next products:
 
-- [ossf/scorecard-action GH action](https://github.com/marketplace/actions/ossf-scorecard-action).
-  - Check the workflow execution [workflows/scorecard.yml](https://github.com/cangulo-actions/semver/actions/workflows/scorecard.yml)
-  - Check the score here: https://scorecard.dev/viewer/?uri=github.com/cangulo-actions/semver
-- [GitHub CodeQL](https://codeql.github.com).
-  - Check the workflow [.github/workflows/codeql.yml](https://github.com/cangulo-actions/semver/actions/workflows/codeql.yml)
+* [ossf/scorecard-action GH action](https://github.com/marketplace/actions/ossf-scorecard-action).
+  * Check the workflow execution [workflows/scorecard.yml](https://github.com/cangulo-actions/semver/actions/workflows/scorecard.yml)
+  * Check the score here: https://scorecard.dev/viewer/?uri=github.com/cangulo-actions/semver
+* [GitHub CodeQL](https://codeql.github.com).
+  * Check the workflow [.github/workflows/codeql.yml](https://github.com/cangulo-actions/semver/actions/workflows/codeql.yml)
 
 <!-- REFRESH 20240524 -->
