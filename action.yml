@@ -1,0 +1,21 @@
+name: semver
+description: Computes the next semantic version from Conventional Commits
+author: cangulo
+
+branding:
+  icon: tag
+  color: blue
+
+inputs:
+  who-to-greet:
+    description: Who to greet
+    required: false
+    default: World
+
+outputs:
+  message:
+    description: The greeting, `Hello <who-to-greet>`
+
+runs:
+  using: node24
+  main: dist/index.js

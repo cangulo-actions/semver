@@ -1,0 +1,103 @@
+name: pull-request
+
+on:
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  ci:
+    name: ci
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version-file: .node-version
+          cache: npm
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Check Format
+        run: npm run format:check
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Test
+        run: npm run ci-test
+
+  # In TypeScript actions, `dist/` is what `uses:` runs. Re-bundle and fail if
+  # the committed `dist/` does not match the sources.
+  check-dist:
+    name: check-dist
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version-file: .node-version
+          cache: npm
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Build dist/ Directory
+        run: npm run bundle
+
+      - name: Compare Directories
+        id: diff
+        run: |
+          if [ ! -d dist/ ]; then
+            echo "Expected dist/ directory does not exist."
+            exit 1
+          fi
+          git diff --ignore-space-at-eol --text --exit-code dist/ || {
+            echo "::error::dist/ is out of date. Run 'npm run bundle' and commit the result."
+            exit 1
+          }
+
+      - name: Upload Expected dist/
+        if: ${{ failure() && steps.diff.outcome == 'failure' }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: dist
+          path: dist/
+
+  test-action:
+    name: test-action
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Run Local Action
+        id: semver
+        uses: ./
+        with:
+          who-to-greet: cangulo
+
+      - name: Assert Output
+        env:
+          ACTUAL: ${{ steps.semver.outputs.message }}
+          EXPECTED: Hello cangulo
+        run: |
+          if [ "$ACTUAL" != "$EXPECTED" ]; then
+            echo "::error::Expected message '$EXPECTED' but got '$ACTUAL'"
+            exit 1
+          fi
+          echo "Output matches: '$ACTUAL'"
