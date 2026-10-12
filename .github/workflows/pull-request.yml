@@ -94,7 +94,7 @@ jobs:
       - name: Assert Output
         env:
           ACTUAL: ${{ steps.semver.outputs.message }}
-          EXPECTED: Hello cangulo
+          EXPECTED: Hello someone-else
         run: |
           if [ "$ACTUAL" != "$EXPECTED" ]; then
             echo "::error::Expected message '$EXPECTED' but got '$ACTUAL'"
